@@ -101,7 +101,7 @@ print'
                     </li>-->
                   </ul>
                 </li>
-                <!--<li><a href="#"><i class="fa fa-circle-o"></i>Respaldo</a></li>-->
+                <li><a href="../../procesos/backup.php"><i class="fa fa-circle-o"></i>Respaldo</a></li>
               </ul>
             </li>
 

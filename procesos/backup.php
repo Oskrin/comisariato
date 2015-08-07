@@ -1,5 +1,6 @@
 <?php
 session_start();
+//C:\Program Files (x86)\PostgreSQL\9.2\bin>psql -U postgres -d prubea_g -p 5432 -h localhost < C:\Users\USER\Downloads comisiarito-2015-07-24 12-00-58.sql"///para el backup
 backup();
   function dl_file($file){
      date_default_timezone_set('America/Guayaquil');
@@ -9,7 +10,8 @@ backup();
      $filename = basename($file);
      $temp=explode('.', $filename);
      $nombre=$temp[0].'-'.$fecha.'.'.'sql';
-     $file_extension = strtolower(substr(strrchr($filename,"."),1));
+     $file_extension = strtolower(substr(strrchr($filename,"."),1));                  
+     
      $ctype="application/force-download";
      header("Pragma: public");
      header("Expires: 0");
@@ -17,7 +19,7 @@ backup();
      header("Cache-Control: public");
      header("Content-Description: File Transfer");
      header("Content-Type: $ctype");
-     $header="Content-Disposition: attachment; filename=".$nombre.";";
+     $header="Content-Disposition: attachment; filename=". $nombre .";";
      header($header );
      header("Content-Transfer-Encoding: binary");
      header("Content-Length: ".$len);
@@ -25,11 +27,10 @@ backup();
      exit;
   }
 
-  function backup(){       
-    $dbname = "neltex"; //database name
-    //$dbname = "mantenimiento_inventario"; //database name
+  function backup(){      
+
+    $dbname = "comisariato";    
     $dbconn = pg_pconnect("host=localhost port=5432 dbname=$dbname user=postgres password=rootdow"); //connectionstring
-//    $dbconn = pg_pconnect("dbname=df2jp28bdkuafd host=ec2-54-204-32-91.compute-1.amazonaws.com port=5432 user=larfyvwbaurpxo password=WV84lJxFXf7aqF6BXCXgwcI-tC sslmode=require"); //cadena de conexion
     if (!$dbconn) {
       echo "Can't connect.\n";
     exit;
@@ -37,44 +38,153 @@ backup();
     /////////id de la auditoria////////////
     date_default_timezone_set('UTC');
     $fecha=date("Y-m-d");
-    //////////////  
-    $consulta=pg_query("select  max(pk_audit) as maximo from tbl_audit");
-    while($row=pg_fetch_row($consulta)){
-      $max=$row[0];
-    }
-    $max=$max+1;
-    //////////////
+        
+    ///////////////*/
     $back = fopen("$dbname.sql","w");
     /////////////////    
-    $str="";
-    $str .= "\nCREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog" .";";
-    $str .= "\nCOMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language'" .";";
-    $str .= "\nSET search_path = public, pg_catalog" .";";
+    $str="";   
     $str .= "\nSET client_encoding=LATIN1" . ";";
-    ////////////
-    $str .= "\nCREATE FUNCTION fn_log_audit() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    IF (TG_OP = 'DELETE') THEN
-      INSERT INTO tbl_audit (\"nombre_tabla\", \"operacion\", \"valor_anterior\", \"valor_nuevo\", \"fecha_cambio\", \"usuario\")
-             VALUES (TG_TABLE_NAME, 'D', OLD, NULL, now(), USER);
-      RETURN OLD;
-    ELSIF (TG_OP = 'UPDATE') THEN
-      INSERT INTO tbl_audit (\"nombre_tabla\", \"operacion\", \"valor_anterior\", \"valor_nuevo\", \"fecha_cambio\", \"usuario\")
-             VALUES (TG_TABLE_NAME, 'U', OLD, NEW, now(), USER);
-      RETURN NEW;
-    ELSIF (TG_OP = 'INSERT') THEN
-      INSERT INTO tbl_audit (\"nombre_tabla\", \"operacion\", \"valor_anterior\", \"valor_nuevo\", \"fecha_cambio\", \"usuario\")
-             VALUES (TG_TABLE_NAME, 'I', NULL, NEW, now(), USER);
-      RETURN NEW;
-    END IF;
-    RETURN NULL;
-END;
-$$;";
-$str .= "\nLANGUAGE 'plpgsql' VOLATILE COST 100;";
-$str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
-    ///////////
+    $table = 'asignacion';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";    
+    $str .= "\n" . 'id_asignacion' . " " . 'int4' . " " . 'NOT NULL' . ",";
+    $str .= "\n" . 'id_bodega' . " " . 'int4' . ",";    
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";    
+    $str .= "\n" . 'estado' . " " . 'text';
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);      
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+    
+    $table = 'bancos';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";    
+    $str .= "\n" . 'id_bancos' . " " . 'int4' . " " . 'NOT NULL' . ",";
+    $str .= "\n" . 'numero_cuenta' . " " . 'text' . ",";    
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";    
+    $str .= "\n" . 'sucursal' . " " . 'text' . ",";    
+    $str .= "\n" . 'tipo_cuenta' . " " . 'text' . ",";    
+    $str .= "\n" . 'estado' . " " . 'text';
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);      
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'bodegas';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";    
+    $str .= "\n" . 'id_bodega' . " " . 'int4' . " " . 'NOT NULL' . ",";
+    $str .= "\n" . 'nombre_bodega' . " " . 'text' . ",";    
+    $str .= "\n" . 'ubicacion_bodega' . " " . 'text' . ",";    
+    $str .= "\n" . 'telefono_bodega' . " " . 'text' . ",";        
+    $str .= "\n" . 'estado' . " " . 'text';
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+    $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);      
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
     $table = 'c_cobrarexternas';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
@@ -128,6 +238,7 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
       $Temparray = explode("|", $t);
       $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
     } //////////////////
+
     $table = 'c_pagarexternas';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
@@ -161,7 +272,7 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
       $str .= $sql;  
       $str .= "\n";
     }       
-     $res1 = pg_query("SELECT pg_index.indisprimary,
+    $res1 = pg_query("SELECT pg_index.indisprimary,
             pg_catalog.pg_get_indexdef(pg_index.indexrelid)
         FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
             pg_catalog.pg_index AS pg_index
@@ -181,6 +292,52 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
       $Temparray = explode("|", $t);
       $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
     } ////////////////////    
+
+    $table = 'cargo_usuario';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_cargo_usuario' . " " . 'int4' . " " . 'NOT NULL' . ",";
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";    
+    $str .= "\n" . 'estado' . " " . 'text';   
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+    $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";      
+    }////////////////// 
+
     $table = 'categoria';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
@@ -205,7 +362,7 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
       $str .= $sql;  
       $str .= "\n";
     }       
-     $res1 = pg_query("SELECT pg_index.indisprimary,
+    $res1 = pg_query("SELECT pg_index.indisprimary,
             pg_catalog.pg_get_indexdef(pg_index.indexrelid)
         FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
             pg_catalog.pg_index AS pg_index
@@ -224,7 +381,98 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
       $t = str_replace("ON", "|", $t);
       $Temparray = explode("|", $t);
       $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";      
-  }////////////////// 
+    }////////////////// 
+
+    $table = 'cliente_ruta';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_cli_ruta' . " " . 'int4' . " " . 'NOT NULL' . ",";
+    $str .= "\n" . 'id_cliente' . " " . 'int4' . ",";        
+    $str .= "\n" . 'id_ruta' . " " . 'int4';   
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+    $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";      
+    }////////////////// 
+
+    $table = 'cliente_sector';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_cli_sector' . " " . 'int4' . " " . 'NOT NULL' . ",";
+    $str .= "\n" . 'id_cliente' . " " . 'int4' . ",";        
+    $str .= "\n" . 'id_sector' . " " . 'int4';   
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+    $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";      
+    }////////////////// 
+
     $table = 'clientes';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
@@ -244,7 +492,8 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
     $str .= "\n" . 'correo' . " " . 'text' . ",";    
     $str .= "\n" . 'credito_cupo' . " " . 'text' . ",";    
     $str .= "\n" . 'notas' . " " . 'text' . ",";    
-    $str .= "\n" . 'estado' . " " . 'text';    
+    $str .= "\n" . 'estado' . " " . 'text' . ",";    
+    $str .= "\n" . 'id_plan_cuentas' . " " . 'int4';    
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
     $str .= "\n--\n";
@@ -260,7 +509,7 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
       $str .= $sql;  
       $str .= "\n";
     }       
-     $res1 = pg_query("SELECT pg_index.indisprimary,
+    $res1 = pg_query("SELECT pg_index.indisprimary,
             pg_catalog.pg_get_indexdef(pg_index.indexrelid)
         FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
             pg_catalog.pg_index AS pg_index
@@ -279,7 +528,7 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
       $t = str_replace("ON", "|", $t);
       $Temparray = explode("|", $t);
       $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";      
-  }  
+    }  
     $table = 'color';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table";
@@ -288,6 +537,100 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
     $str .= "\nCREATE TABLE $table (";
     $str .= "\n" . 'id_color' . " " . 'int4' . " " . 'NOT NULL' . ",";
     $str .= "\n" . 'nombre_color' . " " . 'text' . ",";      
+    $str .= "\n" . 'estado' . " " . 'text';          
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+    $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    }//////////////////  
+
+    $table = 'detalle_adicional';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_detalle_adicional' . " " . 'int4' . " " . 'NOT NULL' . ",";
+    $str .= "\n" . 'id_detalles_permiso' . " " . 'int4' . ",";      
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";      
+    $str .= "\n" . 'estado' . " " . 'text';          
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+    $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    }//////////////////  
+
+    $table = 'detalle_asignacion';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_detalle_asignacion' . " " . 'int4' . " " . 'NOT NULL' . ",";
+    $str .= "\n" . 'id_asignacion' . " " . 'int4' . ",";      
+    $str .= "\n" . 'id_plan_cuentas' . " " . 'int4' . ",";      
     $str .= "\n" . 'estado' . " " . 'text';          
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
@@ -314,18 +657,19 @@ $str .= "\nALTER FUNCTION public.fn_log_audit() OWNER TO postgres;";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  }//////////////////  
-  $table = 'detalle_devolucion_compra';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    }//////////////////  
+
+    $table = 'detalle_devolucion_compra';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla  '$table'";
     $str .= "\n--\n";
@@ -354,7 +698,7 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
       $str .= $sql;  
       $str .= "\n";
     }       
-     $res1 = pg_query("SELECT pg_index.indisprimary,
+    $res1 = pg_query("SELECT pg_index.indisprimary,
             pg_catalog.pg_get_indexdef(pg_index.indexrelid)
         FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
             pg_catalog.pg_index AS pg_index
@@ -364,18 +708,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  }///////////////////  
-  $table = 'detalle_devolucion_venta';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    }///////////////////  
+
+    $table = 'detalle_devolucion_venta';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -404,7 +749,7 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
       $str .= $sql;  
       $str .= "\n";
     }       
-     $res1 = pg_query("SELECT pg_index.indisprimary,
+    $res1 = pg_query("SELECT pg_index.indisprimary,
             pg_catalog.pg_get_indexdef(pg_index.indexrelid)
         FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
             pg_catalog.pg_index AS pg_index
@@ -414,18 +759,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  }////////////////////// 
-  $table = 'detalle_egreso';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+    $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    }////////////////////// 
+
+    $table = 'detalle_egreso';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -454,7 +800,7 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
       $str .= $sql;  
       $str .= "\n";
     }       
-     $res1 = pg_query("SELECT pg_index.indisprimary,
+    $res1 = pg_query("SELECT pg_index.indisprimary,
             pg_catalog.pg_get_indexdef(pg_index.indexrelid)
         FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
             pg_catalog.pg_index AS pg_index
@@ -464,18 +810,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  }/////////////////// 
-  $table = 'detalle_factura_compra';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+    $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    }///////////////////
+
+    $table = 'detalle_factura_compra';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -504,7 +851,7 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
       $str .= $sql;  
       $str .= "\n";
     }       
-     $res1 = pg_query("SELECT pg_index.indisprimary,
+    $res1 = pg_query("SELECT pg_index.indisprimary,
             pg_catalog.pg_get_indexdef(pg_index.indexrelid)
         FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
             pg_catalog.pg_index AS pg_index
@@ -514,18 +861,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } 
-  $table = 'detalle_factura_venta';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } 
+
+    $table = 'detalle_factura_venta';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -565,18 +913,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  }///////////////
-  $table = 'detalle_ingreso';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    }///////////////
+
+    $table = 'detalle_ingreso';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -615,18 +964,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } ////////////////
-  $table = 'detalle_inventario';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } ////////////////
+
+    $table = 'detalle_inventario';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -666,18 +1016,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } /////////////////
-  $table = ' detalle_pagos_venta';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } /////////////////
+
+    $table = ' detalle_pagos_venta';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -714,18 +1065,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } ////////////////
-  $table = 'detalle_proforma';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } ////////////////
+
+    $table = 'detalle_proforma';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -764,18 +1116,70 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'detalle_transaccion';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_detalle_transaccion' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'id_transacciones' . " " . 'int4' . ",";                  
+    $str .= "\n" . 'id_plan_cuentas' . " " . 'int4' . ",";                  
+    $str .= "\n" . 'tipo_referencia' . " " . 'text' . ",";                  
+    $str .= "\n" . 'num_referencia' . " " . 'text' . ","; 
+    $str .= "\n" . 'debito' . " " . 'text' . ","; 
+    $str .= "\n" . 'credito' . " " . 'text' . ","; 
+    $str .= "\n" . 'estado' . " " . 'text';    
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
     $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'detalles_ordenes';
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'detalles_ordenes';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -814,18 +1218,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } /////////////
-  $table = 'detalles_pagos_internos';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } /////////////
+
+    $table = 'detalles_pagos_internos';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -862,30 +1267,28 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'detalles_trabajo';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////+}
+
+    $table = 'detalles_permiso';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
     $str .= "\nDROP TABLE $table CASCADE;";
     $str .= "\nCREATE TABLE $table (";
-    $str .= "\n" . 'id_detalle' . " " . 'int4' . " " . 'NOT NULL' . ",";    
-    $str .= "\n" . 'nombre_detalle' . " " . 'text' . ",";                  
-    $str .= "\n" . 'valor_detalle' . " " . 'text' . ",";                  
-    $str .= "\n" . 'id_trabajotecnico' . " " . 'int4' . ",";                  
-    $str .= "\n" . 'codigo' . " " . 'text' . ","; 
-    $str .= "\n" . 'cantidad' . " " . 'text' . ","; 
-    $str .= "\n" . 'tipo' . " " . 'text';    
+    $str .= "\n" . 'id_detalles_permiso' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'id_permisos' . " " . 'int4' . ",";                  
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";                      
+    $str .= "\n" . 'estado' . " " . 'text';    
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
     $str .= "\n--\n";
@@ -911,18 +1314,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'devolucion_compra';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'devolucion_compra';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -970,18 +1374,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'devolucion_venta';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'devolucion_venta';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1028,18 +1433,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'egresos';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'egresos';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1085,18 +1491,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'empresa';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'empresa';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1108,9 +1515,14 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
     $str .= "\n" . 'direccion_empresa' . " " . 'text' . ",";                  
     $str .= "\n" . 'telefono_empresa' . " " . 'text' . ","; 
     $str .= "\n" . 'celular_empresa' . " " . 'text' . ","; 
+    $str .= "\n" . 'pais_empresa' . " " . 'text' . ","; 
+    $str .= "\n" . 'ciudad_empresa' . " " . 'text' . ","; 
     $str .= "\n" . 'fax_empresa' . " " . 'text' . ","; 
     $str .= "\n" . 'email_empresa' . " " . 'text' . ","; 
     $str .= "\n" . 'pagina_web' . " " . 'text' . ","; 
+    $str .= "\n" . 'descripcion' . " " . 'text' . ","; 
+    $str .= "\n" . 'propietario' . " " . 'text' . ","; 
+    $str .= "\n" . 'imagen' . " " . 'text' . ","; 
     $str .= "\n" . 'estado' . " " . 'text';    
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
@@ -1137,18 +1549,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'factura_compra';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'factura_compra';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1200,18 +1613,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'factura_venta';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'factura_venta';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1263,18 +1677,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'gastos';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'gastos';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1316,18 +1731,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'gastos_internos';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'gastos_internos';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1368,18 +1784,67 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'impuestos';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_impuestos' . " " . 'int4' . " " . 'NOT NULL' . ",";        
+    $str .= "\n" . 'abreviatura' . " " . 'text' . ",";                  
+    $str .= "\n" . 'descripcion' . " " . 'text' . ","; 
+    $str .= "\n" . 'valor' . " " . 'text' . ",";     
+    $str .= "\n" . 'estado' . " " . 'text';    
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
     $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'ingresos';
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'ingresos';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1425,18 +1890,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'inventario';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'inventario';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1474,18 +1940,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'kardex';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'kardex';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1494,14 +1961,11 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
     $str .= "\n" . 'id_kardex' . " " . 'int4' . " " . 'NOT NULL' . ",";    
     $str .= "\n" . 'fecha_kardex' . " " . 'text' . ",";                  
     $str .= "\n" . 'detalle' . " " . 'text' . ",";                  
-    $str .= "\n" . 'cantidad_c' . " " . 'text' . ",";                  
-    $str .= "\n" . 'valor_unitario_c' . " " . 'text' . ","; 
-    $str .= "\n" . 'total_c' . " " . 'text' . ","; 
-    $str .= "\n" . 'cantidad_v' . " " . 'text' . ","; 
-    $str .= "\n" . 'valor_unitario_v' . " " . 'text' . ","; 
-    $str .= "\n" . 'total_v ' . " " . 'text' . ","; 
-    $str .= "\n" . 'cod_productos ' . " " . 'int4' . ","; 
-    $str .= "\n" . 'transaccion ' . " " . 'text' . ","; 
+    $str .= "\n" . 'cantidad' . " " . 'text' . ",";                  
+    $str .= "\n" . 'valor_unitario' . " " . 'text' . ","; 
+    $str .= "\n" . 'total' . " " . 'text' . ","; 
+    $str .= "\n" . 'cod_productos' . " " . 'int4' . ","; 
+    $str .= "\n" . 'transaccion' . " " . 'text' . ",";     
     $str .= "\n" . 'estado' . " " . 'text';    
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
@@ -1528,18 +1992,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'kardex_valorizado';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'kardex_valorizado';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1583,25 +2048,30 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'marcas';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'libro_diario';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
     $str .= "\nDROP TABLE $table CASCADE;";
     $str .= "\nCREATE TABLE $table (";
-    $str .= "\n" . 'id_marca' . " " . 'int4' . " " . 'NOT NULL' . ",";    
-    $str .= "\n" . 'nombre_marca' . " " . 'text' . ","; 
+    $str .= "\n" . 'id_libro_diario' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'fecha' . " " . 'text' . ","; 
+    $str .= "\n" . 'detalle' . " " . 'text' . ","; 
+    $str .= "\n" . 'debe' . " " . 'text' . ","; 
+    $str .= "\n" . 'haber' . " " . 'text' . ","; 
+    $str .= "\n" . 'descripcion' . " " . 'text' . ","; 
      $str .= "\n" . 'estado' . " " . 'text';          
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
@@ -1628,18 +2098,65 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'marcas';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_marca' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'nombre_marca' . " " . 'text' . ","; 
+    $str .= "\n" . 'estado' . " " . 'text';          
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
     $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'ordenes_produccion';
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'ordenes_produccion';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1679,18 +2196,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'pagos_cobrar';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'pagos_cobrar';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1737,18 +2255,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'pagos_compra';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'pagos_compra';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1790,18 +2309,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'pagos_pagar';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'pagos_pagar';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1848,18 +2368,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'pagos_venta';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'pagos_venta';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1901,29 +2422,27 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'parametros';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'permisos';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
     $str .= "\nDROP TABLE $table CASCADE;";
     $str .= "\nCREATE TABLE $table (";
-    $str .= "\n" . 'id_parametro' . " " . 'int4' . " " . 'NOT NULL' . ",";    
-    $str .= "\n" . 'nombre_empresa' . " " . 'text' . ",";                  
-    $str .= "\n" . 'ruc_empresa' . " " . 'text' . ",";                  
-    $str .= "\n" . 'telefono_empresa' . " " . 'text' . ",";                  
-    $str .= "\n" . 'direccion_empresa' . " " . 'text' . ","; 
-    $str .= "\n" . ' propietario' . " " . 'text'; 
+    $str .= "\n" . 'id_permisos' . " " . 'int4' . " " . 'NOT NULL' . ",";        
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";     
+    $str .= "\n" . ' estado' . " " . 'text'; 
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
     $str .= "\n--\n";
@@ -1949,18 +2468,67 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'plan_cuentas';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_plan_cuentas' . " " . 'int4' . " " . 'NOT NULL' . ",";        
+    $str .= "\n" . 'codigo_plan' . " " . 'text' . ",";     
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";     
+    $str .= "\n" . 'cuenta' . " " . 'text' . ",";     
+    $str .= "\n" . ' estado' . " " . 'text'; 
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
     $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'productos';
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+  
+    $table = 'productos';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -1989,7 +2557,10 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
     $str .= "\n" . 'estado' . " " . 'text' . ","; 
     $str .= "\n" . 'inventariable' . " " . 'text' . ","; 
     $str .= "\n" . 'existencia' . " " . 'text' . ","; 
-    $str .= "\n" . ' diferencia' . " " . 'text'; 
+    $str .= "\n" . 'diferencia' . " " . 'text' . ","; 
+    $str .= "\n" . 'imagen' . " " . 'text' . ","; 
+    $str .= "\n" . 'id_bodega' . " " . 'int4' . ","; 
+    $str .= "\n" . ' incluye_iva' . " " . 'text'; 
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
     $str .= "\n--\n";
@@ -2015,18 +2586,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'proforma';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'proforma';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -2072,18 +2644,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'proveedores';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'proveedores';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -2104,7 +2677,59 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
     $str .= "\n" . 'forma_pago' . " " . 'text' . ","; 
     $str .= "\n" . 'correo' . " " . 'text' . ","; 
     $str .= "\n" . 'principal' . " " . 'text' . ","; 
+    $str .= "\n" . 'tipo_proveedor' . " " . 'text' . ","; 
+    $str .= "\n" . 'credito_cupo' . " " . 'text' . ","; 
     $str .= "\n" . 'observaciones' . " " . 'text' . ","; 
+    $str .= "\n" . 'estado' . " " . 'text' . ","; 
+    $str .= "\n" . ' id_plan_cuentas' . " " . 'int4'; 
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'retencion_fuentes';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_retencion_fuentes' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'abreviatura' . " " . 'text' . ",";                  
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";                  
+    $str .= "\n" . 'valor' . " " . 'text' . ",";                  
+    $str .= "\n" . 'valor_base' . " " . 'text' . ",";     
     $str .= "\n" . ' estado' . " " . 'text'; 
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
@@ -2131,38 +2756,30 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'registro_equipo';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+  
+    $table = 'retenciones';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
     $str .= "\nDROP TABLE $table CASCADE;";
     $str .= "\nCREATE TABLE $table (";
-    $str .= "\n" . 'id_registro' . " " . 'int4' . " " . 'NOT NULL' . ",";    
-    $str .= "\n" . 'id_color' . " " . 'int4' . ",";                  
-    $str .= "\n" . 'id_marca' . " " . 'int4' . ",";                  
-    $str .= "\n" . 'id_cliente' . " " . 'int4' . ",";                  
-    $str .= "\n" . 'nro_serie' . " " . 'text' . ","; 
-    $str .= "\n" . 'observaciones' . " " . 'text' . ","; 
-    $str .= "\n" . 'detalles' . " " . 'text' . ","; 
-    $str .= "\n" . 'estado' . " " . 'text' . ","; 
-    $str .= "\n" . 'id_usuario' . " " . 'int4' . ","; 
-    $str .= "\n" . 'fecha_ingreso' . " " . 'text' . ","; 
-    $str .= "\n" . 'id_categoria' . " " . 'int4' . ","; 
-    $str .= "\n" . 'modelo' . " " . 'text' . ","; 
-    $str .= "\n" . 'fecha_salida' . " " . 'text' . ","; 
-    $str .= "\n" . 'descuento' . " " . 'text' . ","; 
-    $str .= "\n" . ' tecnico' . " " . 'text'; 
+    $str .= "\n" . 'id_retenciones' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'abreviatura' . " " . 'text' . ",";                  
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";                  
+    $str .= "\n" . 'valor' . " " . 'text' . ",";                  
+    $str .= "\n" . 'valor_base' . " " . 'text' . ",";     
+    $str .= "\n" . ' estado' . " " . 'text'; 
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
     $str .= "\n--\n";
@@ -2188,18 +2805,159 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'rutas';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_ruta' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'nombre_ruta' . " " . 'text' . ",";                      
+    $str .= "\n" . ' id_sector' . " " . 'int4'; 
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
     $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'seguridad';
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'sectores';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_sectores' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'nombre_sector' . " " . 'text' . ",";                      
+    $str .= "\n" . ' direccion_sector' . " " . 'text'; 
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'segundo_impuesto';
+    $str .= "\n--\n";
+    $str .= "-- Estrutura de la tabla '$table'";
+    $str .= "\n--\n";
+    $str .= "\nDROP TABLE $table CASCADE;";
+    $str .= "\nCREATE TABLE $table (";
+    $str .= "\n" . 'id_segundo_impuesto' . " " . 'int4' . " " . 'NOT NULL' . ",";    
+    $str .= "\n" . 'abreviatura' . " " . 'text' . ",";                      
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";                      
+    $str .= "\n" . 'valor' . " " . 'text' . ",";                      
+    $str .= "\n" . ' estado' . " " . 'text'; 
+    $str=rtrim($str, ",");  
+    $str .= "\n);\n";
+    $str .= "\n--\n";
+    $str .= "-- Creating data for '$table'";
+    $str .= "\n--\n\n";
+    $res3 = pg_query("SELECT * FROM $table");
+    while($r = pg_fetch_row($res3))
+    {
+      $sql = "INSERT INTO $table VALUES ('";
+      $sql .= utf8_decode(implode("','",$r));
+      $sql .= "');";
+      $str = str_replace("''","NULL",$str);
+      $str .= $sql;  
+      $str .= "\n";
+    }       
+     $res1 = pg_query("SELECT pg_index.indisprimary,
+            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
+        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
+            pg_catalog.pg_index AS pg_index
+        WHERE c.relname = '$table'
+            AND c.oid = pg_index.indrelid
+            AND pg_index.indexrelid = c2.oid
+            AND pg_index.indisprimary");
+    while($r = pg_fetch_row($res1))
+    {
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'seguridad';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -2233,18 +2991,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'serie_venta';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'serie_venta';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -2281,18 +3040,19 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'series_compra';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'series_compra';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -2329,25 +3089,26 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = '"tipoProducto"';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'tipo_transaccion';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
     $str .= "\nDROP TABLE $table CASCADE;";
     $str .= "\nCREATE TABLE $table (";
-    $str .= "\n" . '"id_tipoProducto"' . " " . 'int4' . " " . 'NOT NULL' . ",";    
-    $str .= "\n" . '"nombreTipo"' . " " . 'text' . ",";                  
+    $str .= "\n" . 'id_tipo_transaccion' . " " . 'int4' . " " . 'NOT NULL' . ",";        
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";                      
     $str .= "\n" . ' estado' . " " . 'text'; 
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
@@ -2374,26 +3135,36 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'trabajo';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'transacciones';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
     $str .= "\nDROP TABLE $table CASCADE;";
     $str .= "\nCREATE TABLE $table (";
-    $str .= "\n" . 'id_trabajo' . " " . 'int4' . " " . 'NOT NULL' . ",";    
-    $str .= "\n" . 'nombre_trabajo' . " " . 'text' . ",";                  
-    $str .= "\n" . 'precio_trabajo' . " " . 'text' . ",";                  
+    $str .= "\n" . 'id_transacciones' . " " . 'int4' . " " . 'NOT NULL' . ",";        
+    $str .= "\n" . 'id_usuario' . " " . 'int4' . ",";                      
+    $str .= "\n" . 'comprobante' . " " . 'text' . ",";                      
+    $str .= "\n" . 'fecha_actual' . " " . 'text' . ",";                      
+    $str .= "\n" . 'hora_actual' . " " . 'text' . ",";                      
+    $str .= "\n" . 'tipo_transaccion' . " " . 'text' . ",";                      
+    $str .= "\n" . 'num_transaccion' . " " . 'text' . ",";                      
+    $str .= "\n" . 'abreviatura' . " " . 'text' . ",";                      
+    $str .= "\n" . 'concepto' . " " . 'text' . ",";                      
+    $str .= "\n" . 'total_debe' . " " . 'text' . ",";                      
+    $str .= "\n" . 'total_haber' . " " . 'text' . ",";                      
+    $str .= "\n" . 'diferencia' . " " . 'text' . ",";                      
     $str .= "\n" . ' estado' . " " . 'text'; 
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
@@ -2420,28 +3191,29 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'trabajo_tecnico';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+
+    $table = 'unidades_medida';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
     $str .= "\nDROP TABLE $table CASCADE;";
     $str .= "\nCREATE TABLE $table (";
-    $str .= "\n" . 'id_trabajotecnico' . " " . 'int4' . " " . 'NOT NULL' . ",";    
-    $str .= "\n" . 'id_tecnico' . " " . 'int4' . ",";                  
-    $str .= "\n" . 'id_registro' . " " . 'int4' . ",";                  
-    $str .= "\n" . 'total_reparaciones' . " " . 'text' . ",";                  
-    $str .= "\n" . ' detalles' . " " . 'text'; 
+    $str .= "\n" . 'id_unidades' . " " . 'int4' . " " . 'NOT NULL' . ",";            
+    $str .= "\n" . 'descripcion' . " " . 'text' . ",";                      
+    $str .= "\n" . 'abreviatura' . " " . 'text' . ",";                      
+    $str .= "\n" . 'cantidad' . " " . 'text' . ",";                          
+    $str .= "\n" . ' estado' . " " . 'text'; 
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
     $str .= "\n--\n";
@@ -2467,18 +3239,20 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'usuario';
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } //////////////////
+  
+ 
+    $table = 'usuario';
     $str .= "\n--\n";
     $str .= "-- Estrutura de la tabla '$table'";
     $str .= "\n--\n";
@@ -2493,8 +3267,9 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
     $str .= "\n" . 'cargo_usuario' . " " . 'text' . ",";                  
     $str .= "\n" . 'clave' . " " . 'text' . ",";                  
     $str .= "\n" . 'email_usuario' . " " . 'text' . ",";                  
-    $str .= "\n" . 'direccion_usuario' . " " . 'text' . ",";                  	
-    $str .= "\n" . ' usuario' . " " . 'text'; 
+    $str .= "\n" . 'direccion_usuario' . " " . 'text' . ",";                    
+    $str .= "\n" . 'usuario' . " " . 'text' . ",";      
+    $str .= "\n" . ' estado' . " " . 'text'; 
     $str=rtrim($str, ",");  
     $str .= "\n);\n";
     $str .= "\n--\n";
@@ -2520,154 +3295,41 @@ $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
             AND pg_index.indisprimary");
     while($r = pg_fetch_row($res1))
     {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  } //////////////////
-  $table = 'tbl_audit';
-    $str .= "\n--\n";
-    $str .= "-- Estrutura de la tabla '$table'";
-    $str .= "\n--\n";
-    $str .= "\nDROP TABLE $table CASCADE;";
-    $str.="\nCREATE SEQUENCE tbl_audit_pk_audit_seq
-    START WITH $max
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;";
-    $str .= "\nCREATE TABLE $table (";
-    $str .= "\n" . 'pk_audit' . " " . 'int4' . " " . "NOT NULL DEFAULT nextval('tbl_audit_pk_audit_seq'::regclass) " . ",";    
-    $str .= "\n" . 'nombre_tabla' . " " . 'text' . " " .'NOT NULL' . ",";                  
-    $str .= "\n" . 'operacion' . " " . 'character(1)' . " " . 'NOT NULL' .",";                  
-    $str .= "\n" . 'valor_anterior' . " " . 'text' . ",";                  
-    $str .= "\n" . 'valor_nuevo' . " " . 'text' . ",";                  
-    $str .= "\n" . 'fecha_cambio' . " " . 'timestamp' . " " .'NOT NULL' . ",";                  
-    $str .= "\n" . 'usuario' . " " . 'text' . " " .'NOT NULL' ;                      
-
-    $str=rtrim($str, ",");  
-    $str .= "\n);\n";
-    $str .= "\n--\n";
-    $str .= "-- Creating data for '$table'";
-    $str .= "\n--\n\n";
-    $res3 = pg_query("SELECT * FROM $table");
-    while($r = pg_fetch_row($res3))
+      $str .= "\n\n--\n";
+      $str .= "-- Creating index for '$table'";
+      $str .= "\n--\n\n";
+      $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
+      $t = str_replace("USING btree", "|", $t);
+      // Next Line Can be improved!!!
+      $t = str_replace("ON", "|", $t);
+      $Temparray = explode("|", $t);
+      $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
+      $Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
+    } ////////////////// 
+  
+    /////////////////////////////// 
+    $res = pg_query(" SELECT
+    cl.relname AS tabela,ct.conname,
+    pg_get_constraintdef(ct.oid) FROM pg_catalog.pg_attribute a
+    JOIN pg_catalog.pg_class cl ON (a.attrelid = cl.oid AND cl.relkind = 'r') 
+    JOIN pg_catalog.pg_namespace n ON (n.oid = cl.relnamespace)
+    JOIN pg_catalog.pg_constraint ct ON (a.attrelid = ct.conrelid AND ct.confrelid != 0 AND ct.conkey[1] = a.attnum)
+    JOIN pg_catalog.pg_class clf ON (ct.confrelid = clf.oid AND clf.relkind = 'r')
+    JOIN pg_catalog.pg_namespace nf ON (nf.oid = clf.relnamespace)
+    JOIN pg_catalog.pg_attribute af ON (af.attrelid = ct.confrelid AND
+    af.attnum = ct.confkey[1]) order by cl.relname ");
+    while($row = pg_fetch_row($res))
     {
-      $sql = "INSERT INTO $table VALUES ('";
-      $sql .= utf8_decode(implode("','",$r));
-      $sql .= "');";
-      $str = str_replace("''","NULL",$str);
-      $str .= $sql;  
-      $str .= "\n";
-    }       
-     $res1 = pg_query("SELECT pg_index.indisprimary,
-            pg_catalog.pg_get_indexdef(pg_index.indexrelid)
-        FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
-            pg_catalog.pg_index AS pg_index
-        WHERE c.relname = '$table'
-            AND c.oid = pg_index.indrelid
-            AND pg_index.indexrelid = c2.oid
-            AND pg_index.indisprimary");
-    while($r = pg_fetch_row($res1))
-    {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating index for '$table'";
-    $str .= "\n--\n\n";
-    $t = str_replace("CREATE UNIQUE INDEX", "", $r[1]);
-    $t = str_replace("USING btree", "|", $t);
-    // Next Line Can be improved!!!
-    $t = str_replace("ON", "|", $t);
-    $Temparray = explode("|", $t);
-    $str .= "ALTER TABLE ONLY ". $Temparray[1] . " ADD CONSTRAINT " . 
-$Temparray[0] . " PRIMARY KEY " . $Temparray[2] .";\n";
-  }/////////////// 
-  
-  /////////////////////////////// 
-  $res = pg_query(" SELECT
-  cl.relname AS tabela,ct.conname,
-   pg_get_constraintdef(ct.oid)
-   FROM pg_catalog.pg_attribute a
-   JOIN pg_catalog.pg_class cl ON (a.attrelid = cl.oid AND cl.relkind = 'r')
-   JOIN pg_catalog.pg_namespace n ON (n.oid = cl.relnamespace)
-   JOIN pg_catalog.pg_constraint ct ON (a.attrelid = ct.conrelid AND
-   ct.confrelid != 0 AND ct.conkey[1] = a.attnum)
-   JOIN pg_catalog.pg_class clf ON (ct.confrelid = clf.oid AND 
-clf.relkind = 'r')
-   JOIN pg_catalog.pg_namespace nf ON (nf.oid = clf.relnamespace)
-   JOIN pg_catalog.pg_attribute af ON (af.attrelid = ct.confrelid AND
-   af.attnum = ct.confkey[1]) order by cl.relname ");
-  while($row = pg_fetch_row($res))
-  {
-    $str .= "\n\n--\n";
-    $str .= "-- Creating relacionships for '".$row[0]."'";
-    $str .= "\n--\n\n";
-    $str .= "ALTER TABLE ONLY ".$row[0] . " ADD CONSTRAINT " . $row[1] . 
-" " . $row[2] . ";";
-  }     
-  ////////////////////
-  
-
-  /////////////////
-  $str .= "\nCREATE TRIGGER c_cobrarexternas_tg_audit AFTER INSERT OR UPDATE OR DELETE ON c_cobrarexternas FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER c_pagarexternas_tg_audit AFTER INSERT OR UPDATE OR DELETE ON c_pagarexternas FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER categoria_tg_audit AFTER INSERT OR UPDATE OR DELETE ON categoria FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER clientes_tg_audit AFTER INSERT OR UPDATE OR DELETE ON clientes FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER color_tg_audit AFTER INSERT OR UPDATE OR DELETE ON color FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_devolucion_compra_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_devolucion_compra FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_devolucion_venta_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_devolucion_venta FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_egreso_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_egreso FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_factura_compra_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_factura_compra FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_factura_venta_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_factura_venta FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_ingreso_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_ingreso FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_inventario_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_inventario FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_pagos_venta_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_pagos_venta FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalle_proforma_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalle_proforma FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalles_ordenes_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalles_ordenes FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalles_pagos_internos_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalles_pagos_internos FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER detalles_trabajo_tg_audit AFTER INSERT OR UPDATE OR DELETE ON detalles_trabajo FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER devolucion_compra_tg_audit AFTER INSERT OR UPDATE OR DELETE ON devolucion_compra FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER devolucion_venta_tg_audit AFTER INSERT OR UPDATE OR DELETE ON devolucion_venta FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER egresos_tg_audit AFTER INSERT OR UPDATE OR DELETE ON egresos FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER empresa_tg_audit AFTER INSERT OR UPDATE OR DELETE ON empresa FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER factura_compra_tg_audit AFTER INSERT OR UPDATE OR DELETE ON factura_compra FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER factura_venta_tg_audit AFTER INSERT OR UPDATE OR DELETE ON factura_venta FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER gastos_tg_audit AFTER INSERT OR UPDATE OR DELETE ON gastos FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER gastos_internos_tg_audit AFTER INSERT OR UPDATE OR DELETE ON gastos_internos FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER ingresos_tg_audit AFTER INSERT OR UPDATE OR DELETE ON ingresos FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER inventario_tg_audit AFTER INSERT OR UPDATE OR DELETE ON inventario FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER kardex_tg_audit AFTER INSERT OR UPDATE OR DELETE ON kardex FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER kardex_valorizado_tg_audit AFTER INSERT OR UPDATE OR DELETE ON kardex_valorizado FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER marcas_tg_audit AFTER INSERT OR UPDATE OR DELETE ON marcas FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER ordenes_produccion_tg_audit AFTER INSERT OR UPDATE OR DELETE ON ordenes_produccion FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER pagos_cobrar_tg_audit AFTER INSERT OR UPDATE OR DELETE ON pagos_cobrar FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER pagos_compra_tg_audit AFTER INSERT OR UPDATE OR DELETE ON pagos_compra FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER pagos_pagar_tg_audit AFTER INSERT OR UPDATE OR DELETE ON pagos_pagar FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER pagos_venta_tg_audit AFTER INSERT OR UPDATE OR DELETE ON pagos_venta FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER parametros_tg_audit AFTER INSERT OR UPDATE OR DELETE ON parametros FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER productos_tg_audit AFTER INSERT OR UPDATE OR DELETE ON productos FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER proforma_tg_audit AFTER INSERT OR UPDATE OR DELETE ON proforma FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER proveedores_tg_audit AFTER INSERT OR UPDATE OR DELETE ON proveedores FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER registro_equipo_tg_audit AFTER INSERT OR UPDATE OR DELETE ON registro_equipo FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER seguridad_tg_audit AFTER INSERT OR UPDATE OR DELETE ON seguridad FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER serie_venta_tg_audit AFTER INSERT OR UPDATE OR DELETE ON serie_venta FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER series_compra_tg_audit AFTER INSERT OR UPDATE OR DELETE ON series_compra FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER tipoproducto_tg_audit AFTER INSERT OR UPDATE OR DELETE ON ".'"tipoProducto"'." FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER trabajo_tg_audit AFTER INSERT OR UPDATE OR DELETE ON trabajo FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER trabajo_tecnico_tg_audit AFTER INSERT OR UPDATE OR DELETE ON trabajo_tecnico FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-  $str .= "\nCREATE TRIGGER usuario_tg_audit AFTER INSERT OR UPDATE OR DELETE ON usuario FOR EACH ROW EXECUTE PROCEDURE fn_log_audit();";
-	  
-  ////////////////  
-  fwrite($back,$str);
-  fclose($back);
-  dl_file("$dbname.sql");
-  
-}
+      $str .= "\n\n--\n";
+      $str .= "-- Creating relacionships for '".$row[0]."'";
+      $str .= "\n--\n\n";
+      $str .= "ALTER TABLE ONLY ".$row[0] . " ADD CONSTRAINT " . $row[1] . " " . $row[2] . ";";
+    }     
+    ////////////////////        
+    fwrite($back,$str);
+    fclose($back);
+    dl_file("$dbname.sql");  
+  }
 
 ?>
  
