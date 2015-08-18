@@ -30,25 +30,25 @@ if ($_POST["tipo_venta"] == "FACTURA") {
         $tipo = $_POST['ruc_ci'];
         if (strlen($tipo) == 10) {
 //////////////////guardar clientes/////////////    
-            pg_query("insert into clientes values('$contt','Cedula','$_POST[ruc_ci]','$_POST[nombre_cliente]','natural','$_POST[direccion_cliente]','$_POST[telefono_cliente]','','','','$_POST[correo]','','','Activo')");
+            pg_query("insert into clientes values('$contt','Cedula','$_POST[ruc_ci]','$_POST[nombre_cliente]','natural','$_POST[direccion_cliente]','$_POST[telefono_cliente]','','','','$_POST[correo]','','','Activo','1')");
 ////////////////////////////////////////////
 //
-////////////guardar factura compra////////
+////////////guardar factura venta////////
             pg_query("insert into factura_venta values('$cont1','1','$contt','$_SESSION[id]','$cont1','$_POST[num_factura]','$_POST[fecha_actual]','$_POST[hora_actual]','$_POST[cancelacion]','$_POST[tipo_precio]','$_POST[formas]','$_POST[autorizacion]','$_POST[fecha_auto]','$_POST[fecha_caducidad]','$_POST[tarifa0]','$_POST[tarifa12]','$_POST[iva]','$_POST[desc]','$_POST[tot]','Activo','')");
 ////////////////////////////////////////
         } else {
             if (strlen($tipo) == 13) {
                 //////////////////guardar clientes/////////////    
-                pg_query("insert into clientes values('$contt','Ruc','$_POST[ruc_ci]','$_POST[nombre_cliente]','natural','$_POST[direccion_cliente]','$_POST[telefono_cliente]','','','','$_POST[correo]','','','Activo')");
+                pg_query("insert into clientes values('$contt','Ruc','$_POST[ruc_ci]','$_POST[nombre_cliente]','natural','$_POST[direccion_cliente]','$_POST[telefono_cliente]','','','','$_POST[correo]','','','Activo','1')");
 ////////////////////////////////////////////
 //
-////////////guardar factura compra////////
+////////////guardar factura venta////////
                 pg_query("insert into factura_venta values('$cont1','1','$contt','$_SESSION[id]','$cont1','$_POST[num_factura]','$_POST[fecha_actual]','$_POST[hora_actual]','$_POST[cancelacion]','$_POST[tipo_precio]','$_POST[formas]','$_POST[autorizacion]','$_POST[fecha_auto]','$_POST[fecha_caducidad]','$_POST[tarifa0]','$_POST[tarifa12]','$_POST[iva]','$_POST[desc]','$_POST[tot]','Activo','')");
 ////////////////////////////////////////    
             }
         }
     } else {
-        ////////////guardar factura compra////////
+        ////////////guardar factura venta////////
         pg_query("insert into factura_venta values('$cont1','1','$_POST[id_cliente]','$_SESSION[id]','$cont1','$_POST[num_factura]','$_POST[fecha_actual]','$_POST[hora_actual]','$_POST[cancelacion]','$_POST[tipo_precio]','$_POST[formas]','$_POST[autorizacion]','$_POST[fecha_auto]','$_POST[fecha_caducidad]','$_POST[tarifa0]','$_POST[tarifa12]','$_POST[iva]','$_POST[desc]','$_POST[tot]','Activo','')");
 ////////////////////////////////////////
     }
