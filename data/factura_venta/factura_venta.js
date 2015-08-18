@@ -273,6 +273,7 @@ function entrar3() {
                                 var flotante = 0;
                                 var resultado = 0;
                                 var repe = 0;
+                                var suma = 0; 
 
                                 if (filas.length === 0) {
                                     if ($("#descuento").val() !== "") {
@@ -313,7 +314,6 @@ function entrar3() {
                                     $("#descuento").val("");
                                     $("#disponibles").val("");
                                     $("#incluye").val("");
-                                    $('#combobox').children().remove().end();
                                 }
                                 else {
                                     for (var i = 0; i < filas.length; i++) {
@@ -323,46 +323,51 @@ function entrar3() {
                                             repe = 1;
                                         }
                                     }
-                                    if (repe === 1) {
-                                        if ($("#descuento").val() !== "") {
-                                            desc = $("#descuento").val();
-                                            precio = (parseFloat($("#p_venta").val())).toFixed(2);
-                                            multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(2);
-                                            descuento = ((multi * parseFloat($("#descuento").val())) / 100);
-                                            flotante = parseFloat(descuento);
-                                            resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(2);
-                                            total = (multi - resultado).toFixed(2);
+                                    if (repe == 1) {
+                                        suma = parseInt(can) + parseInt($("#cantidad").val());
+                                        if(suma > parseInt($("#disponibles").val())){
+                                            $("#cantidad").focus();
+                                            alertify.error("Error.. Fuera de Stock cantidad disponible: " +$("#disponibles").val());
                                         } else {
-                                            desc = 0;
-                                            precio = (parseFloat($("#p_venta").val())).toFixed(2);
-                                            total = (parseFloat($("#cantidad").val()) * precio).toFixed(2);
-                                        }
-                                    
-                                        datarow = {
-                                            cod_producto: $("#cod_producto").val(), 
-                                            codigo: $("#codigo").val(), 
-                                            detalle: $("#producto").val(), 
-                                            cantidad: $("#cantidad").val(), 
-                                            precio_u: precio, 
-                                            descuento: desc, 
-                                            cal_des: resultado,
-                                            total: total, 
-                                            iva: $("#iva_producto").val(), 
-                                            pendiente: 0,
-                                            incluye: $("#incluye").val()
-                                        };
-                                    
-                                        su = jQuery("#list").jqGrid('setRowData', $("#cod_producto").val(), datarow);
-                                        $("#cod_producto").val("");
-                                        $("#codigo_barras").val("");
-                                        $("#codigo").val("");
-                                        $("#producto").val("");
-                                        $("#cantidad").val("");
-                                        $("#p_venta").val("");
-                                        $("#descuento").val("");
-                                        $("#disponibles").val("");
-                                        $("#incluye").val("");
-                                        $('#combobox').children().remove().end();                                
+                                            if ($("#descuento").val() !== "") {
+                                                desc = $("#descuento").val();
+                                                precio = (parseFloat($("#p_venta").val())).toFixed(2);
+                                                multi = (parseFloat(suma) * parseFloat($("#p_venta").val())).toFixed(2);
+                                                descuento = ((multi * parseFloat($("#descuento").val())) / 100);
+                                                flotante = parseFloat(descuento);
+                                                resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(2);
+                                                total = (multi - resultado).toFixed(2);
+                                            } else {
+                                                desc = 0;
+                                                precio = (parseFloat($("#p_venta").val())).toFixed(2);
+                                                total = (parseFloat(suma) * precio).toFixed(2);
+                                            }
+                                        
+                                            datarow = {
+                                                cod_producto: $("#cod_producto").val(), 
+                                                codigo: $("#codigo").val(), 
+                                                detalle: $("#producto").val(), 
+                                                cantidad: suma, 
+                                                precio_u: precio, 
+                                                descuento: desc, 
+                                                cal_des: resultado,
+                                                total: total, 
+                                                iva: $("#iva_producto").val(), 
+                                                pendiente: 0,
+                                                incluye: $("#incluye").val()
+                                            };
+                                        
+                                            su = jQuery("#list").jqGrid('setRowData', $("#cod_producto").val(), datarow);
+                                            $("#cod_producto").val("");
+                                            $("#codigo_barras").val("");
+                                            $("#codigo").val("");
+                                            $("#producto").val("");
+                                            $("#cantidad").val("");
+                                            $("#p_venta").val("");
+                                            $("#descuento").val("");
+                                            $("#disponibles").val("");
+                                            $("#incluye").val("");
+                                        }                              
                                     } else {
                                         if(filas.length < 26){
                                             if ($("#descuento").val() !== "") {
@@ -401,8 +406,7 @@ function entrar3() {
                                             $("#p_venta").val("");
                                             $("#descuento").val("");
                                             $("#disponibles").val("");
-                                            $("#incluye").val("");
-                                            $('#combobox').children().remove().end();
+                                            $("#incluye").val("");                                       
                                         }else{
                                             alertify.error("Error... Alcanzo el limite máximo de Items");
                                         }
@@ -494,6 +498,7 @@ function entrar3() {
                                 var flotante = 0;
                                 var resultado = 0;
                                 var repe = 0;
+                                var suma = 0;
 
                                 if (filas.length === 0) {
                                     if ($("#descuento").val() !== "") {
@@ -534,7 +539,6 @@ function entrar3() {
                                     $("#descuento").val("");
                                     $("#disponibles").val("");
                                     $("#incluye").val("");
-                                    $('#combobox').children().remove().end();
                                 } else {
                                     for (var i = 0; i < filas.length; i++) {
                                         var id = filas[i];
@@ -544,11 +548,13 @@ function entrar3() {
                                         }
                                     }
 
-                                    if (repe === 1) {
+                                    if (repe == 1) {
+                                        suma = parseInt(can) + parseInt($("#cantidad").val());
+
                                         if ($("#descuento").val() !== "") {
                                             desc = $("#descuento").val();
                                             precio = (parseFloat($("#p_venta").val())).toFixed(2);
-                                            multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(2);
+                                            multi = (parseFloat(suma) * parseFloat($("#p_venta").val())).toFixed(2);
                                             descuento = ((multi * parseFloat($("#descuento").val())) / 100);
                                             flotante = parseFloat(descuento);
                                             resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(2);
@@ -556,14 +562,14 @@ function entrar3() {
                                         } else {
                                             desc = 0;
                                             precio = (parseFloat($("#p_venta").val())).toFixed(2);
-                                            total = (parseFloat($("#cantidad").val()) * precio).toFixed(2);
+                                            total = (parseFloat(suma) * precio).toFixed(2);
                                         }
                                     
                                         datarow = {
                                             cod_producto: $("#cod_producto").val(), 
                                             codigo: $("#codigo").val(), 
                                             detalle: $("#producto").val(), 
-                                            cantidad: $("#cantidad").val(), 
+                                            cantidad: suma, 
                                             precio_u: precio, 
                                             descuento: desc, 
                                             cal_des: resultado,
@@ -583,7 +589,6 @@ function entrar3() {
                                         $("#descuento").val("");
                                         $("#disponibles").val("");
                                         $("#incluye").val("");
-                                        $('#combobox').children().remove().end();                                
                                     } else {
                                         if(filas.length < 26){
                                             if ($("#descuento").val() !== "") {
@@ -623,7 +628,6 @@ function entrar3() {
                                             $("#descuento").val("");
                                             $("#disponibles").val("");
                                             $("#incluye").val("");
-                                            $('#combobox').children().remove().end();
                                         }else{
                                             alertify.error("Error... Alcanzo el limite máximo de Items");
                                         }
