@@ -12,10 +12,15 @@ while ($row = pg_fetch_row($consulta)) {
     $cont++;
 }
 
+
 if ($cont == 0) {
     $data = 0;
 } else {
-    $data = 1;
+    $consulta = pg_query("select max(num_factura) from factura_venta");
+	while ($row = pg_fetch_row($consulta)) {
+	    $data = $row[0];
+
+	}
 }
 echo $data;
 ?>

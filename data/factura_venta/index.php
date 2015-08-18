@@ -5,7 +5,7 @@ include('../menu/app.php');
 conectarse();
 error_reporting(0);
 
-$consulta = pg_query("select num_factura from factura_venta");
+$consulta = pg_query("select max(num_factura) from factura_venta");
 while ($row = pg_fetch_row($consulta)) {
     $num_factura = $row[0];
 }
@@ -25,8 +25,6 @@ while ($row = pg_fetch_row($consulta3)) {
     $campo_direccion_cliente = $row[5];
 
 } 
-
-
 
 ?>
 <!DOCTYPE html>
@@ -276,7 +274,7 @@ while ($row = pg_fetch_row($consulta3)) {
                               </div>  
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                               <div class="form-group">
                                 <label>CÓDIGO</label>
                                 <input type="text" name="codigo"  id="codigo" placeholder="Buscar..." class="form-control" />
@@ -297,7 +295,7 @@ while ($row = pg_fetch_row($consulta3)) {
                               </div>
                             </div>
 
-                            <div class="col-md-1">
+                            <div class="col-md-2">
                               <div class="form-group">
                                 <label>PRECIO</label>
                                 <input type="text" name="p_venta"  id="p_venta" class="form-control" />
