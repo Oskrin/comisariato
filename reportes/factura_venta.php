@@ -117,25 +117,25 @@
     $pdf->SetTextColor(0,0,0);
     while($row = pg_fetch_row($sql)){
         $temp_1 =  number_format($row[3],2,',','.');        
-        $pdf->Text(15, $yy, maxCaracter(utf8_decode($row[0]),3),0,1, 'L',0);                                                    
+        $pdf->Text(5, $yy, maxCaracter(utf8_decode($row[0]),3),0,1, 'L',0);                                                    
         
         $array = ceil_caracter($row[1],35);
         if(sizeof($array) > 1){
             $zz = $yy;
             for($i = 0; $i < sizeof($array); $i++){
-                $pdf->Text(25, $zz, utf8_decode($array[$i]),0,0, 'J',0);                               
+                $pdf->Text(20, $zz, utf8_decode($array[$i]),0,0, 'J',0);                               
                         $zz = $zz + 3;
             }
-            $yy = $yy + 5;
+            $yy = $yy + 4;
         }else{
-            $pdf->Text(25, $yy, maxCaracter(utf8_decode($row[1]),30),0,0, 'L',0);                           
+            $pdf->Text(20, $yy, maxCaracter(utf8_decode($row[1]),30),0,0, 'L',0);                           
                 }        
 
 
-        $pdf->Text(95, $yy, maxCaracter(utf8_decode($row[2]),6),0,0, 'L',0);    
+        $pdf->Text(150, $yy, maxCaracter(utf8_decode($row[2]),6),0,0, 'L',0);    
                 
-        $pdf->Text(120, $yy, maxCaracter($temp_1,6),0,0, 'L',0);                                    
-                $yy = $yy + 5;                                                
+        $pdf->Text(180, $yy, maxCaracter($temp_1,6),0,0, 'L',0);                                    
+                $yy = $yy + 4;                                                
         
     }
     /////////pie        

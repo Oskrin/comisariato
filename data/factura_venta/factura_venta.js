@@ -318,13 +318,15 @@ function entrar3() {
                                 else {
                                     for (var i = 0; i < filas.length; i++) {
                                         var id = filas[i];
-                                        var can = id['cantidad'];
+                                        
                                         if (id['cod_producto'] === $("#cod_producto").val()) {
                                             repe = 1;
+				            var can = id['cantidad'];		
                                         }
                                     }
                                     if (repe == 1) {
                                         suma = parseInt(can) + parseInt($("#cantidad").val());
+
                                         if(suma > parseInt($("#disponibles").val())){
                                             $("#cantidad").focus();
                                             alertify.error("Error.. Fuera de Stock cantidad disponible: " +$("#disponibles").val());
@@ -488,6 +490,7 @@ function entrar3() {
                          }
                     }else{
                         if($("#inventar").val() == "No"){
+			
                                 var filas = jQuery("#list").jqGrid("getRowData");
                                 var descuento = 0;
                                 var total = 0;
@@ -542,15 +545,15 @@ function entrar3() {
                                 } else {
                                     for (var i = 0; i < filas.length; i++) {
                                         var id = filas[i];
-                                        var can = id['cantidad'];
                                         if (id['cod_producto'] === $("#cod_producto").val()) {
                                             repe = 1;
+					    var can = id['cantidad'];
                                         }
                                     }
 
                                     if (repe == 1) {
                                         suma = parseInt(can) + parseInt($("#cantidad").val());
-
+				
                                         if ($("#descuento").val() !== "") {
                                             desc = $("#descuento").val();
                                             precio = (parseFloat($("#p_venta").val())).toFixed(2);
@@ -1313,16 +1316,28 @@ function guardar_factura() {
                                                 var val = data;
                                                 if($("#tipo_venta").val() == "FACTURA"){
                                                    if (val != 0) {
-                                                        alertify.alert("Factura Guardada correctamente", function(){
-                                                            window.open("../../reportes/factura_venta.php?hoja=A4&id="+val,'_blank');
+                                                        //alertify.alert("Factura Guardada correctamente", function(){
+                                                        //    window.open("../../reportes/factura_venta.php?hoja=A4&id="+val,'_blank');
+                                                        //    location.reload();
+                                                        //});
+							alertify.alert("Factura Guardada correctamente", function(){
+                                                            var myWindow = window.open("../../reportes/factura_venta.php?hoja=A4&id="+val,'_blank');
+                                                            myWindow.focus();
+                                                            myWindow.print();                                                                      
                                                             location.reload();
                                                         });
                                                     }
                                                 }else{
                                                     if($("#tipo_venta").val() == "NOTA"){
                                                         if (val != 0) {
-                                                            alertify.alert("Factura Guardada correctamente", function(){
-                                                                window.open("../reportes_sistema/nota_venta.php?hoja=A4&id="+val,'_blank');
+                                                            //alertify.alert("Factura Guardada correctamente", function(){
+                                                            //    window.open("../reportes_sistema/nota_venta.php?hoja=A4&id="+val,'_blank');
+                                                            //    location.reload();
+                                                            //});
+							    alertify.alert("Nota Venta Guardada correctamente", function(){
+                                                                var myWindow = window.open("../reportes_sistema/nota_venta.php?hoja=A4&id="+val,'_blank');
+                                                                myWindow.focus();
+                                                                myWindow.print();          
                                                                 location.reload();
                                                             });
                                                         }
@@ -1904,10 +1919,16 @@ function inicio() {
                 var val = data;
                 if(val != "") {
                     if($("#tipo_venta").val() == "FACTURA"){
-                        window.open("../../reportes/factura_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');
+                        //window.open("../../reportes/factura_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');
+			var myWindow = window.open("../../reportes/factura_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');                                                                        
+                        myWindow.focus();
+                        myWindow.print();
                     }else{
                          if($("#tipo_venta").val() == "NOTA"){
-                            window.open("../../reportes/nota_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');
+                            //window.open("../../reportes/nota_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');
+			    var myWindow = window.open("../../reportes/nota_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');
+                            myWindow.focus();
+                            myWindow.print();
                          }
                     }
                 } else {

@@ -30,7 +30,7 @@ backup();
   function backup(){      
 
     $dbname = "comisariato_nuevo";    
-    $dbconn = pg_pconnect("host=localhost port=5432 dbname=$dbname user=postgres password=sisweb"); //connectionstring
+    $dbconn = pg_pconnect("host=localhost port=5432 dbname=$dbname user=postgres password=root"); //connectionstring
     if (!$dbconn) {
       echo "Can't connect.\n";
     exit;
