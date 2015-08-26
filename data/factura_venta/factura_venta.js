@@ -933,7 +933,7 @@ function comprobar() {
     }
 }
 
-function nuevo_cliente() {
+function nuevo_cliente(){
     alertify.confirm("Desea registrar un nuevo cliente", function (e) {
         if (e) {
             //////////////verificar si esxiste cliente/////////////
@@ -1111,7 +1111,7 @@ function nuevo_cliente() {
                                             } 
                                         }
                                     }  
-                                } else {
+                                }else{
                                     if(numero.length === 13){
                                         alertify.error('El ruc es incorrecto.');
                                         $("#direccion_cliente").attr("disabled", "disabled");
