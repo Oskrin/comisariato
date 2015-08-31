@@ -1202,7 +1202,11 @@ function inicio() {
 
     ////////////////////buscar producto codigo/////
     $("#codigo").autocomplete({
-        source: "buscar_producto.php",
+        // source: "buscar_producto.php",
+        source: function(request, response) {
+        var results = $.ui.autocomplete.filter("buscar_producto.php", request.term);
+        response(results.slice(0, this.options.maxResults));
+    },
         minLength: 1,
         focus: function(event, ui) {
         $("#codigo_barras").val(ui.item.codigo_barras);

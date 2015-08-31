@@ -6,7 +6,7 @@ conectarse();
 $texto2 = $_GET['term'];
 
 $tipo = $_GET['tipo_precio'];
-$consulta = pg_query("select * from productos where codigo like '%$texto2%' and estado = 'Activo'");
+$consulta = pg_query("select * from productos where codigo like '%$texto2%' and estado = 'Activo' ");
 while ($row = pg_fetch_row($consulta)) {
     if ($tipo == "MINORISTA") {
         $data[] = array(
