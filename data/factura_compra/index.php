@@ -72,8 +72,8 @@ $cont1++;
                                   <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                   </div>
-                                </div><!-- /.input group -->
-                              </div><!-- /.form group -->
+                                </div>
+                              </div>
                             </div>
 
                             <div class="col-md-3">
@@ -118,14 +118,8 @@ $cont1++;
                                 <div class="form-group col-md-7 no-padding">                                
                                   <select class="form-control" name="tipo_comprobante" id="tipo_comprobante">
                                     <option value="">........Seleccione........</option>
-				    <option value="FACTURA" selected>FACTURA</option>
-				    <option value="NOTA VENTA">NOTA VENTA</option>
-                                    //<?php
-                                    //$consulta = pg_query("select * from tipo_comprobante ");
-                                    //while ($row = pg_fetch_row($consulta)) {
-                                    //    echo "<option id=$row[0] value=$row[0]>$row[1] $row[2]</option>";
-                                    //}
-                                    //?>
+                        				    <option value="FACTURA" selected>FACTURA</option>
+                        				    <option value="NOTA VENTA">NOTA VENTA</option>
                                   </select>
                                 </div> 
                               </div>
