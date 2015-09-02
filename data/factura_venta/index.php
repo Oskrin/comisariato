@@ -7,22 +7,22 @@ error_reporting(0);
 
 $consulta = pg_query("select max(num_factura) from factura_venta");
 while ($row = pg_fetch_row($consulta)) {
-    $num_factura = $row[0];
+      $num_factura = $row[0];
 }
 
 $cont1 = 0;
 $consulta2 = pg_query("select max(id_factura_venta) from factura_venta");
 while ($row = pg_fetch_row($consulta2)) {
-    $cont1 = $row[0];
+      $cont1 = $row[0];
 }
 $cont1++;
 
 $consulta3 = pg_query("select * from clientes order by id_cliente desc");
 while ($row = pg_fetch_row($consulta3)) {
-    $campo_id_cliente = $row[0];
-    $campo_identificacion_cliente = $row[2];
-    $campo_nombre_cliente = $row[3];
-    $campo_direccion_cliente = $row[5];
+      $campo_id_cliente = $row[0];
+      $campo_identificacion_cliente = $row[2];
+      $campo_nombre_cliente = $row[3];
+      $campo_direccion_cliente = $row[5];
 
 } 
 
@@ -89,6 +89,7 @@ while ($row = pg_fetch_row($consulta3)) {
                                     <input type="text" name="fecha_actual"  id="fecha_actual" readonly class="form-control"/>
                                     <input type="hidden" name="comprobante"  id="comprobante" readonly class="form-control" value="<?php echo $cont1 ?>"/>
                                     <input type="hidden" name="proforma"  id="proforma" readonly class="form-control"/>
+                                    <input type="hidden" name="id_factura_venta"  id="id_factura_venta" readonly class="form-control"/>
                                     <div class="input-group-addon">
                                       <i class="fa fa-calendar"></i>
                                     </div>
@@ -305,7 +306,7 @@ while ($row = pg_fetch_row($consulta3)) {
                             <div class="col-md-1">
                               <div class="form-group">
                                 <label>DESC.</label>
-                                <input type="number" name="descuento" id="descuento"  min="0" placeholder="%" class="form-control" />
+                                <input type="number" name="descuento" id="descuento" readonly min="0" placeholder="%" class="form-control" />
                                 <input type="hidden" name="disponibles"  id="disponibles" readonly class="form-control" />
                                 <input type="hidden" name="iva_producto"  id="iva_producto" readonly class="form-control" />
                                 <input type="hidden" name="carga_series"  id="carga_series" readonly class="form-control" />
