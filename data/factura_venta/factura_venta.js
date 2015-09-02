@@ -1923,9 +1923,10 @@ function inicio() {
 			var myWindow = window.open("../../reportes/factura_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');                                                                        
                         myWindow.focus();
                         myWindow.print();
+                        setTimeout ('myWindow.close ()', 10);
                     }else{
                          if($("#tipo_venta").val() == "NOTA"){
-                            //window.open("../../reportes/nota_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');
+                            window.open("../../reportes/nota_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');
 			    var myWindow = window.open("../../reportes/nota_venta.php?hoja=A4&id="+$("#comprobante").val(),'_blank');
                             myWindow.focus();
                             myWindow.print();
