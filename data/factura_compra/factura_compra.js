@@ -576,7 +576,7 @@ function guardar_serie() {
 }
 
 function guardar_factura() {
-    var tam = jQuery("#list").jqGrid("getRowData");
+var tam = jQuery("#list").jqGrid("getRowData");
 
 if ($("#serie").val() === "") {
     $("#serie").focus();
@@ -606,57 +606,57 @@ if ($("#serie").val() === "") {
                                 $("#serie").focus();
                                 alertify.error("Error... El número de factura ya existe");
                             }else{
-                            if ($("#autorizacion").val() === "") {
-                                $("#autorizacion").focus();
-                                alertify.error("Ingrese la autorización");
-                            }else{
-                                if (tam.length === 0) {
-                                    alertify.error("Error... Inrese productos a la factura");
-                                } else {
-                                    $("#btnGuardar").attr("disabled", true);
-                                    var v1 = new Array();
-                                    var v2 = new Array();
-                                    var v3 = new Array();
-                                    var v4 = new Array();
-                                    var v5 = new Array();
-                                    var string_v1 = "";
-                                    var string_v2 = "";
-                                    var string_v3 = "";
-                                    var string_v4 = "";
-                                    var string_v5 = "";
-                                    var fil = jQuery("#list").jqGrid("getRowData");
-                                    for (var i = 0; i < fil.length; i++) {
-                                        var datos = fil[i];
-                                        v1[i] = datos['cod_producto'];
-                                        v2[i] = datos['cantidad'];
-                                        v3[i] = datos['precio_u'];
-                                        v4[i] = datos['descuento'];
-                                        v5[i] = datos['total'];
-                                    }
-                                    for (i = 0; i < fil.length; i++) {
-                                        string_v1 = string_v1 + "|" + v1[i];
-                                        string_v2 = string_v2 + "|" + v2[i];
-                                        string_v3 = string_v3 + "|" + v3[i];
-                                        string_v4 = string_v4 + "|" + v4[i];
-                                        string_v5 = string_v5 + "|" + v5[i];
-                                    }
-                                    var seriee = $("#serie").val();
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "guardar_factura_compra.php",
-                                        data: "id_proveedor=" + $("#id_proveedor").val() + "&comprobante=" + $("#comprobante").val() + "&fecha_actual=" + $("#fecha_actual").val() + "&hora_actual=" + $("#hora_actual").val() + "&fecha_registro=" + $("#fecha_registro").val() + "&fecha_emision=" + $("#fecha_emision").val() + "&fecha_caducidad=" + $("#fecha_caducidad").val() + "&tipo_comprobante=" + $("#tipo_comprobante").val() + "&serie=" + seriee + "&autorizacion=" + $("#autorizacion").val() + "&cancelacion=" + $("#cancelacion").val() + "&formas=" + $("#formas").val() + "&tarifa0=" + $("#total_p").val() + "&tarifa12=" + $("#total_p2").val() + "&iva=" + $("#iva").val() + "&desc=" + $("#desc").val() + "&tot=" + $("#tot").val() + "&campo1=" + string_v1 + "&campo2=" + string_v2 + "&campo3=" + string_v3 + "&campo4=" + string_v4 + "&campo5=" + string_v5,
-                                        success: function(data) {
-                                           var  val = data;
-                                            if (val == 1) {
-                                                alertify.alert("Factura Guardada correctamente", function(){
-                                                window.open("../../reportes/factura_compra.php?hoja=A4&id="+$("#comprobante").val(),'_blank');    
-                                                location.reload();
-                                                });
-                                            }
+                                if ($("#autorizacion").val() === "") {
+                                    $("#autorizacion").focus();
+                                    alertify.error("Ingrese la autorización");
+                                }else{
+                                    if (tam.length === 0) {
+                                        alertify.error("Error... Inrese productos a la factura");
+                                    } else {
+                                        $("#btnGuardar").attr("disabled", true);
+                                        var v1 = new Array();
+                                        var v2 = new Array();
+                                        var v3 = new Array();
+                                        var v4 = new Array();
+                                        var v5 = new Array();
+                                        var string_v1 = "";
+                                        var string_v2 = "";
+                                        var string_v3 = "";
+                                        var string_v4 = "";
+                                        var string_v5 = "";
+                                        var fil = jQuery("#list").jqGrid("getRowData");
+                                        for (var i = 0; i < fil.length; i++) {
+                                            var datos = fil[i];
+                                            v1[i] = datos['cod_producto'];
+                                            v2[i] = datos['cantidad'];
+                                            v3[i] = datos['precio_u'];
+                                            v4[i] = datos['descuento'];
+                                            v5[i] = datos['total'];
                                         }
-                                    });
+                                        for (i = 0; i < fil.length; i++) {
+                                            string_v1 = string_v1 + "|" + v1[i];
+                                            string_v2 = string_v2 + "|" + v2[i];
+                                            string_v3 = string_v3 + "|" + v3[i];
+                                            string_v4 = string_v4 + "|" + v4[i];
+                                            string_v5 = string_v5 + "|" + v5[i];
+                                        }
+                                        var seriee = $("#serie").val();
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "guardar_factura_compra.php",
+                                            data: "id_proveedor=" + $("#id_proveedor").val() + "&comprobante=" + $("#comprobante").val() + "&fecha_actual=" + $("#fecha_actual").val() + "&hora_actual=" + $("#hora_actual").val() + "&fecha_registro=" + $("#fecha_registro").val() + "&fecha_emision=" + $("#fecha_emision").val() + "&fecha_caducidad=" + $("#fecha_caducidad").val() + "&tipo_comprobante=" + $("#tipo_comprobante").val() + "&serie=" + seriee + "&autorizacion=" + $("#autorizacion").val() + "&cancelacion=" + $("#cancelacion").val() + "&formas=" + $("#formas").val() + "&tarifa0=" + $("#total_p").val() + "&tarifa12=" + $("#total_p2").val() + "&iva=" + $("#iva").val() + "&desc=" + $("#desc").val() + "&tot=" + $("#tot").val() + "&campo1=" + string_v1 + "&campo2=" + string_v2 + "&campo3=" + string_v3 + "&campo4=" + string_v4 + "&campo5=" + string_v5,
+                                            success: function(data) {
+                                               var  val = data;
+                                                if (val == 1) {
+                                                    alertify.alert("Factura Guardada correctamente", function(){
+                                                    window.open("../../reportes/factura_compra.php?hoja=A4&id="+$("#comprobante").val(),'_blank');    
+                                                    location.reload();
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
                                 }
-                              }
                             }
                         }
                     });
@@ -749,8 +749,8 @@ $.ajax({
                         }
                     }
                 });
-             }else{
-             alertify.alert("No hay mas registros posteriores!!");
+             } else {
+                alertify.alert("No hay mas registros posteriores!!");
             }
         }
     });

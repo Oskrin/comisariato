@@ -1305,9 +1305,9 @@ function guardar_factura() {
                                                 if($("#tipo_venta").val() == "FACTURA"){
                                                    if (val != 0) {
 							                            alertify.alert("Factura Guardada correctamente", function(){
-                                                            var myWindow = window.open("../../reportes/factura_venta.php?hoja=A4&id="+val,'_blank');
-                                                            myWindow.focus();
-                                                            myWindow.print();                                                                      
+                                                            // var myWindow = window.open("../../reportes/factura_venta.php?hoja=A4&id="+val,'_blank');
+                                                            // myWindow.focus();
+                                                            // myWindow.print();                                                                      
                                                             location.reload();
                                                         });
                                                     }
@@ -1316,8 +1316,8 @@ function guardar_factura() {
                                                         if (val != 0) {
 							                                alertify.alert("Nota Venta Guardada correctamente", function(){
                                                                 var myWindow = window.open("../../reportes/nota_venta.php?hoja=A4&id="+val,'_blank');
-                                                                myWindow.focus();
-                                                                myWindow.print();          
+                                                                // myWindow.focus();
+                                                                // myWindow.print();          
                                                                 location.reload();
                                                             });
                                                         }
@@ -2107,11 +2107,17 @@ function inicio() {
     $("#precio").on("keypress",punto);
     $("#adelanto").on("keypress",punto);
     ////////////////////////////////
-    
+
     //////////////////buscar productos codigo//////////////// 
-    $("#codigo_barras").keyup(function(e) {
+    $("#codigo_barras").change(function(e) {
+        barras();
+    });
+    //////////////////////////////////////////////////////////
+
+    function barras() {
         var precio = $("#tipo_precio").val(); 
         var codigo = $("#codigo_barras").val();
+        
         if (precio === "MINORISTA") {
             $.getJSON('search.php?codigo_barras=' + codigo + '&precio=' + precio, function(data) {
                 var tama = data.length;
@@ -2142,6 +2148,8 @@ function inicio() {
                     $("#des").val("");
                     $("#inventar").val("");
                     $("#incluye").val("");
+                    alertify.error("Producto no ingresado");
+                    $("#codigo_barras").val("");
                 }
             });
         } else {
@@ -2175,14 +2183,15 @@ function inicio() {
                         $("#des").val("");
                         $("#inventar").val("");
                         $("#incluye").val("");
+                        alertify.error("Producto no ingresado");
+                        $("#codigo_barras").val("");
                     }
                 });
             }
-        }
-    });
-    //////////////////////////////////////////////////////////
+        }   
+    } 
 
-       //////////////////buscar productos codigo////////////////
+    //////////////////buscar productos codigo////////////////
     $("#codigo").keyup(function(e) {
         var precio = $("#tipo_precio").val(); 
         var res = combo(precio);        
