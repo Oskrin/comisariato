@@ -5,13 +5,14 @@
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
     session_start()   ;
-    class PDF extends FPDF{   
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        }    
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,7 +40,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -70,10 +71,11 @@
     $pdf->Cell(15, 6, utf8_decode('Iva 12%'),1,0, 'C',0);                                     
     $pdf->Cell(15, 6, utf8_decode('Total'),1,0, 'C',0);                                     
     $pdf->Cell(25, 6, utf8_decode('Fecha Pago'),1,0, 'C',0);                                     
-    $pdf->Cell(20, 6, utf8_decode('Tipo Pago'),1,1, 'C',0);                                                                      
+    $pdf->Cell(20, 6, utf8_decode('Tipo Pago'),1,1, 'C',0); 
+                                                                         
     $consulta1=pg_query("select num_factura,fecha_actual,hora_actual,fecha_cancelacion,tipo_precio,forma_pago,tarifa0,tarifa12,iva_venta,descuento_venta,total_venta,identificacion,nombres_cli,nombre_empresa,id_factura_venta,factura_venta.estado from factura_venta, clientes,empresa,usuario where factura_venta.id_cliente=clientes.id_cliente and factura_venta.id_empresa=empresa.id_empresa and usuario.id_usuario=factura_venta.id_usuario  order by factura_venta.id_factura_venta asc");
-    while($row1=pg_fetch_row($consulta1)){ 
-        if($row1[15] == "Activo"){       
+    while($row1=pg_fetch_row($consulta1)) { 
+        if($row1[15] == "Activo") {       
             $pdf->SetTextColor(0,0,0);                                                 
             $pdf->SetX(1); 
             $pdf->Cell(22, 6, utf8_decode($row1[14]),0,0, 'C',0);                                     
@@ -93,8 +95,8 @@
             $pdf->Cell(25, 6, $row1[3],0,0, 'C',0);                    
             $pdf->Cell(20, 6, $row1[5],0,0, 'C',0);                         
             $pdf->Ln(6);                                                                                                                                                                                              
-        }else{
-            if($row1[15] == "Pasivo"){       
+        } else {
+            if($row1[15] == "Pasivo") {       
                 $pdf->SetTextColor(208,17,52);
                 $pdf->SetX(1); 
                 $pdf->Cell(22, 6, utf8_decode($row1[14]),0,0, 'C',0);                                     
@@ -116,7 +118,8 @@
                 $pdf->Ln(6);                                                                                                                                                                                              
             }   
         }
-    }       
+    }     
+
     $pdf->SetTextColor(0,0,0);               
     $pdf->SetX(1);                                             
     $pdf->Cell(207, 0, utf8_decode(""),1,1, 'R',0);

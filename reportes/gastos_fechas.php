@@ -5,13 +5,14 @@
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
     session_start()   ;
-    class PDF extends FPDF{   
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        }  
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,7 +40,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -58,7 +59,7 @@
 
     $total=0;
     $sql=pg_query("select * from gastos_internos,usuario,proveedores where gastos_internos.id_usuario=usuario.id_usuario and gastos_internos.id_proveedor=proveedores.id_proveedor and fecha_actual between '$_GET[inicio]' and '$_GET[fin]'");    
-    if(pg_num_rows($sql)){
+    if(pg_num_rows($sql)) {
         $pdf->SetX(1); 
         $pdf->Cell(25, 6, utf8_decode('Comprobante'),1,0, 'C',0);                                     
         $pdf->Cell(35, 6, utf8_decode('Nro. Factura'),1,0, 'C',0);                                     
@@ -68,7 +69,7 @@
         $pdf->Cell(35, 6, utf8_decode('Descripción'),1,0, 'C',0);                                             
         $pdf->Cell(20, 6, utf8_decode('Total'),1,1, 'C',0); 
     }
-    while($row=pg_fetch_row($sql)){              
+    while($row=pg_fetch_row($sql)) {              
         $pdf->SetX(1); 
         $pdf->Cell(25, 6, utf8_decode($row[3]),0,0, 'C',0);                                     
         $pdf->Cell(35, 6, utf8_decode($row[6]),0,0, 'C',0);                                                     

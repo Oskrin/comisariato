@@ -4,15 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF
-    {   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){             
+        }    
+
+        function Header() {             
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -37,7 +38,7 @@
             $this->Cell(200, 5,utf8_decode("LISTA DE PRODUCTOS POR CATEGORÍAS Y MARCAS"),0,1, 'C',0);                                                                                        
             $this->Ln(5);             
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -65,13 +66,13 @@
     if($_GET['marca']=="" && $_GET['categoria']==""){
         $sql=pg_query("select codigo,cod_barras,articulo,iva_minorista,iva_mayorista,stock,categoria,marca from productos ");
     }else{
-        if($_GET['marca']=="" && $_GET['categoria']!=""){
+        if($_GET['marca']=="" && $_GET['categoria']!="") {
             $sql=pg_query("select codigo,cod_barras,articulo,iva_minorista,iva_mayorista,stock,categoria,marca from productos where categoria='$_GET[categoria]'");
         }else{
-            if($_GET['marca']!="" && $_GET['categoria']==""){
+            if($_GET['marca']!="" && $_GET['categoria']=="") {
                 $sql=pg_query("select codigo,cod_barras,articulo,iva_minorista,iva_mayorista,stock,categoria,marca from productos where marca='$_GET[marca]'");
             }else{
-                if($_GET['marca']!="" && $_GET['categoria']!=""){
+                if($_GET['marca']!="" && $_GET['categoria']!="") {
                     $sql=pg_query("select codigo,cod_barras,articulo,iva_minorista,iva_mayorista,stock,categoria,marca from productos where categoria='$_GET[categoria]' and marca='$_GET[marca]'"); 
                 }else{
 

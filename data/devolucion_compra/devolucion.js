@@ -709,7 +709,7 @@ function guardar_devolucion() {
     }
 }
 
-function flecha_atras(){
+function flecha_atras() {
   $.ajax({
         type: "POST",
         url: "../../procesos/flechas.php",
@@ -789,7 +789,7 @@ function flecha_atras(){
     }); 
  } 
 
-function flecha_siguiente(){
+function flecha_siguiente() {
   $.ajax({
         type: "POST",
         url: "../../procesos/flechas.php",
@@ -864,14 +864,14 @@ function flecha_siguiente(){
                 }
             }
         });
-        }else{
+        } else {
             alertify.alert("No hay mas registros superiores!!");
         }
     }
 });   
 } 
 
-function limpiar_devolucion(){
+function limpiar_devolucion() {
     location.reload(); 
 }
 
@@ -925,23 +925,16 @@ function cancelar_serie(){
 
 function punto(e){
  var key;
-if (window.event)
-{
+if (window.event) {
     key = e.keyCode;
-}
-else if (e.which)
-{
+} else if (e.which) {
     key = e.which;
 }
 
-if (key < 48 || key > 57)
-{
-    if (key === 46 || key === 8)
-    {
+if (key < 48 || key > 57) {
+    if (key === 46 || key === 8) {
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
 }

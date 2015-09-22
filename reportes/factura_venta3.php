@@ -2,25 +2,21 @@
 require('../fpdf/fpdf.php');
 include '../procesos/base.php';
 conectarse();
-class PDF extends FPDF
-{
+class PDF extends FPDF {
     var $widths;
     var $aligns;
 
-    function SetWidths($w)
-    {
+    function SetWidths($w) {
         //Set the array of column widths
         $this->widths=$w;
     }
 
-    function SetAligns($a)
-    {
+    function SetAligns($a) {
         //Set the array of column alignments
         $this->aligns=$a;
     }
 
-    function Row($data)
-    {
+    function Row($data) {
         //Calculate the height of the row
         $nb=0;
         for($i=0;$i<count($data);$i++)
@@ -49,15 +45,13 @@ class PDF extends FPDF
     }
     
 
-    function CheckPageBreak($h)
-    {
+    function CheckPageBreak($h) {
         //If the height h would cause an overflow, add a new page immediately
         if($this->GetY()+$h>$this->PageBreakTrigger)
             $this->AddPage($this->CurOrientation);
     }
 
-    function NbLines($w, $txt)
-{
+    function NbLines($w, $txt) {
     //Computes the number of lines a MultiCell of width w will take
     $cw=&$this->CurrentFont['cw'];
     if($w==0)

@@ -4,15 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF
-    {   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){             
+        }                      
+
+        function Header() {             
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -40,7 +41,7 @@
             $this->Ln(2);
             $sql=pg_query("select proveedores.id_proveedor, identificacion_pro,empresa_pro from proveedores,factura_compra where proveedores.id_proveedor='$_GET[id]' LIMIT 1");                        
             $this->SetLineWidth(0.2);
-            while($row=pg_fetch_row($sql)){          
+            while($row=pg_fetch_row($sql)) {          
                 $this->SetX(1);                  
                 $this->Cell(80, 8, utf8_decode('RUC/CI: '.$row[1]),1,0, 'L',1);                                                                                                        
                 $this->Cell(125, 8, utf8_decode('NOMBRE: '.$row[2]),1,1, 'L',1);                                                                                                        
@@ -55,7 +56,7 @@
             $this->Cell(30, 5, utf8_decode("Total Compra"),1,0, 'C',0);    
             $this->Cell(20, 5, utf8_decode("Cantidad"),1,1, 'C',0);               
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -72,9 +73,9 @@
     $pdf->SetFont('Amble-Regular','',9); 
     $total = 0;      
     $sql=pg_query("select proveedores.id_proveedor, identificacion_pro,factura_compra.id_factura_compra,num_serie from proveedores,factura_compra where proveedores.id_proveedor='$_GET[id]' and factura_compra.id_proveedor=proveedores.id_proveedor");
-    while($row=pg_fetch_row($sql)){        
+    while($row=pg_fetch_row($sql)) {        
         $sql1=pg_query("select detalle_factura_compra.id_detalle_compra,productos.codigo,productos.articulo,productos.iva_minorista,productos.iva_mayorista,productos.stock,detalle_factura_compra.precio_compra,total_compra,cantidad from detalle_factura_compra,productos where detalle_factura_compra.cod_productos=productos.cod_productos and detalle_factura_compra.id_factura_compra='$row[2]' order by id_detalle_compra asc");
-        while($row1=pg_fetch_row($sql1)){            
+        while($row1=pg_fetch_row($sql1)) {            
             $pdf->SetX(1);                  
             $pdf->Cell(35, 5, maxCaracter(utf8_decode($row[3]),20),0,0, 'L',0);
             $pdf->Cell(30, 5, maxCaracter(utf8_decode($row1[1]),12),0,0, 'L',0);

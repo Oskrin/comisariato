@@ -2,6 +2,7 @@
     require('../fpdf/fpdf.php');
     include '../procesos/base.php';
     include '../procesos/funciones.php';
+
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
     session_start()   ;
@@ -10,7 +11,8 @@
         var $aligns;       
         function SetWidths($w){            
             $this->widths=$w;
-        }                       
+        }  
+
         function Header(){                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
@@ -67,9 +69,9 @@
         $sub=0;
         $sql1=pg_query("select * from factura_venta where estado='Activo' and id_cliente='$row[0]' order by forma_pago asc;");
         if(pg_num_rows($sql1)){
-            while($row1=pg_fetch_row($sql1)){
-                if($row1[10]=='Contado'){
-                    if($repetido==0){                        
+            while($row1=pg_fetch_row($sql1)) {
+                if($row1[10]=='Contado') {
+                    if($repetido==0) {                        
                         $pdf->SetX(1); 
                         $pdf->SetFillColor(187, 179, 180);            
                         $pdf->Cell(70, 6, maxCaracter(utf8_decode('RUC/CI:'.$row[2]),35),1,0, 'L',1);                                     
@@ -95,8 +97,7 @@
                     $pdf->Cell(30, 6, utf8_decode($row1[6]),0,1, 'C',0);                                                                 
                     $repetido=1;   
                     $sub=$sub+$row1[15];                        
-                } 
-                else{    
+                } else {    
                     if($repetido==0){     
                         $pdf->SetX(1);                         
                         $pdf->Cell(70, 6, maxCaracter(utf8_decode('RUC/CI:'.$row[2]),35),1,0, 'L',1);                                     

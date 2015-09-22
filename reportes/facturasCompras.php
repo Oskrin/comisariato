@@ -5,13 +5,13 @@
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
     session_start()   ;
-    class PDF extends FPDF{   
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
         }                       
-        function Header(){                         
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -42,7 +42,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -63,11 +63,11 @@
     $desc = 0;
     $ivaT = 0;    
     $consulta=pg_query('select * from proveedores order by id_proveedor asc');
-    while($row=pg_fetch_row($consulta)){
+    while($row=pg_fetch_row($consulta)) {
         $consulta1=pg_query("select num_serie,fecha_actual,hora_actual,fecha_cancelacion,num_autorizacion,factura_compra.forma_pago,tarifa0,tarifa12,iva_compra,descuento_compra,total_compra,empresa_pro,identificacion_pro,representante_legal,id_factura_compra from factura_compra,proveedores where factura_compra.id_proveedor=proveedores.id_proveedor and factura_compra.id_proveedor='$row[0]' and fecha_actual between '$_GET[inicio]' and '$_GET[fin]' order by factura_compra.id_factura_compra");
         $contador=pg_num_rows($consulta1);
         if($contador > 0){               
-            while($row1=pg_fetch_row($consulta1)){                                             
+            while($row1=pg_fetch_row($consulta1)) {                                             
                 if($repetido==0){                       
                     $pdf->SetX(1); 
                     $pdf->Cell(22, 6, utf8_decode('Comprobante'),1,0, 'C',0);                                     

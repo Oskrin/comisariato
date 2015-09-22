@@ -6,14 +6,15 @@
 
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends PDF_Rotate
-    {   
+    session_start();
+
+    class PDF extends PDF_Rotate {   
         var $widths;
         var $aligns;
         function SetWidths($w){            
             $this->widths=$w;
         }        
+
         function RotatedText($x, $y, $txt, $angle) {
             //Text rotated around its origin
             $this->Rotate($angle, $x, $y);
@@ -39,7 +40,7 @@
     $pdf->SetFont('Amble-Regular','',9);     
 
     $sql = pg_query("select id_facturas_novalidas, id_facturas_novalidas,fecha_actual, tarifa0,tarifa12,iva_venta,descuento_venta,total_venta,clientes.id_cliente,identificacion,nombres_cli,direccion_cli,telefono,facturas_novalidas.estado from facturas_novalidas,clientes where id_facturas_novalidas = '".$_GET['id']."' and facturas_novalidas.id_cliente = clientes.id_cliente");
-    while($row = pg_fetch_row($sql)){
+    while($row = pg_fetch_row($sql)) {
         $id_cliente = $row[8];
         $cliente = $row[10];
         $ci_ruc = $row[9];
@@ -72,7 +73,7 @@
     $pdf->Text(180, 62, maxCaracter(utf8_decode($ci_ruc),20),1,0, 'L',0);////ruc ci
     $pdf->Text(268, 62, maxCaracter(utf8_decode($fecha),20),1,0, 'L',0);/////fecha
     
-    if($estado == 'Pasivo'){        
+    if($estado == 'Pasivo') {        
         $pdf->SetTextColor(249,33,33);
         $pdf->RotatedImage('../images/circle.png', 110, 42, 30, 10, 45);        
         $pdf->RotatedText(120,41, 'ANULADO!', 45);        
@@ -86,7 +87,7 @@
     $yy = 76;
     $iva_base = 1.12;    
     $pdf->SetTextColor(0,0,0);
-    while($row = pg_fetch_row($sql)){
+    while($row = pg_fetch_row($sql)) {
         $total_si = 0;
         $total_sit = 0;
         $total_si = $row[3] / $iva_base;
@@ -100,7 +101,7 @@
         $array = ceil_caracter($row[1],35);
         if(sizeof($array) > 1){
             $zz = $yy;
-            for($i = 0; $i < sizeof($array); $i++){
+            for($i = 0; $i < sizeof($array); $i++) {
                 $pdf->Text(25, $zz, utf8_decode($array[$i]),0,0, 'J',0);                               
                 $pdf->Text(180, $zz, utf8_decode($array[$i]),0,0, 'J',0);                               
                 $zz = $zz + 3;
@@ -117,10 +118,8 @@
         $pdf->Text(120, $yy, maxCaracter(number_format($total_si,2,',','.'),6),0,0, 'L',0);                                    
         $pdf->Text(270, $yy, maxCaracter(number_format($total_si,2,',','.'),6),0,0, 'L',0);    
         $yy = $yy + 5;    
-
-        
-        
     }
+
     $sql = pg_query("select cantidad,articulo,precio_venta,total_venta from  detalle_facturas_novalidas,productos where id_facturas_novalidas = '".$_GET['id']."' and detalle_facturas_novalidas.cod_productos = productos.cod_productos and productos.incluye_iva= 'No'");    
     $pdf->SetTextColor(0,0,0);
     while($row = pg_fetch_row($sql)){

@@ -10,8 +10,9 @@
         var $aligns;       
         function SetWidths($w){            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        } 
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,7 +40,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -69,8 +70,8 @@
         $contador=0;
         $sql1=pg_query("select * from factura_compra where estado='Activo' and id_proveedor='$row[0]' and forma_pago='Credito' order by forma_pago asc;");
         if(pg_num_rows($sql1)){
-            while($row1=pg_fetch_row($sql1)){                   
-                if($repetido==0){                        
+            while($row1=pg_fetch_row($sql1)) {                   
+                if($repetido==0){                         
                     $pdf->SetX(1); 
                     $pdf->SetFillColor(187, 179, 180);            
                     $pdf->Cell(70, 6, maxCaracter(utf8_decode('RUC/CI:'.$row[2]),35),1,0, 'L',1);                                     
@@ -88,7 +89,7 @@
                     $contador=1;                    
                 }
                 $sql2=pg_query("select * from factura_compra,pagos_compra where factura_compra.id_factura_compra= pagos_compra.id_factura_compra and pagos_compra.estado='Activo' and pagos_compra.id_proveedor='$row[0]' and factura_compra.id_factura_compra='$row1[0]'");
-                while($row2=pg_fetch_row($sql2)){
+                while($row2=pg_fetch_row($sql2)) {
                     $pdf->Cell(25, 6, utf8_decode($row2[0]),0,0, 'C',0);                                     
                     $pdf->Cell(30, 6, utf8_decode($row2[10]),0,0, 'C',0);                                     
                     $pdf->Cell(45, 6, substr($row2[11],8,30),0,0, 'C',0);                                         
@@ -103,7 +104,7 @@
 
         $sql3=pg_query("select * from c_pagarexternas where id_proveedor='$row[0]' and estado='Activo'");
         if(pg_num_rows($sql3)){
-            while($row3=pg_fetch_row($sql3)){
+            while($row3=pg_fetch_row($sql3)) {
                 if($repetido==0){          
                     $pdf->SetX(1); 
                     $pdf->SetFillColor(187, 179, 180);            

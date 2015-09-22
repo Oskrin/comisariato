@@ -4,14 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF{   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        } 
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,7 +41,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -54,7 +56,6 @@
     $pdf->SetFont('Arial','B',9);   
     $pdf->SetX(5);    
     $pdf->SetFont('Amble-Regular','',9); 
-    
 
     $sql=pg_query("select * from proforma,clientes,usuario,empresa where proforma.id_cliente=clientes.id_cliente and proforma.id_usuario=usuario.id_usuario and proforma.id_empresa=empresa.id_empresa and id_proforma='$_GET[id]'");
     while($row=pg_fetch_row($sql)){
@@ -95,7 +96,7 @@
     $pdf->Cell(25, 6, utf8_decode('Descuento'),1,0, 'C',0);                                         
     $pdf->Cell(25, 6, utf8_decode('Total'),1,1, 'C',0);    
     $sql=pg_query("select * from detalle_proforma,productos where id_proforma='$_GET[id]'  and productos.incluye_iva = 'No' and detalle_proforma.cod_productos=productos.cod_productos order by id_detalle_proforma asc;");          
-    while($row=pg_fetch_row($sql)){        
+    while($row=pg_fetch_row($sql)) {        
         $pdf->SetX(1);
         $pdf->Cell(40, 6, maxCaracter(utf8_decode($row[9]),15),0,0, 'L',0);                                     
         $pdf->Cell(65, 6, maxCaracter(utf8_decode($row[11]),30),0,0, 'L',0);                                     
@@ -106,7 +107,7 @@
     }
     $iva_base = 1.12;
     $sql=pg_query("select * from detalle_proforma,productos where id_proforma='$_GET[id]' and productos.incluye_iva = 'Si'  and detalle_proforma.cod_productos=productos.cod_productos order by id_detalle_proforma asc;");          
-    while($row=pg_fetch_row($sql)){       
+    while($row=pg_fetch_row($sql)) {       
         $pdf->SetX(1);
          $total_si = 0;
         $total_sit = 0;

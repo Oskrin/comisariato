@@ -29,7 +29,7 @@ session_start();
     $repetido=0;   
     $contador=0; 
     $consulta=pg_query("select id_cliente,identificacion,nombres_cli from clientes");
-    while($row=pg_fetch_row($consulta)){
+    while($row=pg_fetch_row($consulta)) {
         $repetido=0;
         $total=0;
         $sql1=pg_query("select * from registro_equipo,color,marcas,usuario,categoria where categoria.id_categoria=registro_equipo.id_categoria and usuario.id_usuario=registro_equipo.id_usuario and marcas.id_marca=registro_equipo.id_marca and color.id_color=registro_equipo.id_color and id_cliente='$row[0]' and fecha_salida between '$_GET[inicio]' and '$_GET[fin]' and estado='3'");
@@ -50,7 +50,7 @@ session_start();
                       
             }
            
-            while($row1=pg_fetch_row($sql1)){
+            while($row1=pg_fetch_row($sql1)) {
                 $codigo.='<tr>                
                 <td style="width:60px;text-align:left;">'.$row1[0].'</td>    
                 <td style="width:80px;text-align:left;">'.$row1[31].'</td>

@@ -5,13 +5,13 @@
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
     session_start()   ;
-    class PDF extends FPDF{   
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
         }                       
-        function Header(){                         
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,12 +39,13 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
         }               
     }
+
     $pdf = new PDF('P','mm','a4');
     $pdf->AddPage();
     $pdf->SetMargins(0,0,0,0);
@@ -75,9 +76,9 @@
     $pdf->Cell(15, 6, utf8_decode('Saldo'),1,0, 'C',0);                                                                                                                                    
     $pdf->Cell(20, 6, utf8_decode('Acumulado'),1,1, 'C',0);                                   
 
-    while($row=pg_fetch_row($sql)){
+    while($row=pg_fetch_row($sql)) {
         $sql1=pg_query("select id_factura_venta,num_factura,nombres_cli,total_venta,fecha_actual from factura_venta,clientes where factura_venta.id_cliente=clientes.id_cliente and id_factura_venta='$row[0]'");
-        while($row1=pg_fetch_row($sql1)){
+        while($row1=pg_fetch_row($sql1)) {
             $id_fac=$row1[0];
             $num_fac=$row1[1];
             $total=$row1[3];
@@ -85,7 +86,7 @@
             $cliente=$row1[2];
         }
         $sql2=pg_query("SELECT * FROM gastos where fecha_actual between '$_GET[inicio]' and '$_GET[fin]' and id_factura_venta='$id_fac' order by id_factura_venta asc");
-        while($row2=pg_fetch_row($sql2)){
+        while($row2=pg_fetch_row($sql2)) {
             $pdf->SetX(1);
             $pdf->Cell(20, 6, substr($num_fac,8,30),0,0, 'C',0);                                     
             $pdf->Cell(22, 6, utf8_decode($fecha),0,0, 'C',0);                                                     

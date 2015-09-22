@@ -69,6 +69,7 @@ $cont1++;
                                 <div class="input-group">
                                   <input type="text" name="fecha_actual"  id="fecha_actual" readonly class="form-control"/>
                                   <input type="hidden" name="comprobante"  id="comprobante" readonly class="form-control" value="<?php echo $cont1 ?>"/>
+                                  <input type="hidden" name="id_factura_compra"  id="id_factura_compra" readonly class="form-control"/>
                                   <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                   </div>
@@ -105,7 +106,7 @@ $cont1++;
                           <div class="col-md-12">
                             <div class="col-md-5">
                               <div class="form-group">
-                                <label class="col-md-4" >Nro. de serie: <font color="red">*</font></label>
+                                <label class="col-md-4">Nro. de serie: <font color="red">*</font></label>
                                 <div class="form-group col-md-8 no-padding">                                
                                   <input type="text" name="serie"  id="serie" required class="form-control" data-inputmask='"mask": "999-999-999999999"' data-mask />
                                 </div> 
@@ -114,7 +115,7 @@ $cont1++;
 
                             <div class="col-md-6">
                               <div class="form-group">
-                                <label class="col-md-5" >Tipo de comprobante: <font color="red">*</font></label>
+                                <label class="col-md-5">Tipo de comprobante: <font color="red">*</font></label>
                                 <div class="form-group col-md-7 no-padding">                                
                                   <select class="form-control" name="tipo_comprobante" id="tipo_comprobante">
                                     <option value="">........Seleccione........</option>
@@ -131,7 +132,7 @@ $cont1++;
                           <div class="col-md-12">
                             <div class="col-md-4">
                               <div class="form-group">
-                                <label class="col-md-5" >Proveedor: <font color="red">*</font></label>
+                                <label class="col-md-5">Proveedor: <font color="red">*</font></label>
                                 <div class="form-group col-md-7 no-padding">                                
                                   <select class="form-control" name="tipo_docu" id="tipo_docu">
                                     <option value="">......Seleccione......</option>
@@ -172,7 +173,7 @@ $cont1++;
 
                             <div class="col-md-4">
                               <div class="form-group">
-                                <label class="col-md-5" >Fecha emisón:</label>
+                                <label class="col-md-5">Fecha emisón:</label>
                                 <div class="form-group col-md-7 no-padding">                                
                                   <input type="text" name="fecha_emision"  id="fecha_emision" required readonly class="form-control" />
                                 </div> 
@@ -203,7 +204,7 @@ $cont1++;
 
                             <div class="col-md-4">
                               <div class="form-group">
-                                <label class="col-md-5" >Fecha Cancelación:</label>
+                                <label class="col-md-5">Fecha Cancelación:</label>
                                 <div class="form-group col-md-7 no-padding">                                
                                   <input type="text" name="cancelacion"  id="cancelacion" required readonly class="form-control" />
                                 </div> 
@@ -212,7 +213,7 @@ $cont1++;
 
                             <div class="col-md-4">
                               <div class="form-group">
-                                <label class="col-md-5" >Formas de Pago:</label>
+                                <label class="col-md-5">Formas de Pago:</label>
                                 <div class="form-group col-md-7 no-padding">                                
                                   <select class="form-control" name="formas" id="formas">
                                     <option value="Contado">Contado</option>
@@ -268,27 +269,22 @@ $cont1++;
                               <div class="form-group">
                                 <label>DESC.</label>
                                 <input type="number" name="descuento"  id="descuento"  min="0" placeholder="%" class="form-control" />
-                                <select id="iva_producto" name="iva_producto" style="display: none" class="form-control"  >
-                                    <option value="Elija">Elija</option>
-                                    <option value="Si">Si</option> 
-                                    <option value="No">No</option> 
-                                </select>
+                                <input type="hidden" name="iva_producto"  id="iva_producto" readonly class="form-control" />
                                 <input type="hidden" name="carga_series"  id="carga_series" readonly class="form-control" />
                                 <input type="hidden" name="incluye"  id="incluye" readonly class="form-control" />
                                 <input type="hidden" name="cod_producto"  id="cod_producto" readonly class="form-control" />
-                                
                               </div>  
                             </div> 
                          </div>
                         </div>
 
                         <!-- <div class="row"> -->
-                         <div class="col-mx-12">
-                            <div id="grid_container">
-                                <table id="list"></table>
+                        <div class="col-mx-12">
+                          <div id="grid_container">
+                            <table id="list"></table>
                                 <!--<div id="pager"></div>-->   
-                            </div>
-                         </div>   
+                          </div>
+                        </div>   
                         <!-- </div> -->
 
                         <div class="row">
@@ -358,7 +354,7 @@ $cont1++;
                                 </div> 
                               </div>
                             </div>
-                         </div>   
+                          </div>   
                         </div>
                       </form>
                     </div>

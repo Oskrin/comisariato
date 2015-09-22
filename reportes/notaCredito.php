@@ -6,14 +6,15 @@
 
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends PDF_Rotate
-    {   
+    session_start();
+
+    class PDF extends PDF_Rotate {   
         var $widths;
         var $aligns;
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
         }        
+
         function RotatedText($x, $y, $txt, $angle) {
             //Text rotated around its origin
             $this->Rotate($angle, $x, $y);
@@ -39,8 +40,7 @@
     $pdf->SetFont('Amble-Regular','',9);     
 
     $sql=pg_query("select id_devolucion_venta,num_serie,fecha_actual,tarifa0,tarifa12,iva_venta,descuento_venta,total_venta,observaciones,identificacion,nombres_cli,telefono,direccion_cli from devolucion_venta,clientes where devolucion_venta.id_cliente=clientes.id_cliente and devolucion_venta.id_devolucion_venta='$_GET[id]'");    
-    while($row = pg_fetch_row($sql)){
-        
+    while($row = pg_fetch_row($sql)) {
         $cliente = $row[10];
         $ci_ruc = $row[9];
         $direccion = $row[12];
@@ -65,11 +65,8 @@
     $pdf->Text(113, 55, maxCaracter(utf8_decode($telefono),20),1,0, 'L',0);////telefono
     $pdf->Text(30, 62, maxCaracter(utf8_decode($ci_ruc),20),1,0, 'L',0);////ruc ci
     $pdf->Text(113, 62, maxCaracter(utf8_decode($fecha),20),1,0, 'L',0);/////fecha
-
-
-    
    
-    ////////detalles    
+    ////////detalles//////////////////////    
     $sql=pg_query("select id_detalle_deventa,id_devolucion_venta,productos.cod_productos,cantidad,precio_venta,descuento_producto,total_venta,articulo from detalle_devolucion_venta,productos where detalle_devolucion_venta.cod_productos=productos.cod_productos and id_devolucion_venta='$_GET[id]' and productos.incluye_iva = 'No'");
     $yy = 76;
     $iva_base = 1.12;    
@@ -87,20 +84,20 @@
         $pdf->Text(95, $yy, maxCaracter(number_format($total_sit,2,',','.'),6),0,0, 'L',0);            
         $pdf->Text(120, $yy, maxCaracter(number_format($total_si,2,',','.'),6),0,0, 'L',0);            
    
-        $yy = $yy + 5;        
-        
+        $yy = $yy + 5;  
     }
-    $sql=pg_query("select id_detalle_deventa,id_devolucion_venta,productos.cod_productos,cantidad,precio_venta,descuento_producto,total_venta,articulo from detalle_devolucion_venta,productos where detalle_devolucion_venta.cod_productos=productos.cod_productos and id_devolucion_venta='$_GET[id]' and productos.incluye_iva = 'Si'");
+
+    $sql = pg_query("select id_detalle_deventa,id_devolucion_venta,productos.cod_productos,cantidad,precio_venta,descuento_producto,total_venta,articulo from detalle_devolucion_venta,productos where detalle_devolucion_venta.cod_productos=productos.cod_productos and id_devolucion_venta='$_GET[id]' and productos.incluye_iva = 'Si'");
     $pdf->SetTextColor(0,0,0);
-    while($row = pg_fetch_row($sql)){
+    while($row = pg_fetch_row($sql)) {
         $temp_1 =  number_format($row[6],2,',','.');
         $pdf->Text(15, $yy, maxCaracter(utf8_decode($row[3]),3),0,1, 'L',0);    
         $pdf->Text(25, $yy, maxCaracter(utf8_decode($row[7]),50),0,0, 'L',0);    
         $pdf->Text(95, $yy, maxCaracter(utf8_decode($row[4]),6),0,0, 'L',0);    
         $pdf->Text(120, $yy, maxCaracter($temp_1,6),0,0, 'L',0);             
-        $yy = $yy + 5;        
-        
+        $yy = $yy + 5;           
     }
+
     /////////pie        
     $subtotal = truncateFloat($iva12,2);
     $descuento_venta = truncateFloat($descuento_venta,2);
@@ -108,18 +105,16 @@
     $iva0 = truncateFloat($iva0,2);
     $total_venta = truncateFloat($total_venta,2);
 
-
     $pdf->Text(120, 113, maxCaracter($subtotal,5),0,1, 'L',0);    
     $pdf->Text(120, 119, maxCaracter($iva0,5),0,1, 'L',0);     
     $pdf->Text(120, 125, maxCaracter($iva_venta,5),0,1, 'L',0);    
     $pdf->Text(98, 126, '12',0,1, 'L',0);    
     $pdf->Text(120, 131, maxCaracter($descuento_venta,5),0,1, 'L',0);    
     $pdf->Text(120, 137, maxCaracter($total_venta,10),0,1, 'L',0);    
-   
-
 
     $pdf->Output();
 ?>
+
 <?php
 require('../dompdf/dompdf_config.inc.php');
 session_start();

@@ -7,13 +7,13 @@
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
     session_start()   ;
-    class PDF extends PDF_Rotate
-    {   
+    class PDF extends PDF_Rotate {   
         var $widths;
         var $aligns;
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }        
+        }    
+
         function RotatedText($x, $y, $txt, $angle) {
             //Text rotated around its origin
             $this->Rotate($angle, $x, $y);
@@ -28,7 +28,7 @@
             $this->Rotate(0);
         }                      
     }
-   $pdf = new PDF('L','mm',array(200,210));
+    $pdf = new PDF('L','mm',array(200,210));
     //$pdf = new PDF('P','mm','a5');
     $pdf->AddPage();
     $pdf->SetMargins(0,0,0,0);
@@ -64,11 +64,8 @@
     $pdf->Text(30, 53, maxCaracter(utf8_decode($direccion),35),1,0, 'L',0);////direccion
     $pdf->Text(155, 42, maxCaracter(utf8_decode($ci_ruc),20),1,0, 'L',0);////ruc ci
     $pdf->Text(155, 48, maxCaracter(utf8_decode($telefono),20),1,0, 'L',0);////telefono
-
-    
-
         
-    if($estado == 'Pasivo'){        
+    if($estado == 'Pasivo') {        
         $pdf->SetTextColor(249,33,33);
         $pdf->RotatedImage('../images/circle.png', 110, 42, 30, 10, 45);        
         $pdf->RotatedText(120,41, 'ANULADO!', 45);        
@@ -107,12 +104,10 @@
         $pdf->Text(150, $yy, maxCaracter(number_format($total_sit,2,',','.'),6),0,0, 'L',0);            
         
         $pdf->Text(180, $yy, maxCaracter(number_format($total_si,2,',','.'),6),0,0, 'L',0);                                    
-                $yy = $yy + 4;    
-///////////////////////////////////////
-
-        
-        
+            $yy = $yy + 4;    
+///////////////////////////////////////  
     }
+
     $sql = pg_query("select cantidad,articulo,precio_venta,total_venta from  detalle_factura_venta,productos where id_factura_venta = '".$_GET['id']."' and detalle_factura_venta.cod_productos = productos.cod_productos and productos.incluye_iva= 'No'");    
     $pdf->SetTextColor(0,0,0);
     while($row = pg_fetch_row($sql)){
@@ -127,15 +122,13 @@
                         $zz = $zz + 3;
             }
             $yy = $yy + 4;
-        }else{
+        } else {
             $pdf->Text(20, $yy, maxCaracter(utf8_decode($row[1]),30),0,0, 'L',0);                           
-                }        
-
-
+        }    
         $pdf->Text(150, $yy, maxCaracter(utf8_decode($row[2]),6),0,0, 'L',0);    
                 
         $pdf->Text(180, $yy, maxCaracter($temp_1,6),0,0, 'L',0);                                    
-                $yy = $yy + 4;                                                
+        $yy = $yy + 4;                                                
         
     }
     /////////pie        
@@ -151,9 +144,6 @@
     $pdf->Text(180, 187, maxCaracter($iva_venta,5),0,1, 'L',0);    
 //    $pdf->Text(180, 192, maxCaracter($descuento_venta,5),0,1, 'L',0);    
     $pdf->Text(180, 192, maxCaracter($total_venta,10),0,1, 'L',0);    
-
-       
-
 
     $pdf->Output();
 ?>

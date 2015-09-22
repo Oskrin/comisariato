@@ -5,13 +5,13 @@
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
     session_start()   ;
-    class PDF extends FPDF{   
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
         }                       
-        function Header(){                         
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,7 +39,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -86,7 +86,7 @@
         $pdf->Cell(20, 6, utf8_decode('Saldo'),1,0, 'C',0);                                                                                                                                    
         $pdf->Cell(20, 6, utf8_decode('Acumulado'),1,1, 'C',0);                                                                                                                                                
         $valor_pagado=0;
-        while($row2=pg_fetch_row($sql2)){
+        while($row2=pg_fetch_row($sql2)) {
             $pdf->SetX(1); 
             $pdf->Cell(25, 6, substr($num_fac,8,30),0,0, 'C',0);                                     
             $pdf->Cell(25, 6, utf8_decode($fecha),0,0, 'C',0);                                                     

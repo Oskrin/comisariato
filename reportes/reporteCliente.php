@@ -50,7 +50,7 @@ session_start();
                       
             }
            
-            while($row1=pg_fetch_row($sql1)){
+            while($row1=pg_fetch_row($sql1)) {
                 $codigo.='<tr>                
                 <td style="width:60px;text-align:left;">'.$row1[0].'</td>    
                 <td style="width:80px;text-align:left;">'.$row1[31].'</td>

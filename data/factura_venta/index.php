@@ -23,7 +23,6 @@ while ($row = pg_fetch_row($consulta3)) {
       $campo_identificacion_cliente = $row[2];
       $campo_nombre_cliente = $row[3];
       $campo_direccion_cliente = $row[5];
-
 } 
 
 ?>
@@ -93,8 +92,8 @@ while ($row = pg_fetch_row($consulta3)) {
                                     <div class="input-group-addon">
                                       <i class="fa fa-calendar"></i>
                                     </div>
-                                  </div><!-- /.input group -->
-                                </div><!-- /.form group -->
+                                  </div>
+                                </div>
                                </div>
 
                                <div class="col-md-3">
@@ -106,8 +105,8 @@ while ($row = pg_fetch_row($consulta3)) {
                                         <div class="input-group-addon">
                                           <i class="fa fa-clock-o"></i>
                                         </div>
-                                      </div><!-- /.input group -->
-                                    </div><!-- /.form group -->
+                                      </div>
+                                    </div>
                                   </div>  
                               </div>
 
@@ -306,7 +305,7 @@ while ($row = pg_fetch_row($consulta3)) {
                             <div class="col-md-1">
                               <div class="form-group">
                                 <label>DESC.</label>
-                                <input type="number" name="descuento" id="descuento" readonly min="0" placeholder="%" class="form-control" />
+                                <input type="number" name="descuento" id="descuento" min="0" placeholder="%" class="form-control" />
                                 <input type="hidden" name="disponibles"  id="disponibles" readonly class="form-control" />
                                 <input type="hidden" name="iva_producto"  id="iva_producto" readonly class="form-control" />
                                 <input type="hidden" name="carga_series"  id="carga_series" readonly class="form-control" />

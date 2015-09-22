@@ -4,14 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF{   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        }  
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,7 +41,8 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -63,7 +66,7 @@
     $repetido=0;   
     $contador=0; 
     $consulta=pg_query('select * FROM proveedores order by id_proveedor asc');
-    while($row=pg_fetch_row($consulta)){
+    while($row=pg_fetch_row($consulta)) {
         $total=0;
         $sub=0;
         $saldo=0;
@@ -72,7 +75,7 @@
         $num_fact=0;        
         $sql1=pg_query("select * from factura_compra where id_proveedor='$row[0]' order by forma_pago asc;");        
         if(pg_num_rows($sql1)>0){
-            while($row1=pg_fetch_row($sql1)){  
+            while($row1=pg_fetch_row($sql1)) {  
                 if($repetido==0){
                     $pdf->SetX(1); 
                     $pdf->SetFillColor(187, 179, 180);            
@@ -91,7 +94,7 @@
                     $repetido=1;
                     $contador=1;                    
                 }
-                if($row1[14]=='Contado'){
+                if($row1[14]=='Contado') {
                     $pdf->Cell(22, 6, utf8_decode($row1[4]),0,0, 'C',0);                                     
                     $pdf->Cell(27, 6, utf8_decode('Factura'),0,0, 'C',0);                                     
                     $pdf->Cell(35, 6, substr($row1[11],8,30),0,0, 'C',0);                                         
@@ -101,8 +104,7 @@
                     $pdf->Cell(25, 6, utf8_decode($row1[5]),0,0, 'C',0);
                     $pdf->Cell(25, 6, utf8_decode($row1[10]),0,1, 'C',0);                                        
                     $sub=$sub+$row1[19];
-                }
-                else{
+                } else{
                     $sql3=pg_query("select * from pagos_pagar where num_factura='$row1[11]';");
                     if(pg_num_rows($sql3)>0){                        
                         while($row3=pg_fetch_row($sql3)){     
@@ -119,7 +121,7 @@
                     }                   
                 }
             }      
-            if($contador>0){
+            if($contador>0) {
                 $pdf->SetX(1);                                             
                 $pdf->Cell(207, 0, utf8_decode(""),1,1, 'R',0);
                 $pdf->Cell(105, 6, utf8_decode("Totales"),0,0, 'R',0);

@@ -4,14 +4,15 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF{   
+    session_start();
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        }                 
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -42,7 +43,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -63,7 +64,7 @@
     $repetido=0;   
     $contador=0; 
     $consulta=pg_query("select id_cliente,identificacion,nombres_cli from clientes");
-    while($row=pg_fetch_row($consulta)){
+    while($row=pg_fetch_row($consulta)) {
         $repetido=0;
         $total=0;
         $sql1=pg_query("select * from proforma where fecha_actual between '$_GET[inicio]' and '$_GET[fin]' and id_cliente='$row[0]' and estado='Activo'");
@@ -86,7 +87,7 @@
                 $pdf->Cell(25, 6, utf8_decode('Tipo Precio'),1,1, 'C',0);                   
                 $repetido=1;
             }            
-            while($row1=pg_fetch_row($sql1)){
+            while($row1=pg_fetch_row($sql1)) {
                 $pdf->Cell(25, 6, $row1[0],0,0, 'C',0);                    
                 $pdf->Cell(30, 6, 'Factura',0,0, 'C',0);                    
                 $pdf->Cell(20, 6, $row1[8],0,0, 'C',0);        

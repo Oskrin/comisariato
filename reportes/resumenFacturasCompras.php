@@ -4,14 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF{   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        }   
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -41,7 +43,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -61,7 +63,7 @@
     $desc=0;
     $ivaT=0;
     $consulta=pg_query('select * from proveedores order by id_proveedor asc');
-    while($row=pg_fetch_row($consulta)){
+    while($row=pg_fetch_row($consulta)) {
         $total=0;
         $sub=0;
         $desc=0;
@@ -70,7 +72,7 @@
         $contador=pg_num_rows($consulta1);
         if($contador > 0){
             $repetido=0;
-            while($row1=pg_fetch_row($consulta1)){                                     
+            while($row1=pg_fetch_row($consulta1)) {                                     
                 if($repetido==0){                                                                    
                     $pdf->SetX(1); 
                     $pdf->SetFillColor(187, 179, 180);            
@@ -111,7 +113,7 @@
                 $pdf->Ln(6);                                                                                                                                                                                  
             }
         }
-        if($contador > 0){        
+        if($contador > 0) {        
             $pdf->SetX(1);                                             
             $pdf->Cell(207, 0, utf8_decode(""),1,1, 'R',0);
             $pdf->Cell(188, 6, utf8_decode("Total"),0,0, 'R',0);

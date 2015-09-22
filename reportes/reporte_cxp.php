@@ -4,14 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF{   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        }  
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,12 +41,14 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
         }               
     }
+
     $pdf = new PDF('P','mm','a4');
     $pdf->AddPage();
     $pdf->SetMargins(0,0,0,0);
@@ -98,7 +102,7 @@
     }
     else{        
         $sql=pg_query("select * from factura_compra,proveedores,usuario,empresa where factura_compra.id_proveedor=proveedores.id_proveedor and factura_compra.id_usuario=usuario.id_usuario and factura_compra.id_empresa=empresa.id_empresa and num_serie='$_GET[id]' and proveedores.id_proveedor='$_GET[proveedor]'");        
-        while($row=pg_fetch_row($sql)){
+        while($row=pg_fetch_row($sql)) {
             $pdf->SetX(1); 
             $pdf->SetFillColor(187, 179, 180);            
             $pdf->Cell(50, 6, maxCaracter(utf8_decode('RUC/CI:'.$row[23]),35),1,0, 'L',1);                                     

@@ -112,7 +112,6 @@ function entrar() {
             } else {
                 if ($("#cantidad").val() === "") {
                     $("#cantidad").focus();
-                    // alertify.alert("Ingrese una cantidad");
                 } else {
                     $("#p_venta").focus();
                 }
@@ -136,14 +135,13 @@ function entrar2() {
             } else {
                 if ($("#cantidad").val() === "") {
                     $("#cantidad").focus();
-                    // alertify.alert("Ingrese una cantidad");
                 } else {
                     if ($("#p_venta").val() === "") {
-                    $("#p_venta").focus();
-                    alertify.alert("Ingrese un precio");
-                  }else{
-                    $("#descuento").focus();
-                 }
+                        $("#p_venta").focus();
+                        alertify.alert("Ingrese un precio");
+                    }else{
+                       $("#descuento").focus();
+                    }
                 }
             }
         }
@@ -156,6 +154,7 @@ function comprobar2() {
     var iva12 = 0;
     var total_total = 0;
     var descu_total = 0;
+
     if ($("#cod_producto").val() === "") {
         $("#codigo").focus();
         alertify.alert("Ingrese un producto");
@@ -170,7 +169,6 @@ function comprobar2() {
             } else {
                 if ($("#cantidad").val() === "") {
                     $("#cantidad").focus();
-                    // alertify.alert("Ingrese una cantidad");
                 } else {
                     if ($("#p_venta").val() === "") {
                     $("#p_venta").focus();
@@ -234,7 +232,7 @@ function comprobar2() {
                             }
                         }
 
-                        if (repe === 1) {
+                        if (repe == 1) {
                             if ($("#descuento").val() !== "") {
                                 desc = $("#descuento").val();
                                 precio = (parseFloat($("#p_venta").val())).toFixed(2);
@@ -274,7 +272,7 @@ function comprobar2() {
                             $("#disponibles").val("");
                             $("#incluye").val("");
                         } else {
-                            if(filas.length < 19){
+                            if(filas.length < 19) {
                                 if ($("#descuento").val() !== "") {
                                     desc = $("#descuento").val();
                                     precio = (parseFloat($("#p_venta").val())).toFixed(2);
@@ -457,7 +455,7 @@ function guardar_proforma() {
     }
 }
 
-function flecha_atras(){
+function flecha_atras() {
     $.ajax({
        type: "POST",
        url: "../../procesos/flechas.php",
@@ -511,7 +509,8 @@ function flecha_atras(){
                             $("#observaciones").val(data[i + 14]);
                         }
                     }
-                });                
+                });   
+
                 $.getJSON('retornar_proforma_venta2.php?com=' + valor, function(data) {
                     var tama = data.length;
                     if (tama !== 0) {
@@ -531,7 +530,7 @@ function flecha_atras(){
                         }
                     }
                 });
-           }else{
+           } else {
                alertify.alert("No hay mas registros posteriores!!");
            }
        }
@@ -610,7 +609,7 @@ function flecha_siguiente(){
                     }
                 }
             });
-           }else{
+           } else {
                alertify.alert("No hay mas registros superiores!!");
            }    
        }

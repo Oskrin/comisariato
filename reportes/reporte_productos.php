@@ -4,15 +4,17 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF
-    {   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;
-        function SetWidths($w){            
+
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){             
+        }       
+
+        function Header() {             
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -41,7 +43,7 @@
             $this->Cell(30, 5, utf8_decode("Precio Mayorista"),1,0, 'C',0);    
             $this->Cell(20, 5, utf8_decode("Stock"),1,1, 'C',0);   
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -58,7 +60,7 @@
     $sql = pg_query("select codigo,cod_barras,articulo,iva_minorista,iva_mayorista,stock from productos");       
     $pdf->SetFont('Amble-Regular','',9);   
     $pdf->SetX(5);    
-    while($row = pg_fetch_row($sql)){                
+    while($row = pg_fetch_row($sql)) {                
         $pdf->SetX(1);                  
         $pdf->Cell(30, 5, utf8_decode($row[0]),0,0, 'L',0);
         $pdf->Cell(95, 5, maxCaracter(utf8_decode($row[2]),50),0,0, 'L',0);

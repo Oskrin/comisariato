@@ -4,14 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF{   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        } 
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,7 +41,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -86,9 +88,10 @@
     $pdf->Cell(40, 6, utf8_decode('Cod. Producto'),1,0, 'C',0);                                     
     $pdf->Cell(87, 6, utf8_decode('Descripción'),1,0, 'C',0);                                     
     $pdf->Cell(25, 6, utf8_decode('P. Unitario'),1,0, 'C',0);                                     
-    $pdf->Cell(25, 6, utf8_decode('P. Total'),1,1, 'C',0);                                             
+    $pdf->Cell(25, 6, utf8_decode('P. Total'),1,1, 'C',0);  
+
     $sql=pg_query("select * from detalles_ordenes,productos where detalles_ordenes.cod_productos=productos.cod_productos and id_ordenes='$_GET[id]'");
-    while($row=pg_fetch_row($sql)){
+    while($row=pg_fetch_row($sql)) {
         $pdf->SetX(1);
         $pdf->Cell(30, 6, utf8_decode($row[3]),0,0, 'C',0);                                        
         $pdf->Cell(40, 6, utf8_decode($row[8]),0,0, 'C',0);                                        

@@ -4,8 +4,9 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF{   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;                       
         var $tipo;
@@ -14,10 +15,11 @@
         var $total;
         var $total1;
         var $concepto;
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){    
+        }  
+
+        function Header() {    
             $total=0;
             $total1 = 0;
             $concepto ="";
@@ -85,7 +87,7 @@
     $repetido=0;         
     $sql1=pg_query("select P.id_plan_cuentas, P.codigo_plan, P.descripcion, D.tipo_referencia, D.num_referencia, D.debito, D.credito  from transacciones T, detalle_transaccion D, plan_cuentas P where T.id_transacciones = D.id_transacciones and D.id_plan_cuentas = P.id_plan_cuentas and  T.comprobante='$_GET[id]' order by P.id_plan_cuentas asc");
     if(pg_num_rows($sql1)){
-        while($row1=pg_fetch_row($sql1)){                
+        while($row1=pg_fetch_row($sql1)) {                
             if($repetido==0){      
                 $pdf->SetX(1);     
                 $pdf->Cell(35, 6, utf8_decode('Cod, Cuenta'),1,0, 'C',0);                                         
@@ -106,7 +108,8 @@
             $repetido=1;   
         }                 
     }
-    if($contador>0){
+    
+    if($contador>0) {
         $pdf->SetX(1);
         $pdf->Cell(205, 0, utf8_decode(''),1,1, 'R',1);                                     
         $pdf->Cell(166, 6, utf8_decode('Totales:'),0,0, 'R',0);                                         

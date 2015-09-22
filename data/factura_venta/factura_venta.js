@@ -435,7 +435,7 @@ function entrar3() {
 
                                             subtotal0 = parseFloat(subtotal0) + 0;
                                             subtotal12 = parseFloat(subtotal12) + parseFloat(sub1);
-                                            descu_total = parseFloat(descu_total) + dd['cal_des'];
+                                            descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
                                             iva12 = parseFloat(iva12) + parseFloat(iva1);
                                         
                                             subtotal0 = parseFloat(subtotal0).toFixed(3);
@@ -451,7 +451,7 @@ function entrar3() {
                                                 subtotal0 = parseFloat(subtotal0) + 0;
                                                 subtotal12 = parseFloat(subtotal12) + parseFloat(sub2);
                                                 iva12 = parseFloat(iva12) + parseFloat(iva2);
-                                                descu_total = parseFloat(descu_total) + dd['cal_des'];
+                                                descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
 
                                                 subtotal0 = parseFloat(subtotal0).toFixed(3);
                                                 subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -467,7 +467,7 @@ function entrar3() {
                                             subtotal0 = parseFloat(subtotal0) + parseFloat(sub);
                                             subtotal12 = parseFloat(subtotal12) + 0;
                                             iva12 = parseFloat(iva12) + 0;
-                                            descu_total = parseFloat(descu_total) + dd['cal_des'];
+                                            descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
                                             
                                             subtotal0 = parseFloat(subtotal0).toFixed(3);
                                             subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -539,7 +539,7 @@ function entrar3() {
                                     limpiar_campos();
                                 } else {
                                     for (var i = 0; i < filas.length; i++) {
-                                        var id = filas[i];
+                                         var id = filas[i];
 
                                         if (id['cod_producto'] === $("#cod_producto").val()) {
                                             repe = 1;
@@ -646,7 +646,7 @@ function entrar3() {
 
                                             subtotal0 = parseFloat(subtotal0) + 0;
                                             subtotal12 = parseFloat(subtotal12) + parseFloat(sub1);
-                                            descu_total = parseFloat(descu_total) + dd['cal_des'];
+                                            descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
                                             iva12 = parseFloat(iva12) + parseFloat(iva1);
                                         
                                             subtotal0 = parseFloat(subtotal0).toFixed(3);
@@ -662,7 +662,7 @@ function entrar3() {
                                                 subtotal0 = parseFloat(subtotal0) + 0;
                                                 subtotal12 = parseFloat(subtotal12) + parseFloat(sub2);
                                                 iva12 = parseFloat(iva12) + parseFloat(iva2);
-                                                descu_total = parseFloat(descu_total) + dd['cal_des'];
+                                                descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
 
                                                 subtotal0 = parseFloat(subtotal0).toFixed(3);
                                                 subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -678,7 +678,7 @@ function entrar3() {
                                             subtotal0 = parseFloat(subtotal0) + parseFloat(sub);
                                             subtotal12 = parseFloat(subtotal12) + 0;
                                             iva12 = parseFloat(iva12) + 0;
-                                            descu_total = parseFloat(descu_total) + dd['cal_des'];
+                                            descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
                                             
                                             subtotal0 = parseFloat(subtotal0).toFixed(3);
                                             subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -725,8 +725,7 @@ function abrirDialogo() {
                     $('#combobox').children().remove().end();
                     $("#series").dialog("open");
                     $("#combobox").append('<option></option>');
-                    for (var i = 0; i < tama; i = i + 1)
-                    {
+                    for (var i = 0; i < tama; i = i + 1) {
                         $("#combobox").append('<option value='+data[i]+' >'+data[i]+'</option>');
                     }
                     $.widget( "custom.combobox", {
@@ -1566,7 +1565,7 @@ function flecha_atras(){
                             desc = data[i + 5];
                             precio = (parseFloat(data[i + 4])).toFixed(3);
                             multi = (parseFloat(data[i + 3]) * parseFloat(data[i + 4])).toFixed(3);
-                            descuento = ((multi * parseFloat(data[i + 5])) / 100).toFixed(3);
+                            descuento = ((multi * parseFloat(desc)) / 100).toFixed(3);
                             flotante = parseFloat(descuento);
                             resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
                             total = (multi - resultado).toFixed(3);
@@ -1719,7 +1718,7 @@ function flecha_siguiente() {
                             desc = data[i + 5];
                             precio = (parseFloat(data[i + 4])).toFixed(3);
                             multi = (parseFloat(data[i + 3]) * parseFloat(data[i + 4])).toFixed(3);
-                            descuento = ((multi * parseFloat(data[i + 5])) / 100).toFixed(3);
+                            descuento = ((multi * parseFloat(desc)) / 100).toFixed(3);
                             flotante = parseFloat(descuento);
                             resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
                             total = (multi - resultado).toFixed(3);
@@ -1785,6 +1784,11 @@ function limpiar_campo3() {
         $("#p_venta").val("");
         $("#descuento").val("");
         $("#disponibles").val("");
+        $("#iva_producto").val("");
+        $("#carga_series").val("");
+        $("#des").val("");
+        $("#incluye").val("");
+        $("#inventar").val("");
     }
 }
 
@@ -1797,6 +1801,11 @@ function limpiar_campo4() {
         $("#p_venta").val("");
         $("#descuento").val("");
         $("#disponibles").val("");
+        $("#iva_producto").val("");
+        $("#carga_series").val("");
+        $("#des").val("");
+        $("#incluye").val("");
+        $("#inventar").val("");
     }
 }
 
@@ -2691,7 +2700,7 @@ function inicio() {
                           subtotal0 = parseFloat($("#total_p").val()) + 0;
                           subtotal12 = parseFloat($("#total_p2").val()) - parseFloat(sub1);
                           iva12 = parseFloat($("#iva").val()) - parseFloat(iva1);
-                          descu_total = parseFloat($("#desc").val()) - ret.cal_des;
+                          descu_total = parseFloat($("#desc").val()) - parseFloat(ret.cal_des);
 
                           subtotal0 = parseFloat(subtotal0).toFixed(3);
                           subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -2706,7 +2715,7 @@ function inicio() {
                             subtotal0 = parseFloat($("#total_p").val()) + 0;
                             subtotal12 = parseFloat($("#total_p2").val()) - parseFloat(sub2);
                             iva12 = parseFloat($("#iva").val()) - parseFloat(iva2);
-                            descu_total = parseFloat($("#desc").val()) - ret.cal_des;
+                            descu_total = parseFloat($("#desc").val()) - parseFloat(ret.cal_des);
 
                             subtotal0 = parseFloat(subtotal0).toFixed(3);
                             subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -2722,7 +2731,7 @@ function inicio() {
                           subtotal0 = parseFloat($("#total_p").val()) - parseFloat(sub);
                           subtotal12 = parseFloat($("#total_p2").val()) + 0;
                           iva12 = parseFloat($("#iva").val()) + 0;
-                          descu_total = parseFloat($("#desc").val()) - ret.cal_des;
+                          descu_total = parseFloat($("#desc").val()) - parseFloat(ret.cal_des);
                           
                           subtotal0 = parseFloat(subtotal0).toFixed(3);
                           subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -2898,7 +2907,7 @@ function inicio() {
                         desc = data[i + 5];
                         precio = (parseFloat(data[i + 4])).toFixed(3);
                         multi = (parseFloat(data[i + 3]) * parseFloat(data[i + 4])).toFixed(3);
-                        descuento = ((multi * parseFloat(data[i + 5])) / 100).toFixed(3);
+                        descuento = ((multi * parseFloat(desc)) / 100).toFixed(3);
                         flotante = parseFloat(descuento);
                         resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
                         total = (multi - resultado).toFixed(3);
@@ -3073,7 +3082,7 @@ function inicio() {
                     desc = data[i + 5];
                     precio = (parseFloat(data[i + 4])).toFixed(3);
                     multi = (parseFloat(data[i + 3]) * parseFloat(data[i + 4])).toFixed(3);
-                    descuento = ((multi * parseFloat(data[i + 5])) / 100).toFixed(3);
+                    descuento = ((multi * parseFloat(desc)) / 100).toFixed(3);
                     flotante = parseFloat(descuento);
                     resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
                     total = (multi - resultado).toFixed(3);

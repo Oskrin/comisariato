@@ -4,15 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF
-    {   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){             
+        }   
+
+        function Header() {             
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -39,7 +40,7 @@
             $this->SetFont('Amble-Regular','',10);        
             $this->Ln(5);              
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -55,17 +56,16 @@
     $pdf->SetX(5);    
     $pdf->SetFont('Amble-Regular','',9); 
     
-
     $total=0;
     $sub=0;
     $repetido=0;   
     $contador=0; 
     $consulta=pg_query("select id_cliente,identificacion,nombres_cli,telefono,direccion_cli from clientes where id_cliente='$_GET[id]'");
-    while($row=pg_fetch_row($consulta)){
+    while($row=pg_fetch_row($consulta)) {
         $repetido=0;
         $total=0;
         $sql1=pg_query("select id_factura_venta,num_factura,num_autorizacion,fecha_autorizacion,fecha_caducidad FROM factura_venta where id_cliente='$row[0]' and estado='Activo'");
-        if(pg_num_rows($sql1)){
+        if(pg_num_rows($sql1)) {
             if($repetido==0){
                 $pdf->SetX(1);        
                 $pdf->SetFillColor(221,221,221);          
@@ -83,7 +83,7 @@
                 $pdf->Cell(40, 6, utf8_decode("Fecha caducidad"),1,1, 'C',0);                               
                 $repetido=1;
             }            
-            while($row1=pg_fetch_row($sql1)){                
+            while($row1=pg_fetch_row($sql1)) {                
                 $pdf->SetX(1);        
                 $pdf->Cell(40, 6, utf8_decode($row1[1]),0,0, 'C',0);                       
                 $pdf->Cell(35, 6, utf8_decode('Factura'),0,0, 'C',0);                       

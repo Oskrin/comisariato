@@ -39,7 +39,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -62,12 +62,12 @@
     $repetido=0;    
     
     $consulta=pg_query('select * FROM proveedores order by id_proveedor asc');
-    while($row=pg_fetch_row($consulta)){
+    while($row=pg_fetch_row($consulta)) {
         $repetido=0;
         $sub=0;
         $sql1=pg_query("select * from factura_compra where estado='Activo' and id_proveedor='$row[0]' order by forma_pago asc");
         if(pg_num_rows($sql1)){
-            while($row1=pg_fetch_row($sql1)){
+            while($row1=pg_fetch_row($sql1)) {
                 if($row1[14]=='Contado'){
                     if($repetido==0){
                         $pdf->SetX(1); 
@@ -95,8 +95,7 @@
                     $pdf->Cell(30, 6, utf8_decode($row1[5]),0,1, 'C',0);                    
                     $repetido=1;   
                     $sub=$sub+$row1[19];                                        
-                } 
-                else{    
+                } else {    
                     if($repetido==0){ 
                         $pdf->SetX(1); 
                         $pdf->SetFillColor(187, 179, 180);            

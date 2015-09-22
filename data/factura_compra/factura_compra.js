@@ -10,7 +10,7 @@ window.open('../../ayudas/ayuda.pdf');
 function scrollToBottom() {
     $('html, body').animate({
         scrollTop: $(document).height()
-        }, 'slow');
+    }, 'slow');
 }
 
 function scrollToTop() {
@@ -40,8 +40,7 @@ function show() {
     setTimeout("show()", 1000);
 }
 
-var dialogo =
-{
+var dialogo = {
     autoOpen: false,
     resizable: false,
     width: 600,
@@ -49,8 +48,7 @@ var dialogo =
     modal: true
 };
         
-var dialogo2 =
-{
+var dialogo2 = {
     autoOpen: false,
     resizable: false,
     width: 800,
@@ -197,17 +195,16 @@ function comprobar() {
 }
 
 function limpiar_campos () {
-////////limpiar///////////
-$("#cod_producto").val("");
-$("#codigo_barras").val("");
-$("#codigo").val("");
-$("#producto").val("");
-$("#cantidad").val("");
-$("#precio").val("");
-$("#descuento").val("");
-$("#carga_series").val("");
-$("#incluye").val("");
-///////////////////////////    
+    $("#cod_producto").val("");
+    $("#codigo_barras").val("");
+    $("#codigo").val("");
+    $("#producto").val("");
+    $("#cantidad").val("");
+    $("#precio").val("");
+    $("#descuento").val("");
+    $("#iva_producto").val("");
+    $("#carga_series").val("");
+    $("#incluye").val("");   
 }
 
 function comprobar2() {
@@ -240,6 +237,7 @@ function comprobar2() {
                             $("#precio").focus();
                             alertify.error("Ingrese un precio");
                         } else {
+
                             var filas = jQuery("#list").jqGrid("getRowData");
                             var descuento = 0;
                             var total = 0;
@@ -249,24 +247,24 @@ function comprobar2() {
                             var flotante = 0;
                             var resultado = 0;  
                             var repe = 0;
-                            
+
                             if (filas.length === 0) {
                                 if ($("#descuento").val() !== "") {
                                     desc = $("#descuento").val();
                                     precio = (parseFloat($("#precio").val())).toFixed(3);
-                                    multi = ($("#cantidad").val() * parseFloat($("#precio").val())).toFixed(3);
-                                    descuento = ((multi * parseFloat($("#descuento").val()))/100).toFixed(3);
+                                    multi = (parseFloat($("#cantidad").val()) * parseFloat($("#precio").val())).toFixed(3);
+                                    descuento = ((multi * parseFloat(desc)) / 100);
                                     flotante = parseFloat(descuento);
                                     resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
                                     total = (multi - resultado).toFixed(3);
                                 } else {
                                     desc = 0;
                                     precio = (parseFloat($("#precio").val())).toFixed(3);
-                                    multi = ($("#cantidad").val() * parseFloat($("#precio").val())).toFixed(3);
-                                    descuento = ((multi * parseFloat($("#descuento").val()))/100).toFixed(3);
+                                    multi = (parseFloat($("#cantidad").val()) * parseFloat($("#precio").val())).toFixed(3);
+                                    descuento = ((multi * parseFloat(desc)) / 100);
                                     flotante = parseFloat(descuento);
                                     resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
-                                    total = ($("#cantidad").val() * precio).toFixed(3);
+                                    total = (parseFloat($("#cantidad").val()) * precio).toFixed(3);
                                 }
 
                                 var datarow = {
@@ -287,31 +285,39 @@ function comprobar2() {
                             } else {
                                 for (var i = 0; i < filas.length; i++) {
                                     var id = filas[i];
+
                                     if (id['cod_producto'] === $("#cod_producto").val()) {
                                         repe = 1;
+                                        var can = id['cantidad'];
                                     }
                                 }
 
                                 if (repe == 1) {
+                                    var suma = parseInt(can) + parseInt($("#cantidad").val());
+
                                     if ($("#descuento").val() !== "") {
-                                    desc = $("#descuento").val();
-                                    precio = (parseFloat($("#precio").val())).toFixed(2);
-                                    multi = ($("#cantidad").val() * parseFloat($("#precio").val())).toFixed(2);
-                                    descuento = ((multi * parseFloat($("#descuento").val()))/100).toFixed(2);
-                                    flotante = parseFloat(descuento);
-                                    resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(2);
-                                    total = (multi - resultado).toFixed(2);
+                                        desc = $("#descuento").val();
+                                        precio = (parseFloat($("#precio").val())).toFixed(3);
+                                        multi = (parseFloat(suma) * parseFloat($("#precio").val())).toFixed(3);
+                                        descuento = ((multi * parseFloat(desc)) / 100);
+                                        flotante = parseFloat(descuento);
+                                        resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                                        total = (multi - resultado).toFixed(3);
                                     } else {
                                         desc = 0;
-                                        precio = (parseFloat($("#precio").val())).toFixed(2);
-                                        total = ($("#cantidad").val() * precio).toFixed(2);
+                                        precio = (parseFloat($("#precio").val())).toFixed(3);
+                                        multi = (parseFloat($("#cantidad").val()) * parseFloat($("#precio").val())).toFixed(3);
+                                        descuento = ((multi * parseFloat(desc)) / 100);
+                                        flotante = parseFloat(descuento);
+                                        resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                                        total = (parseFloat(suma) * precio).toFixed(3);
                                     }
 
                                     datarow = {
                                         cod_producto: $("#cod_producto").val(), 
                                         codigo: $("#codigo").val(), 
                                         detalle: $("#producto").val(), 
-                                        cantidad: $("#cantidad").val(), 
+                                        cantidad: suma, 
                                         precio_u: precio, 
                                         descuento: desc,
                                         cal_des: resultado, 
@@ -324,17 +330,21 @@ function comprobar2() {
                                     limpiar_campos();
                                 } else {
                                     if ($("#descuento").val() !== "") {
-                                    desc = $("#descuento").val();
-                                    precio = (parseFloat($("#precio").val())).toFixed(2);
-                                    multi = ($("#cantidad").val() * parseFloat($("#precio").val())).toFixed(2);
-                                    descuento = ((multi * parseFloat($("#descuento").val()))/100).toFixed(2);
-                                    flotante = parseFloat(descuento);
-                                    resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(2);
-                                    total = (multi - resultado).toFixed(2);
+                                        desc = $("#descuento").val();
+                                        precio = (parseFloat($("#precio").val())).toFixed(3);
+                                        multi = (parseFloat($("#cantidad").val()) * parseFloat($("#precio").val())).toFixed(3);
+                                        descuento = ((multi * parseFloat(desc)) / 100);
+                                        flotante = parseFloat(descuento);
+                                        resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                                        total = (multi - resultado).toFixed(3);
                                     } else {
                                         desc = 0;
-                                        precio = (parseFloat($("#precio").val())).toFixed(2);
-                                        total = ($("#cantidad").val() * precio).toFixed(2);
+                                        precio = (parseFloat($("#precio").val())).toFixed(3);
+                                        multi = (parseFloat($("#cantidad").val()) * parseFloat($("#precio").val())).toFixed(3);
+                                        descuento = ((multi * parseFloat(desc)) / 100);
+                                        flotante = parseFloat(descuento);
+                                        resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                                        total = (parseFloat($("#cantidad").val()) * precio).toFixed(3);
                                     }
 
                                     datarow = {
@@ -373,7 +383,7 @@ function comprobar2() {
 
                                             subtotal0 = parseFloat(subtotal0) + 0;
                                             subtotal12 = parseFloat(subtotal12) + parseFloat(sub1);
-                                            descu_total = parseFloat(descu_total) + dd['cal_des'];
+                                            descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
                                             iva12 = parseFloat(iva12) + parseFloat(iva1);
                                         
                                             subtotal0 = parseFloat(subtotal0).toFixed(3);
@@ -382,6 +392,7 @@ function comprobar2() {
                                             descu_total = parseFloat(descu_total).toFixed(3);
                                         } else {
                                             if(dd['incluye'] == "Si"){
+
                                                 subtotal = dd['total'];
                                                 sub2 = (subtotal / 1.12).toFixed(3);
                                                 iva2 = (sub2 * 0.12).toFixed(3);
@@ -389,8 +400,8 @@ function comprobar2() {
                                                 subtotal0 = parseFloat(subtotal0) + 0;
                                                 subtotal12 = parseFloat(subtotal12) + parseFloat(sub2);
                                                 iva12 = parseFloat(iva12) + parseFloat(iva2);
-                                                descu_total = parseFloat(descu_total) + dd['cal_des'];
-
+                                                descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
+                                             
                                                 subtotal0 = parseFloat(subtotal0).toFixed(3);
                                                 subtotal12 = parseFloat(subtotal12).toFixed(3);
                                                 iva12 = parseFloat(iva12).toFixed(3);
@@ -405,7 +416,7 @@ function comprobar2() {
                                             subtotal0 = parseFloat(subtotal0) + parseFloat(sub);
                                             subtotal12 = parseFloat(subtotal12) + 0;
                                             iva12 = parseFloat(iva12) + 0;
-                                            descu_total = parseFloat(descu_total) + dd['cal_des'];
+                                            descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
                                             
                                             subtotal0 = parseFloat(subtotal0).toFixed(3);
                                             subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -537,7 +548,6 @@ function agregar() {
     }
 }
 
-
 function guardar_serie() {
     var tam2 = jQuery("#list2").jqGrid("getRowData");
     if ($("#cod_producto").val() === "") {
@@ -602,7 +612,6 @@ if ($("#serie").val() === "") {
                         success: function(data) {
                             var val = data;
                             if (val == 1) {
-                                // $("#serie").val("");
                                 $("#serie").focus();
                                 alertify.error("Error... El número de factura ya existe");
                             }else{
@@ -666,8 +675,90 @@ if ($("#serie").val() === "") {
     }
 }
 
+function modificar_factura() {
+var tam = jQuery("#list").jqGrid("getRowData");
+
+    if ($("#id_factura_compra").val() === "") {
+        alertify.error("Selccione una factura");
+        $("#buscar_facturas_compras").dialog("open"); 
+    } else {
+        if ($("#serie").val() === "") {
+            $("#serie").focus();
+            alertify.error("Ingrese una serie");
+            } else {
+                if ($("#tipo_comprobante").val() === "") {
+                    $("#tipo_comprobante").focus();
+                    alertify.error("Seleccione el comprobante");
+                } else {
+                    if ($("#tipo_docu").val() === "") {
+                        $("#tipo_docu").focus();
+                        alertify.error("Seleccione tipo documento");
+                    } else {
+                        if ($("#id_proveedor").val() === "") {
+                            $("#ruc_ci").focus();
+                            alertify.error("Indique un Proveedor");
+                        } else {
+                            if ($("#autorizacion").val() === "") {
+                                $("#autorizacion").focus();
+                                alertify.error("Ingrese la autorización");
+                            }else{
+                                if (tam.length === 0) {
+                                    alertify.error("Error... Inrese productos a la factura");
+                                } else {
+                                    $("#btnModificar").attr("disabled", true);
+                                    var v1 = new Array();
+                                    var v2 = new Array();
+                                    var v3 = new Array();
+                                    var v4 = new Array();
+                                    var v5 = new Array();
+                                    var string_v1 = "";
+                                    var string_v2 = "";
+                                    var string_v3 = "";
+                                    var string_v4 = "";
+                                    var string_v5 = "";
+                                    var fil = jQuery("#list").jqGrid("getRowData");
+                                    for (var i = 0; i < fil.length; i++) {
+                                        var datos = fil[i];
+                                        v1[i] = datos['cod_producto'];
+                                        v2[i] = datos['cantidad'];
+                                        v3[i] = datos['precio_u'];
+                                        v4[i] = datos['descuento'];
+                                        v5[i] = datos['total'];
+                                    }
+                                    for (i = 0; i < fil.length; i++) {
+                                        string_v1 = string_v1 + "|" + v1[i];
+                                        string_v2 = string_v2 + "|" + v2[i];
+                                        string_v3 = string_v3 + "|" + v3[i];
+                                        string_v4 = string_v4 + "|" + v4[i];
+                                        string_v5 = string_v5 + "|" + v5[i];
+                                    }
+
+                                    var seriee = $("#serie").val();
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "modificar_factura_compra.php",
+                                        data: "id_factura_compra=" + $("#id_factura_compra").val() + "&id_proveedor=" + $("#id_proveedor").val() + "&comprobante=" + $("#comprobante").val() + "&fecha_actual=" + $("#fecha_actual").val() + "&hora_actual=" + $("#hora_actual").val() + "&fecha_registro=" + $("#fecha_registro").val() + "&fecha_emision=" + $("#fecha_emision").val() + "&fecha_caducidad=" + $("#fecha_caducidad").val() + "&tipo_comprobante=" + $("#tipo_comprobante").val() + "&serie=" + seriee + "&autorizacion=" + $("#autorizacion").val() + "&cancelacion=" + $("#cancelacion").val() + "&formas=" + $("#formas").val() + "&tarifa0=" + $("#total_p").val() + "&tarifa12=" + $("#total_p2").val() + "&iva=" + $("#iva").val() + "&desc=" + $("#desc").val() + "&tot=" + $("#tot").val() + "&campo1=" + string_v1 + "&campo2=" + string_v2 + "&campo3=" + string_v3 + "&campo4=" + string_v4 + "&campo5=" + string_v5,
+                                        success: function(data) {
+                                           var  val = data;
+                                            if (val != 0) {
+                                                alertify.alert("Factura Modificada correctamente", function(){
+                                                window.open("../../reportes/factura_compra.php?hoja=A4&id="+ val,'_blank');    
+                                                location.reload();
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }    
+                }
+            }
+        }    
+}
+
 function flecha_atras(){
-$.ajax({
+    $.ajax({
         type: "POST",
         url: "../../procesos/flechas.php",
         data: "comprobante=" + $("#comprobante").val() + "&tabla=" + "factura_compra" + "&id_tabla=" + "id_factura_compra" + "&tipo=" + 1,
@@ -676,26 +767,13 @@ $.ajax({
             if(val != ""){
                 $("#comprobante").val(val);
                 var valor = $("#comprobante").val();
-                 ///////////////////llamar factura flechas primera parte/////
+                 // llamar factura flechas primera parte
                 $("#btnGuardar").attr("disabled", true);
-                $("#btnModificar").attr("disabled", true);
-                $("#btncargar").attr("disabled", true);
 
                 $("#ruc_ci").attr("disabled", "disabled");
                 $("#serie").attr("disabled", "disabled");
-                $("#autorizacion").attr("disabled", "disabled");
-
-                $("#codigo_barras").attr("disabled", "disabled");
-                $("#codigo").attr("disabled", "disabled");
-                $("#producto").attr("disabled", "disabled");
-                $("#cantidad").attr("disabled", "disabled");
-                $("#precio").attr("disabled", "disabled");
-                $("#descuento").attr("disabled", "disabled");
 
                 $("#formas").val("Contado");
-                $("#adelanto").val("");
-                $("#meses").val("");
-                $("#cuotas").val("");
                 $("#list").jqGrid("clearGridData", true);
                 $("#total_p").val("0.000");
                 $("#total_p2").val("0.000");
@@ -706,45 +784,64 @@ $.ajax({
                 $.getJSON('retornar_factura_compra.php?com=' + valor, function(data) {
                     var tama = data.length;
                     if (tama !== 0) {
-                        for (var i = 0; i < tama; i = i + 21) {
-                            $("#fecha_actual").val(data[i]);
-                            $("#hora_actual").val(data[i + 1 ]);
-                            $("#digitador").val(data[i + 2 ] + " " + data[i + 3 ] );
-                            $("#id_proveedor").val(data[i + 4]);
-                            $("#tipo_docu").val(data[i + 5]);
-                            $("#ruc_ci").val(data[i + 6]);
-                            $("#empresa").val(data[i + 7]);
-                            $("#tipo_comprobante").val(data[i + 8]);
-                            $("#fecha_registro").val(data[i + 9]);
-                            $("#fecha_emision").val(data[i + 10]);
-                            $("#fecha_caducidad").val(data[i + 11]);
-                            $("#serie").val(data[i + 12]);
-                            $("#autorizacion").val(data[i + 13]);
-                            $("#cancelacion").val(data[i + 14]);
-                            $("#formas").val(data[i + 15]);
-                            $("#total_p").val(data[i + 16]);
-                            $("#total_p2").val(data[i + 17]);
-                            $("#iva").val(data[i + 18]);
-                            $("#desc").val(data[i + 19]);
-                            $("#tot").val(data[i + 20]);
+                        for (var i = 0; i < tama; i = i + 22) {
+                            $("#id_factura_compra").val(data[i]);
+                            $("#fecha_actual").val(data[i + 1]);
+                            $("#hora_actual").val(data[i + 2]);
+                            $("#digitador").val(data[i + 3] + " " + data[i + 4] );
+                            $("#id_proveedor").val(data[i + 5]);
+                            $("#tipo_docu").val(data[i + 6]);
+                            $("#ruc_ci").val(data[i + 7]);
+                            $("#empresa").val(data[i + 8]);
+                            $("#tipo_comprobante").val(data[i + 9]);
+                            $("#fecha_registro").val(data[i + 10]);
+                            $("#fecha_emision").val(data[i + 11]);
+                            $("#fecha_caducidad").val(data[i + 12]);
+                            $("#serie").val(data[i + 13]);
+                            $("#autorizacion").val(data[i + 14]);
+                            $("#cancelacion").val(data[i + 15]);
+                            $("#formas").val(data[i + 16]);
+                            $("#total_p").val(data[i + 17]);
+                            $("#total_p2").val(data[i + 18]);
+                            $("#iva").val(data[i + 19]);
+                            $("#desc").val(data[i + 20]);
+                            $("#tot").val(data[i + 21]);
                         }
                     }
                 });
                 
                 $.getJSON('retornar_factura_compra2.php?com=' + valor, function(data) {
                     var tama = data.length;
+                    var descuento = 0;
+                    var total = 0;
+                    var su = 0;
+                    var precio = 0;
+                    var multi = 0;
+                    var flotante = 0;
+                    var resultado = 0;
+
                     if (tama !== 0) {
-                        for (var i = 0; i < tama; i = i + 8) {
+                        for (var i = 0; i < tama; i = i + 9) {
+                            desc = data[i + 5];
+                            precio = (parseFloat(data[i + 4])).toFixed(3);
+                            multi = (parseFloat(data[i + 3]) * parseFloat(data[i + 4])).toFixed(3);
+                            descuento = ((multi * parseFloat(desc)) / 100).toFixed(3);
+                            flotante = parseFloat(descuento);
+                            resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                            total = (multi - resultado).toFixed(3);
+
                             var datarow = {
                                 cod_producto: data[i], 
                                 codigo: data[i + 1], 
                                 detalle: data[i + 2], 
                                 cantidad: data[i + 3], 
-                                precio_u: data[i + 4], 
-                                descuento: data[i + 5], 
+                                precio_u: precio, 
+                                descuento: desc, 
+                                cal_des: resultado,  
                                 total: data[i + 6], 
-                                iva: data[i + 7]
-                                };
+                                iva: data[i + 7],
+                                incluye: data[i + 8]
+                            };
                             var su = jQuery("#list").jqGrid('addRowData', data[i], datarow);
                         }
                     }
@@ -766,21 +863,11 @@ $.ajax({
             if(val != ""){
             $("#comprobante").val(val);
             var valor = $("#comprobante").val();
-            ///////////////////llamar factura flechas primera parte/////
+            // llamar factura flechas primera parte/////
             $("#btnGuardar").attr("disabled", true);
-            $("#btnModificar").attr("disabled", true);
-            $("#btncargar").attr("disabled", true);
 
             $("#ruc_ci").attr("disabled", "disabled");
             $("#serie").attr("disabled", "disabled");
-            $("#autorizacion").attr("disabled", "disabled");
-
-            $("#codigo_barras").attr("disabled", "disabled");
-            $("#codigo").attr("disabled", "disabled");
-            $("#producto").attr("disabled", "disabled");
-            $("#cantidad").attr("disabled", "disabled");
-            $("#precio").attr("disabled", "disabled");
-            $("#descuento").attr("disabled", "disabled");
 
             $("#formas").val("Contado");
             $("#adelanto").val("");
@@ -792,50 +879,71 @@ $.ajax({
             $("#iva").val("0.000");
             $("#desc").val("0.000");
             $("#tot").val("0.000");
-            ///////////////////////////////////////////////////   
+            // fin
     
             $.getJSON('retornar_factura_compra.php?com=' + valor, function(data) {
                 var tama = data.length;
                 if (tama !== 0) {
-                    for (var i = 0; i < tama; i = i + 21) {
-                        $("#fecha_actual").val(data[i]);
-                        $("#hora_actual").val(data[i + 1 ]);
-                        $("#digitador").val(data[i + 2 ] + " " + data[i + 3 ] );
-                        $("#id_proveedor").val(data[i + 4]);
-                        $("#tipo_docu").val(data[i + 5]);
-                        $("#ruc_ci").val(data[i + 6]);
-                        $("#empresa").val(data[i + 7]);
-                        $("#tipo_comprobante").val(data[i + 8]);
-                        $("#fecha_registro").val(data[i + 9]);
-                        $("#fecha_emision").val(data[i + 10]);
-                        $("#fecha_caducidad").val(data[i + 11]);
-                        $("#serie").val(data[i + 12]);
-                        $("#autorizacion").val(data[i + 13]);
-                        $("#cancelacion").val(data[i + 14]);
-                        $("#formas").val(data[i + 15]);
-                        $("#total_p").val(data[i + 16]);
-                        $("#total_p2").val(data[i + 17]);
-                        $("#iva").val(data[i + 18]);
-                        $("#desc").val(data[i + 19]);
-                        $("#tot").val(data[i + 20]);
+                    for (var i = 0; i < tama; i = i + 22) {
+                        $("#id_factura_compra").val(data[i]);
+                        $("#fecha_actual").val(data[i + 1]);
+                        $("#hora_actual").val(data[i + 2]);
+                        $("#digitador").val(data[i + 3] + " " + data[i + 4] );
+                        $("#id_proveedor").val(data[i + 5]);
+                        $("#tipo_docu").val(data[i + 6]);
+                        $("#ruc_ci").val(data[i + 7]);
+                        $("#empresa").val(data[i + 8]);
+                        $("#tipo_comprobante").val(data[i + 9]);
+                        $("#fecha_registro").val(data[i + 10]);
+                        $("#fecha_emision").val(data[i + 11]);
+                        $("#fecha_caducidad").val(data[i + 12]);
+                        $("#serie").val(data[i + 13]);
+                        $("#autorizacion").val(data[i + 14]);
+                        $("#cancelacion").val(data[i + 15]);
+                        $("#formas").val(data[i + 16]);
+                        $("#total_p").val(data[i + 17]);
+                        $("#total_p2").val(data[i + 18]);
+                        $("#iva").val(data[i + 19]);
+                        $("#desc").val(data[i + 20]);
+                        $("#tot").val(data[i + 21]);
                     }
                 }
             });
             
             $.getJSON('retornar_factura_compra2.php?com=' + valor, function(data) {
                 var tama = data.length;
+                var tama = data.length;
+                var descuento = 0;
+                var total = 0;
+                var su = 0;
+                var precio = 0;
+                var multi = 0;
+                var flotante = 0;
+                var resultado = 0;
+
                 if (tama !== 0) {
-                    for (var i = 0; i < tama; i = i + 8) {
+                    for (var i = 0; i < tama; i = i + 9) {
+                        desc = data[i + 5];
+                        precio = (parseFloat(data[i + 4])).toFixed(3);
+                        multi = (parseFloat(data[i + 3]) * parseFloat(data[i + 4])).toFixed(3);
+                        descuento = ((multi * parseFloat(desc)) / 100).toFixed(3);
+                        flotante = parseFloat(descuento);
+                        resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                        total = (multi - resultado).toFixed(3);
+
                         var datarow = {
                             cod_producto: data[i], 
                             codigo: data[i + 1], 
                             detalle: data[i + 2], 
                             cantidad: data[i + 3], 
-                            precio_u: data[i + 4], 
-                            descuento: data[i + 5], 
+                            precio_u: precio, 
+                            descuento: desc, 
+                            cal_des: resultado,  
                             total: data[i + 6], 
-                            iva: data[i + 7]
-                            };
+                            iva: data[i + 7],
+                            incluye: data[i + 8]
+                        };
+
                         var su = jQuery("#list").jqGrid('addRowData', data[i], datarow);
                     }
                 }
@@ -866,26 +974,30 @@ function limpiar_campo(){
 }
 
 function limpiar_campo2(){
-    if($("#codigo").val() === ""){
+    if($("#codigo").val() === "") {
         $("#cod_producto").val("");
         $("#codigo_barras").val("");
         $("#producto").val("");
         $("#cantidad").val("");
         $("#precio").val("");
         $("#descuento").val("");
-        $("#iva_producto option[value=" + 'Elija' + "]").attr("selected", true);
+        $("#iva_producto").val("");
+        $("#carga_series").val("");
+        $("#incluye").val("");
     }
 }
 
 function limpiar_campo3(){
-    if($("#producto").val() === ""){
+    if($("#producto").val() === "") {
         $("#cod_producto").val("");
         $("#codigo_barras").val("");
         $("#codigo").val("");
         $("#cantidad").val("");
         $("#precio").val("");
         $("#descuento").val("");
-        $("#iva_producto option[value=" + 'Elija' + "]").attr("selected", true);
+        $("#iva_producto").val("");
+        $("#carga_series").val("");
+        $("#incluye").val("");
     }
 }
 
@@ -899,35 +1011,73 @@ return patron.test(te);
 
 function punto(e){
  var key;
-if (window.event)
-{
+if (window.event) {
     key = e.keyCode;
-}
-else if (e.which)
-{
+} else if (e.which) {
     key = e.which;
 }
 
-if (key < 48 || key > 57)
-{
-    if (key === 46 || key === 8)
-    {
+if (key < 48 || key > 57) {
+    if (key === 46 || key === 8) {
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
 return true;   
 }
 
+var combo_1 = '';
+var combo_2 = '';
+
 function inicio() {
     $("[data-mask]").inputmask();
     alertify.set({ delay: 1000 });
     // jQuery().UItoTop({ easingType: 'easeOutQuart' });    
     show();
-    
+
+    /////////////cambiar idioma///////
+     $.datepicker.regional['es'] = {
+        closeText: 'Cerrar',
+        prevText: '<Ant',
+        nextText: 'Sig>',
+        currentText: 'Hoy',
+        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+        dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+    };
+    $.datepicker.setDefaults($.datepicker.regional['es']);
+
+    function combo() {
+        $.ajax({
+            type: "POST",
+            url: "buscar_producto.php",        
+            success: function(resp) {             
+                combo_1 = JSON.parse(resp);          
+            }
+        });    
+        return combo_1;
+    }
+
+    function combo1() {
+        $.ajax({
+            type: "POST",
+            url: "buscar_producto2",        
+            success: function(resp) {             
+                combo_2 = JSON.parse(resp);          
+            }
+        });    
+        return combo_2;
+    }
+
     $("#btncargar").click(function(e) {
         e.preventDefault();
     });
@@ -949,24 +1099,22 @@ function inicio() {
     $("#btnCancelar").click(function(e) {
         e.preventDefault();
     });
-   
     $("#btnNuevo").click(function(e) {
         e.preventDefault();
     });
-    // $("#btnImprimir").attr("disabled", true);
-    $("#btnImprimir").click(function (){
+    $("#btnImprimir").click(function () {
         $.ajax({
-        type: "POST",
-        url: "../../procesos/validacion.php",
-        data: "comprobante=" + $("#comprobante").val() + "&tabla=" + "factura_compra" + "&id_tabla=" + "id_factura_compra" + "&tipo=" + 1,
-        success: function(data) {
-            var val = data;
-            if(val != "") {
-                window.open("../../reportes/factura_compra.php?hoja=A4&id="+$("#comprobante").val(),'_blank');  
-            } else {
-              alertify.alert("Factura no creada!!");
-            }   
-        }
+            type: "POST",
+            url: "../../procesos/validacion.php",
+            data: "comprobante=" + $("#comprobante").val() + "&tabla=" + "factura_compra" + "&id_tabla=" + "id_factura_compra" + "&tipo=" + 1,
+            success: function(data) {
+                var val = data;
+                if(val != "") {
+                    window.open("../../reportes/factura_compra.php?hoja=A4&id="+$("#comprobante").val(),'_blank');  
+                } else {
+                  alertify.alert("Factura no creada!!");
+                }   
+            }
         });
     });
 
@@ -975,6 +1123,7 @@ function inicio() {
     $("#btnGuardarSeries").on("click", guardar_serie);
     $("#btnCancelarSeries").on("click", cancelar);
     $("#btnGuardar").on("click", guardar_factura);
+    $("#btnModificar").on("click", modificar_factura);
     $("#btnNuevo").on("click", limpiar_factura);
     $("#btnAtras").on("click", flecha_atras);
     $("#btnAdelante").on("click", flecha_siguiente);
@@ -989,8 +1138,7 @@ function inicio() {
     $("#cantidad").validCampoFranz("0123456789");
     $("#autorizacion").validCampoFranz("0123456789");
     $("#descuento").validCampoFranz("0123456789");
-    
-    //$("input[type=text]").on("keyup", enter);
+
     $("#ruc_ci").on("keyup", limpiar_campo);
     $("#codigo").on("keyup", limpiar_campo2);
     $("#producto").on("keyup", limpiar_campo3);
@@ -1111,7 +1259,6 @@ function inicio() {
         }
     });
 
-
     $('.ui-spinner-button').click(function() {
         $(this).siblings('input').change();
     });
@@ -1157,7 +1304,7 @@ function inicio() {
     ////////////////////////
 
     ////////////////buscar producto codigo barras///////////////
-    $("#codigo_barras").keyup(function(e) {
+    $("#codigo_barras").change(function(e) {
     var codigo = $("#codigo_barras").val();
     $.getJSON('search.php?codigo_barras=' + codigo, function(data) {
             var tama = data.length;
@@ -1172,7 +1319,7 @@ function inicio() {
                     $("#incluye").val(data[i + 6]);
                     $("#cantidad").focus();
                 }
-            }else{
+            } else {
                 $("#codigo").val("");
                 $("#producto").val("");
                 $("#precio").val("");
@@ -1180,6 +1327,8 @@ function inicio() {
                 $("#carga_series").val("");
                 $("#cod_producto").val("");
                 $("#incluye").val("");
+                alertify.error("Producto no ingresado");
+                $("#codigo_barras").val("");
             }
         });
     });
@@ -1332,12 +1481,13 @@ function inicio() {
                         subtotal0 = parseFloat($("#total_p").val()) + 0;
                         subtotal12 = parseFloat($("#total_p2").val()) - parseFloat(sub1);
                         iva12 = parseFloat($("#iva").val()) - parseFloat(iva1);
-                        descu_total = parseFloat($("#desc").val()) - ret.cal_des;
+                        descu_total = parseFloat($("#desc").val()) - parseFloat(ret.cal_des);
 
                         subtotal0 = parseFloat(subtotal0).toFixed(3);
                         subtotal12 = parseFloat(subtotal12).toFixed(3);
                         iva12 = parseFloat(iva12).toFixed(3);
                         descu_total = parseFloat(descu_total).toFixed(3);
+
                       } else {
                             if(ret.incluye == "Si") {
                               subtotal = ret.total;
@@ -1347,7 +1497,7 @@ function inicio() {
                               subtotal0 = parseFloat($("#total_p").val()) + 0;
                               subtotal12 = parseFloat($("#total_p2").val()) - parseFloat(sub2);
                               iva12 = parseFloat($("#iva").val()) - parseFloat(iva2);
-                              descu_total = parseFloat($("#desc").val()) - ret.cal_des;
+                              descu_total = parseFloat($("#desc").val()) - parseFloat(ret.cal_des);
 
                               subtotal0 = parseFloat(subtotal0).toFixed(3);
                               subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -1363,7 +1513,7 @@ function inicio() {
                             subtotal0 = parseFloat($("#total_p").val()) - parseFloat(sub);
                             subtotal12 = parseFloat($("#total_p2").val()) + 0;
                             iva12 = parseFloat($("#iva").val()) + 0;
-                            descu_total = parseFloat($("#desc").val()) - ret.cal_des;
+                            descu_total = parseFloat($("#desc").val()) - parseFloat(ret.cal_des);
                               
                             subtotal0 = parseFloat(subtotal0).toFixed(3);
                             subtotal12 = parseFloat(subtotal12).toFixed(3);
@@ -1432,11 +1582,12 @@ function inicio() {
                             $("#iva_producto").val("");
                         }
                     }
+
                     $("#total_p2").val(sub);
                     $("#iva").val(iva);
                     $("#desc").val(descu);
                     $("#tot").val(t_fc);
-               }else{
+               } else {
                     fil = jQuery("#list").jqGrid("getRowData");
                     subtotal = 0;
                     t_fc = 0;
@@ -1492,7 +1643,7 @@ function inicio() {
                     $("#iva").val(iva);
                     $("#desc").val(descu);
                     $("#tot").val(t_fc);
-               }else{
+                } else {
                     fil = jQuery("#list").jqGrid("getRowData");
                     subtotal = 0;
                     t_fc = 0;
@@ -1595,29 +1746,16 @@ function inicio() {
         jQuery('#list3').jqGrid('restoreRow', id);
         
         if (id) {
-           var ret = jQuery("#list3").jqGrid('getRowData', id);
-           var valor = ret.id_factura_compra;
+            var ret = jQuery("#list3").jqGrid('getRowData', id);
+            var valor = ret.id_factura_compra;
             /////////////agregregar factura compra////////
-           $("#comprobante").val(valor);
-           $("#btnGuardar").attr("disabled", true);
-            $("#btnModificar").attr("disabled", true);
-            $("#btncargar").attr("disabled", true);
+            $("#comprobante").val(valor);
+            $("#btnGuardar").attr("disabled", true);
 
             $("#ruc_ci").attr("disabled", "disabled");
-            $("#serie").attr("disabled", "disabled");
-            $("#autorizacion").attr("disabled", "disabled");
-
-            $("#codigo_barras").attr("disabled", "disabled");
-            $("#codigo").attr("disabled", "disabled");
-            $("#producto").attr("disabled", "disabled");
-            $("#cantidad").attr("disabled", "disabled");
-            $("#precio").attr("disabled", "disabled");
-            $("#descuento").attr("disabled", "disabled");
 
             $("#formas").val("Contado");
-            $("#adelanto").val("");
-            $("#meses").val("");
-            $("#cuotas").val("");
+
             $("#list").jqGrid("clearGridData", true);
             $("#total_p").val("0.00");
             $("#total_p2").val("0.00");
@@ -1625,44 +1763,75 @@ function inicio() {
             $("#desc").val("0.00");
             $("#tot").val("0.00");            
     
-           $.getJSON('retornar_factura_compra.php?com=' + valor, function(data) {
+            $.getJSON('retornar_factura_compra.php?com=' + valor, function(data) {
             var tama = data.length;
             if (tama !== 0) {
-                for (var i = 0; i < tama; i = i + 21) {
-                    $("#fecha_actual").val(data[i]);
-                    $("#hora_actual").val(data[i + 1 ]);
-                    $("#digitador").val(data[i + 2 ] + " " + data[i + 3 ] );
-                    $("#id_proveedor").val(data[i + 4]);
-                    $("#tipo_docu").val(data[i + 5]);
-                    $("#ruc_ci").val(data[i + 6]);
-                    $("#empresa").val(data[i + 7]);
-                    $("#tipo_comprobante").val(data[i + 8]);
-                    $("#fecha_registro").val(data[i + 9]);
-                    $("#fecha_emision").val(data[i + 10]);
-                    $("#fecha_caducidad").val(data[i + 11]);
-                    $("#serie").val(data[i + 12]);
-                    $("#autorizacion").val(data[i + 13]);
-                    $("#cancelacion").val(data[i + 14]);
-                    $("#formas").val(data[i + 15]);
-                    $("#total_p").val(data[i + 16]);
-                    $("#total_p2").val(data[i + 17]);
-                    $("#iva").val(data[i + 18]);
-                    $("#desc").val(data[i + 19]);
-                    $("#tot").val(data[i + 20]);
+                for (var i = 0; i < tama; i = i + 22) {
+                    $("#id_factura_compra").val(data[i]);
+                    $("#fecha_actual").val(data[i + 1]);
+                    $("#hora_actual").val(data[i + 2]);
+                    $("#digitador").val(data[i + 3] + " " + data[i + 4] );
+                    $("#id_proveedor").val(data[i + 5]);
+                    $("#tipo_docu").val(data[i + 6]);
+                    $("#ruc_ci").val(data[i + 7]);
+                    $("#empresa").val(data[i + 8]);
+                    $("#tipo_comprobante").val(data[i + 9]);
+                    $("#fecha_registro").val(data[i + 10]);
+                    $("#fecha_emision").val(data[i + 11]);
+                    $("#fecha_caducidad").val(data[i + 12]);
+                    $("#serie").val(data[i + 13]);
+                    $("#autorizacion").val(data[i + 14]);
+                    $("#cancelacion").val(data[i + 15]);
+                    $("#formas").val(data[i + 16]);
+                    $("#total_p").val(data[i + 17]);
+                    $("#total_p2").val(data[i + 18]);
+                    $("#iva").val(data[i + 19]);
+                    $("#desc").val(data[i + 20]);
+                    $("#tot").val(data[i + 21]);
                 }
             }
         });
         
         $.getJSON('retornar_factura_compra2.php?com=' + valor, function(data) {
             var tama = data.length;
+            var tama = data.length;
+            var descuento = 0;
+            var total = 0;
+            var su = 0;
+            var precio = 0;
+            var multi = 0;
+            var flotante = 0;
+            var resultado = 0;
+
             if (tama !== 0) {
-            for (var i = 0; i < tama; i = i + 8) {
-                    var datarow = {cod_producto: data[i], codigo: data[i + 1], detalle: data[i + 2], cantidad: data[i + 3], precio_u: data[i + 4], descuento: data[i + 5], total: data[i + 6], iva: data[i + 7]};
+                for (var i = 0; i < tama; i = i + 9) {
+                    desc = data[i + 5];
+                    precio = (parseFloat(data[i + 4])).toFixed(3);
+                    multi = (parseFloat(data[i + 3]) * parseFloat(data[i + 4])).toFixed(3);
+                    descuento = ((multi * parseFloat(desc)) / 100).toFixed(3);
+                    flotante = parseFloat(descuento);
+                    resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                    total = (multi - resultado).toFixed(3);
+
+                    var datarow = {
+                        cod_producto: data[i], 
+                        codigo: data[i + 1], 
+                        detalle: data[i + 2], 
+                        cantidad: data[i + 3], 
+                        precio_u: precio, 
+                        descuento: desc, 
+                        cal_des: resultado,  
+                        total: data[i + 6], 
+                        iva: data[i + 7],
+                        incluye: data[i + 8]
+                    };
+
                     var su = jQuery("#list").jqGrid('addRowData', data[i], datarow);
                 }
             }
         });
-            $("#buscar_facturas_compras").dialog("close");
+        $("#buscar_facturas_compras").dialog("close");
+
         } else {
           alertify.alert("Seleccione una Factura");
         }
@@ -1705,24 +1874,10 @@ function inicio() {
             /////////////agregregar factura compra////////
             $("#comprobante").val(valor);
             $("#btnGuardar").attr("disabled", true);
-            $("#btnModificar").attr("disabled", true);
-            $("#btncargar").attr("disabled", true);
 
             $("#ruc_ci").attr("disabled", "disabled");
-            $("#serie").attr("disabled", "disabled");
-            $("#autorizacion").attr("disabled", "disabled");
-
-            $("#codigo_barras").attr("disabled", "disabled");
-            $("#codigo").attr("disabled", "disabled");
-            $("#producto").attr("disabled", "disabled");
-            $("#cantidad").attr("disabled", "disabled");
-            $("#precio").attr("disabled", "disabled");
-            $("#descuento").attr("disabled", "disabled");
 
             $("#formas").val("Contado");
-            $("#adelanto").val("");
-            $("#meses").val("");
-            $("#cuotas").val("");
             $("#list").jqGrid("clearGridData", true);
             $("#total_p").val("0.00");
             $("#total_p2").val("0.00");
@@ -1731,39 +1886,69 @@ function inicio() {
             $("#tot").val("0.00");
             ///////////////////////////////////////////////////   
     
-           $.getJSON('retornar_factura_compra.php?com=' + valor, function(data) {
+            $.getJSON('retornar_factura_compra.php?com=' + valor, function(data) {
             var tama = data.length;
             if (tama !== 0) {
-                for (var i = 0; i < tama; i = i + 21) {
-                    $("#fecha_actual").val(data[i]);
-                    $("#hora_actual").val(data[i + 1 ]);
-                    $("#digitador").val(data[i + 2 ] + " " + data[i + 3 ] );
-                    $("#id_proveedor").val(data[i + 4]);
-                    $("#tipo_docu").val(data[i + 5]);
-                    $("#ruc_ci").val(data[i + 6]);
-                    $("#empresa").val(data[i + 7]);
-                    $("#tipo_comprobante").val(data[i + 8]);
-                    $("#fecha_registro").val(data[i + 9]);
-                    $("#fecha_emision").val(data[i + 10]);
-                    $("#fecha_caducidad").val(data[i + 11]);
-                    $("#serie").val(data[i + 12]);
-                    $("#autorizacion").val(data[i + 13]);
-                    $("#cancelacion").val(data[i + 14]);
-                    $("#formas").val(data[i + 15]);
-                    $("#total_p").val(data[i + 16]);
-                    $("#total_p2").val(data[i + 17]);
-                    $("#iva").val(data[i + 18]);
-                    $("#desc").val(data[i + 19]);
-                    $("#tot").val(data[i + 20]);
+                for (var i = 0; i < tama; i = i + 22) {
+                    $("#id_factura_compra").val(data[i]);
+                    $("#fecha_actual").val(data[i + 1]);
+                    $("#hora_actual").val(data[i + 2]);
+                    $("#digitador").val(data[i + 3] + " " + data[i + 4] );
+                    $("#id_proveedor").val(data[i + 5]);
+                    $("#tipo_docu").val(data[i + 6]);
+                    $("#ruc_ci").val(data[i + 7]);
+                    $("#empresa").val(data[i + 8]);
+                    $("#tipo_comprobante").val(data[i + 9]);
+                    $("#fecha_registro").val(data[i + 10]);
+                    $("#fecha_emision").val(data[i + 11]);
+                    $("#fecha_caducidad").val(data[i + 12]);
+                    $("#serie").val(data[i + 13]);
+                    $("#autorizacion").val(data[i + 14]);
+                    $("#cancelacion").val(data[i + 15]);
+                    $("#formas").val(data[i + 16]);
+                    $("#total_p").val(data[i + 17]);
+                    $("#total_p2").val(data[i + 18]);
+                    $("#iva").val(data[i + 19]);
+                    $("#desc").val(data[i + 20]);
+                    $("#tot").val(data[i + 21]);
                 } 
             }
         });
         
         $.getJSON('retornar_factura_compra2.php?com=' + valor, function(data) {
             var tama = data.length;
+            var tama = data.length;
+            var descuento = 0;
+            var total = 0;
+            var su = 0;
+            var precio = 0;
+            var multi = 0;
+            var flotante = 0;
+            var resultado = 0;
+
             if (tama !== 0) {
-                for (var i = 0; i < tama; i = i + 8) {
-                    var datarow = {cod_producto: data[i], codigo: data[i + 1], detalle: data[i + 2], cantidad: data[i + 3], precio_u: data[i + 4], descuento: data[i + 5], total: data[i + 6], iva: data[i + 7]};
+                for (var i = 0; i < tama; i = i + 9) {
+                    desc = data[i + 5];
+                    precio = (parseFloat(data[i + 4])).toFixed(3);
+                    multi = (parseFloat(data[i + 3]) * parseFloat(data[i + 4])).toFixed(3);
+                    descuento = ((multi * parseFloat(desc)) / 100).toFixed(3);
+                    flotante = parseFloat(descuento);
+                    resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                    total = (multi - resultado).toFixed(3);
+
+                    var datarow = {
+                        cod_producto: data[i], 
+                        codigo: data[i + 1], 
+                        detalle: data[i + 2], 
+                        cantidad: data[i + 3], 
+                        precio_u: precio, 
+                        descuento: desc, 
+                        cal_des: resultado,  
+                        total: data[i + 6], 
+                        iva: data[i + 7],
+                        incluye: data[i + 8]
+                    };
+
                     var su = jQuery("#list").jqGrid('addRowData', data[i], datarow);
                 }
             }

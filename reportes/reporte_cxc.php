@@ -4,14 +4,16 @@
     include '../procesos/funciones.php';
     conectarse();    
     date_default_timezone_set('America/Guayaquil'); 
-    session_start()   ;
-    class PDF extends FPDF{   
+    session_start();
+
+    class PDF extends FPDF {   
         var $widths;
         var $aligns;       
-        function SetWidths($w){            
+        function SetWidths($w) {            
             $this->widths=$w;
-        }                       
-        function Header(){                         
+        }       
+
+        function Header() {                         
             $this->AddFont('Amble-Regular','','Amble-Regular.php');
             $this->SetFont('Amble-Regular','',10);        
             $fecha = date('Y-m-d', time());
@@ -62,7 +64,7 @@
     $repetido=0;    
     if ($_GET['tipo_pago'] == "EXTERNA") {        
         $sql=pg_query("select * from c_cobrarexternas,clientes,empresa where c_cobrarexternas.id_cliente=clientes.id_cliente and c_cobrarexternas.id_empresa=empresa.id_empresa and c_cobrarexternas.num_factura='$_GET[id]'");        
-        while($row=pg_fetch_row($sql)){
+        while($row=pg_fetch_row($sql)) {
             if($repetido==0){
                 $pdf->SetX(1); 
                 $pdf->SetFillColor(187, 179, 180);            
@@ -82,7 +84,7 @@
                 $repetido=1;                   
             }                                                                     
             $sql1=pg_query("select * from pagos_cobrar where num_factura='$_GET[id]' and id_cuentas_cobrar='$_GET[comprobante]'");
-            while($row1=pg_fetch_row($sql1)){
+            while($row1=pg_fetch_row($sql1)) {
                 $pdf->Cell(30, 6, utf8_decode($row1[0]),0,0, 'C',0);                                         
                 $pdf->Cell(30, 6, utf8_decode($row[8]),0,0, 'C',0);                                         
                 $pdf->Cell(50, 6, utf8_decode($row[7]),0,0, 'C',0);                                         
@@ -102,7 +104,7 @@
         $saldo_t=0;
         $id_f=0;
         $sql=pg_query("select * from factura_venta,clientes,empresa where factura_venta.id_cliente=clientes.id_cliente and factura_venta.id_empresa=empresa.id_empresa and num_factura='$_GET[id]';");        
-        while($row=pg_fetch_row($sql)){
+        while($row=pg_fetch_row($sql)) {
             $pdf->SetX(1); 
             $pdf->SetFillColor(187, 179, 180);            
             $pdf->Cell(50, 6, maxCaracter(utf8_decode('RUC/CI:'.$row[23]),35),1,0, 'L',1);                                     
@@ -125,14 +127,14 @@
         
         $fec="";
         $sql=pg_query("select fecha_actual from pagos_cobrar where comprobante='$_GET[comprobante]'");
-        while($row=pg_fetch_row($sql)){
+        while($row=pg_fetch_row($sql)) {
             $fec=$row[0];
         }
         
         $sql=pg_query("select * from pagos_venta where id_factura_venta='$id_f'");
         $meses=0;
         $id_pv=0;
-        while($row=pg_fetch_row($sql)){
+        while($row=pg_fetch_row($sql)) {
             $meses=$row[6];
             $id_pv=$row[0];
             $pdf->Cell(22, 6, utf8_decode($row[2]),0,0, 'C',0);                                         
@@ -147,7 +149,7 @@
         }
         $sql=pg_query("select * from detalles_pagos_internos where id_cuentas_cobrar='$_GET[comprobante]' order by id_detalles_pagos_interna asc;");
         $valor_mes=0;
-        while($row=pg_fetch_row($sql)){
+        while($row=pg_fetch_row($sql)) {
             $sql1=pg_query("select * from detalle_pagos_venta where id_pagos_venta='$id_pv' and fecha_pago='$row[2]';");
             while($row1=pg_fetch_row($sql1)){  
                 $pdf->Cell(22, 6, utf8_decode(''),0,0, 'C',0);                                         

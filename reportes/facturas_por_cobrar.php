@@ -39,7 +39,7 @@
             $this->SetFillColor(255,255,225);            
             $this->SetLineWidth(0.2);                                        
         }
-        function Footer(){            
+        function Footer() {            
             $this->SetY(-15);            
             $this->SetFont('Arial','I',8);            
             $this->Cell(0,10,'Pag. '.$this->PageNo().'/{nb}',0,0,'C');
@@ -62,13 +62,13 @@
     $repetido=0;    
     
     $consulta=pg_query('select * from clientes order by id_cliente asc');
-    while($row=pg_fetch_row($consulta)){
+    while($row=pg_fetch_row($consulta)) {
         $repetido=0;
         $sub=0;
         $contador=0;
         $sql1=pg_query("select * from factura_venta where estado='Activo' and id_cliente='$row[0]' and forma_pago='Credito' order by forma_pago asc;");
         if(pg_num_rows($sql1)){
-            while($row1=pg_fetch_row($sql1)){                   
+            while($row1=pg_fetch_row($sql1)) {                   
                 if($repetido==0){         
                     $pdf->SetX(1); 
                     $pdf->SetFillColor(187, 179, 180);            
@@ -102,7 +102,7 @@
 
         $sql3=pg_query("select * from c_cobrarexternas where id_cliente='$row[0]' and estado='Activo'");
         if(pg_num_rows($sql3)){
-            while($row3=pg_fetch_row($sql3)){
+            while($row3=pg_fetch_row($sql3)) {
                 if($repetido==0){     
                     $pdf->SetX(1); 
                     $pdf->SetFillColor(187, 179, 180);            
@@ -130,7 +130,7 @@
                 $sub=$sub+($row3[9]-$row3[10]);                
             }
         }
-        if($contador>0){
+        if($contador>0) {
             $pdf->SetX(1);                                             
             $pdf->Cell(207, 0, utf8_decode(""),1,1, 'R',0);
             $pdf->Cell(180, 6, utf8_decode("Totales"),0,0, 'R',0);
