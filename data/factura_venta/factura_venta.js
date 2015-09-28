@@ -228,17 +228,17 @@ function entrar2() {
 }
 
 function limpiar_campos () {
-$("#cod_producto").val("");
-$("#codigo_barras").val("");
-$("#codigo").val("");
-$("#producto").val("");
-$("#cantidad").val("");
-$("#p_venta").val("");
-$("#descuento").val("");
-$("#des").val("");
-$("#disponibles").val("");
-$("#incluye").val("");
-$("#carga_series").val("");
+    $("#cod_producto").val("");
+    $("#codigo_barras").val("");
+    $("#codigo").val("");
+    $("#producto").val("");
+    $("#cantidad").val("");
+    $("#p_venta").val("");
+    $("#descuento").val("");
+    $("#des").val("");
+    $("#disponibles").val("");
+    $("#incluye").val("");
+    $("#carga_series").val("");
 } 
 
 function entrar3() {
@@ -488,7 +488,7 @@ function entrar3() {
                             /////////////////////////////////////////////////////
                          }
                     } else {
-                        if($("#inventar").val() == "No"){
+                        if($("#inventar").val() == "No") {
 			
                                 var filas = jQuery("#list").jqGrid("getRowData");
                                 var descuento = 0;
@@ -1253,7 +1253,7 @@ function guardar_factura() {
                                 alertify.alert("Seleccione un tipo de precio");
                             } else {
                                 if (tam.length === 0) {
-                                    $("#codigo").focus();
+                                    $("#codigo_barras").focus();
                                     alertify.error("Error... Ingrese productos a la factura");
                                 } else {
                                     if ($("#formas").val() === "Credito" && $("#meses").val() === "") {
@@ -1317,6 +1317,131 @@ function guardar_factura() {
                                                                 var myWindow = window.open("../../reportes/nota_venta.php?hoja=A4&id="+val,'_blank');
                                                                 // myWindow.focus();
                                                                 // myWindow.print();          
+                                                                location.reload();
+                                                            });
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        } 
+                    } 
+                }
+            }
+        });
+    }
+}
+
+function guardar_imprimir_factura() {
+    var tam = jQuery("#list").jqGrid("getRowData");
+
+    if ($("#num_factura").val() === "") {
+        $("#num_factura").focus();
+        alertify.error("Ingrese número de la factura");
+    } else {
+        var num_factu = ("001" + "-" + "001" + "-" + $("#num_factura").val());
+        $.ajax({
+            type: "POST",
+            url: "comparar_num_venta.php",
+            data: "num_fac=" + num_factu,
+            success: function(data) {
+                var val = data;
+                if (val != 0) {
+                    $("#num_factura").val("");
+                    $("#num_factura").focus();
+                    alertify.error("Error... La factura ya existe, favor verificar el número que corresponda");
+                    var res1 = parseInt(val.substr(8, 16));
+                    res1 = res1 + 1;
+                    
+                    $("#num_factura").val(res1);
+                    var a1 = autocompletar(res1);
+                    var validado = a1 + "" + res1;
+                    $("#num_factura").val(validado);
+                } else {
+                    if ($("#ruc_ci").val() === "") {
+                        var a = autocompletar($("#num_factura").val());
+                        $("#num_factura").val(a + "" + $("#num_factura").val());
+                        $("#ruc_ci").focus();
+                        alertify.error("Indique un cliente");
+                    } else {
+                        if ($("#nombre_cliente").val() === "") {
+                            $("#nombre_cliente").focus();
+                            alertify.error("Nombres del cliente");
+                        } else {
+                            if ($("#tipo_precio").val() === "") {
+                                $("#tipo_precio").focus();
+                                alertify.alert("Seleccione un tipo de precio");
+                            } else {
+                                if (tam.length === 0) {
+                                    $("#codigo_barras").focus();
+                                    alertify.error("Error... Ingrese productos a la factura");
+                                } else {
+                                    if ($("#formas").val() === "Credito" && $("#meses").val() === "") {
+                                        $("#meses").focus();
+                                        alertify.error("Meses a diferir");
+                                    } else {
+                                        $("#btnGuardar").attr("disabled", true);
+                                        var v1 = new Array();
+                                        var v2 = new Array();
+                                        var v3 = new Array();
+                                        var v4 = new Array();
+                                        var v5 = new Array();
+                                        var v6 = new Array();
+
+                                        var string_v1 = "";
+                                        var string_v2 = "";
+                                        var string_v3 = "";
+                                        var string_v4 = "";
+                                        var string_v5 = "";
+                                        var string_v6 = "";
+
+                                        var fil = jQuery("#list").jqGrid("getRowData");
+                                        for (var i = 0; i < fil.length; i++) {
+                                            var datos = fil[i];
+                                            v1[i] = datos['cod_producto'];
+                                            v2[i] = datos['cantidad'];
+                                            v3[i] = datos['precio_u'];
+                                            v4[i] = datos['descuento'];
+                                            v5[i] = datos['total'];
+                                            v6[i] = datos['pendiente'];
+                                        }
+                                        
+                                        for (i = 0; i < fil.length; i++) {
+                                            string_v1 = string_v1 + "|" + v1[i];
+                                            string_v2 = string_v2 + "|" + v2[i];
+                                            string_v3 = string_v3 + "|" + v3[i];
+                                            string_v4 = string_v4 + "|" + v4[i];
+                                            string_v5 = string_v5 + "|" + v5[i];
+                                            string_v6 = string_v6 + "|" + v6[i];
+                                        }
+                                        
+                                        var a = autocompletar($("#num_factura").val());
+                                        var seriee = ("001" + "-" + "001" + "-" + a + "" + $("#num_factura").val());
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "guardar_factura_venta.php",
+                                            data: "id_cliente=" + $("#id_cliente").val() + "&comprobante=" + $("#comprobante").val() + "&num_factura=" + seriee + "&fecha_actual=" + $("#fecha_actual").val() + "&hora_actual=" + $("#hora_actual").val() + "&proforma=" + $("#proforma").val() + "&cancelacion=" + $("#cancelacion").val() + "&tipo_precio=" + $("#tipo_precio").val() + "&formas=" + $("#formas").val() + "&adelanto=" + $("#adelanto").val() + "&meses=" + $("#meses").val() + "&autorizacion=" + $("#autorizacion").val()+ "&fecha_auto=" + $("#fecha_auto").val()+ "&fecha_caducidad=" + $("#fecha_caducidad").val() + "&tarifa0=" + $("#total_p").val() + "&tarifa12=" + $("#total_p2").val() + "&iva=" + $("#iva").val() + "&desc=" + $("#desc").val() + "&tot=" + $("#tot").val() + "&ruc_ci=" + $("#ruc_ci").val() + "&nombre_cliente=" + $("#nombre_cliente").val() + "&direccion_cliente=" + $("#direccion_cliente").val() + "&telefono_cliente=" + $("#telefono_cliente").val() + "&correo=" + $("#correo").val() + "&campo1=" + string_v1 + "&campo2=" + string_v2 + "&campo3=" + string_v3 + "&campo4=" + string_v4 + "&campo5=" + string_v5+ "&campo6=" + string_v6+ "&tipo_venta=" + $("#tipo_venta").val(),
+                                            success: function(data) {
+                                                var val = data;
+                                                if($("#tipo_venta").val() == "FACTURA"){
+                                                   if (val != 0) {
+                                                        alertify.alert("Factura Guardada correctamente", function() {
+                                                            var myWindow = window.open("../../reportes/factura_venta.php?hoja=A4&id="+val,'_blank');
+                                                            myWindow.focus();
+                                                            myWindow.print();                                                                      
+                                                            location.reload();
+                                                        });
+                                                    }
+                                                }else{
+                                                    if($("#tipo_venta").val() == "NOTA"){
+                                                        if (val != 0) {
+                                                            alertify.alert("Nota Venta Guardada correctamente", function() {
+                                                                var myWindow = window.open("../../reportes/nota_venta.php?hoja=A4&id="+val,'_blank');
+                                                                myWindow.focus();
+                                                                myWindow.print();          
                                                                 location.reload();
                                                             });
                                                         }
@@ -2067,7 +2192,7 @@ function inicio() {
     $("#buscar_notas_venta").dialog(dialogo6);
     $("#tipo_busqueda").dialog(dialogo7);
 
-    $("#btnImprimir").click(function (){  
+    $("#btnImprimir").click(function () {  
         $.ajax({
             type: "POST",
             url: "../../procesos/validacion.php",
@@ -2087,7 +2212,7 @@ function inicio() {
                          }
                     }
                 } else {
-                    alertify.alert("Factura no creada!!");
+                     guardar_imprimir_factura();
                 }   
             }
         });
