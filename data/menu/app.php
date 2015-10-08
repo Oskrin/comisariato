@@ -155,13 +155,13 @@ print'
                   </ul>
                 </li>
 
-                <!--<li>
+                <li>
                   <a href=""><i class="fa fa-circle-o"></i>Transferencias<i class="fa fa-angle-left pull-right"></i></a>
                   <ul class="treeview-menu">
                     <li><a href="../ingresos"><i class="fa fa-circle-o"></i>Ingresos</a></li>
                     <li><a href="../egresos"><i class="fa fa-circle-o"></i>Egresos</a></li>
                   </ul>
-                </li>-->
+                </li>
 
                 <li><a href="../registro_gastos" target="_blank"><i class="fa fa-circle-o"></i>Registro Gastos</a></li>
                 <li><a href="../gastos" target="_blank"><i class="fa fa-circle-o"></i>Gastos Internos</a></li>

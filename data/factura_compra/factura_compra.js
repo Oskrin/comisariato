@@ -247,6 +247,7 @@ function comprobar2() {
                             var flotante = 0;
                             var resultado = 0;  
                             var repe = 0;
+                            var suma = 0;
 
                             if (filas.length === 0) {
                                 if ($("#descuento").val() !== "") {
@@ -286,14 +287,14 @@ function comprobar2() {
                                 for (var i = 0; i < filas.length; i++) {
                                     var id = filas[i];
 
-                                    if (id['cod_producto'] === $("#cod_producto").val()) {
+                                    if (id['cod_producto'] == $("#cod_producto").val()) {
                                         repe = 1;
                                         var can = id['cantidad'];
                                     }
                                 }
 
                                 if (repe == 1) {
-                                    var suma = parseInt(can) + parseInt($("#cantidad").val());
+                                       suma = parseInt(can) + parseInt($("#cantidad").val());
 
                                     if ($("#descuento").val() !== "") {
                                         desc = $("#descuento").val();
@@ -912,7 +913,6 @@ $.ajax({
             
             $.getJSON('retornar_factura_compra2.php?com=' + valor, function(data) {
                 var tama = data.length;
-                var tama = data.length;
                 var descuento = 0;
                 var total = 0;
                 var su = 0;
@@ -1033,7 +1033,6 @@ var combo_2 = '';
 function inicio() {
     $("[data-mask]").inputmask();
     alertify.set({ delay: 1000 });
-    // jQuery().UItoTop({ easingType: 'easeOutQuart' });    
     show();
 
     /////////////cambiar idioma///////
@@ -1189,7 +1188,7 @@ function inicio() {
                 .append("<a>" + item.value + "</a>")
                 .appendTo(ul);
             };
-            //////////////////////////////
+
             $("#ruc_ci").val("");
             $("#empresa").val("");
             $("#id_proveedor").val("");
@@ -1220,7 +1219,7 @@ function inicio() {
                     .append("<a>" + item.value + "</a>")
                     .appendTo(ul);
                 };
-                //////////////////////////////
+     
                 $("#ruc_ci").val("");
                 $("#empresa").val("");
                 $("#id_proveedor").val("");
@@ -1250,7 +1249,7 @@ function inicio() {
                         .append("<a>" + item.value + "</a>")
                         .appendTo(ul);
                     };
-                    //////////////////////////////
+                 
                     $("#ruc_ci").val("");
                     $("#empresa").val("");
                     $("#id_proveedor").val("");
@@ -1263,7 +1262,7 @@ function inicio() {
         $(this).siblings('input').change();
     });
 
-    //////////////////calcular meses/////////
+    // calcular meses
     $("#meses").change(function() {
         $("#meses").val("");
         if ($("#formas").val() === "Contado") {
@@ -1277,8 +1276,9 @@ function inicio() {
             }
         }
     });
+    // fin
 
-    /////////series//////////////
+    // series
     $("#formas").change(function() {
         var tam2 = jQuery("#list").jqGrid("getRowData");
         if ($("#formas").val() === "Contado") {
@@ -1301,9 +1301,9 @@ function inicio() {
             }
         }
     });
-    ////////////////////////
+    // fin
 
-    ////////////////buscar producto codigo barras///////////////
+    // buscar producto codigo barras 
     $("#codigo_barras").change(function(e) {
     var codigo = $("#codigo_barras").val();
     $.getJSON('search.php?codigo_barras=' + codigo, function(data) {
@@ -1332,9 +1332,9 @@ function inicio() {
             }
         });
     });
-    //////////////////////////////////////////////
+    // fin
 
-   ////////////////////buscar producto codigo/////
+   // buscar producto codigo
     $("#codigo").autocomplete({
         source: "buscar_producto.php",
         minLength: 1,
@@ -1366,9 +1366,9 @@ function inicio() {
         .append("<a>" + item.value + "</a>")
         .appendTo(ul);
     };
-    ///////////////////////////////////////////
+    // fin
 
-    /////////////////buscar producto nombre/////////////
+    // buscar producto nombre
     $("#producto").autocomplete({
         source: "buscar_producto2.php",
         minLength: 1,
@@ -1400,7 +1400,7 @@ function inicio() {
         .append("<a>" + item.value + "</a>")
         .appendTo(ul);
     };
-    //////////////////////////////////////////////
+    // fin
 
     $('#fecha_actual').datepicker({
         dateFormat: 'yy-mm-dd'
@@ -1418,7 +1418,7 @@ function inicio() {
         dateFormat: 'yy-mm-dd'
     }).datepicker('setDate', 'today');
 
-    /////////////////////datos tabla//////////////////////////
+    // datos tabla
     jQuery("#list").jqGrid({
         datatype: "local",
         colNames: ['', 'ID', 'Código', 'Detalle', 'Cantidad', 'Precio. U', 'Descuento','Calculado', 'Total', 'Iva','Incluye'],
@@ -1438,7 +1438,6 @@ function inicio() {
             {name: 'incluye', index: 'incluye', editable: false, hidden: true, frozen: true, editrules: {required: true}, align: 'center', width: 90}
         ],
         rowNum: 30,
-        // width: 810,
         height: 300,
         sortable: true,
         rowList: [10, 20, 30],
@@ -1672,7 +1671,7 @@ function inicio() {
         }
     });
 
-    ///////////////////////////tabla series////////////////////////////
+    // tabla series
     jQuery("#list2").jqGrid({
         datatype: "local",
         colNames: ['', 'cod_serie', 'Series'],
@@ -1717,9 +1716,9 @@ function inicio() {
                 search: true,
                 view: true
             });
-        ///////////////////////////////////////////////////////////////////////
+        // Fin
 
-        ////////////////////////////buscador facturas compra///////////////////   
+        // buscador facturas compra 
         jQuery("#list3").jqGrid({
         url: 'xmlBuscarFacturaCompra.php',
         datatype: 'xml',
@@ -1748,7 +1747,8 @@ function inicio() {
         if (id) {
             var ret = jQuery("#list3").jqGrid('getRowData', id);
             var valor = ret.id_factura_compra;
-            /////////////agregregar factura compra////////
+
+            // agregregar factura compra
             $("#comprobante").val(valor);
             $("#btnGuardar").attr("disabled", true);
 
@@ -1793,7 +1793,6 @@ function inicio() {
         });
         
         $.getJSON('retornar_factura_compra2.php?com=' + valor, function(data) {
-            var tama = data.length;
             var tama = data.length;
             var descuento = 0;
             var total = 0;
@@ -1916,7 +1915,6 @@ function inicio() {
         });
         
         $.getJSON('retornar_factura_compra2.php?com=' + valor, function(data) {
-            var tama = data.length;
             var tama = data.length;
             var descuento = 0;
             var total = 0;

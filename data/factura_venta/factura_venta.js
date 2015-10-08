@@ -2242,11 +2242,10 @@ function inicio() {
     $("#adelanto").on("keypress",punto);
     ////////////////////////////////
 
-    //////////////////buscar productos codigo//////////////// 
+    // buscar productos codigo
     $("#codigo_barras").change(function(e) {
         barras();
     });
-    //////////////////////////////////////////////////////////
 
     function barras() {
         var precio = $("#tipo_precio").val(); 
@@ -2324,6 +2323,7 @@ function inicio() {
             }
         }   
     } 
+    // fin
 
     //////////////////buscar productos codigo////////////////
     $("#codigo").keyup(function(e) {

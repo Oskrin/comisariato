@@ -91,26 +91,26 @@ function enter3(e) {
 }
 
 function comprobar() {
-    if ($("#id_cliente").val() === "") {
+    if ($("#id_cliente").val() == "") {
         $("#ruc_ci").focus();
         alertify.alert("Ingrese un cliente");
     } 
 }
 
 function entrar() {
-    if ($("#cod_producto").val() === "") {
+    if ($("#cod_producto").val() == "") {
         $("#codigo").focus();
         alertify.alert("Ingrese un producto");
     } else {
-        if ($("#codigo").val() === "") {
+        if ($("#codigo").val() == "") {
             $("#codigo").focus();
             alertify.alert("Ingrese un producto");
         } else {
-            if ($("#producto").val() === "") {
+            if ($("#producto").val() == "") {
                 $("#producto").focus();
                 alertify.alert("Ingrese un producto");
             } else {
-                if ($("#cantidad").val() === "") {
+                if ($("#cantidad").val() == "") {
                     $("#cantidad").focus();
                 } else {
                     $("#p_venta").focus();
@@ -121,22 +121,22 @@ function entrar() {
 }
 
 function entrar2() {
-    if ($("#cod_producto").val() === "") {
+    if ($("#cod_producto").val() == "") {
         $("#codigo").focus();
         alertify.alert("Ingrese un producto");
     } else {
-        if ($("#codigo").val() === "") {
+        if ($("#codigo").val() == "") {
             $("#codigo").focus();
             alertify.alert("Ingrese un producto");
         } else {
-            if ($("#producto").val() === "") {
+            if ($("#producto").val() == "") {
                 $("#producto").focus();
                 alertify.alert("Ingrese un producto");
             } else {
-                if ($("#cantidad").val() === "") {
+                if ($("#cantidad").val() == "") {
                     $("#cantidad").focus();
                 } else {
-                    if ($("#p_venta").val() === "") {
+                    if ($("#p_venta").val() == "") {
                         $("#p_venta").focus();
                         alertify.alert("Ingrese un precio");
                     }else{
@@ -155,22 +155,22 @@ function comprobar2() {
     var total_total = 0;
     var descu_total = 0;
 
-    if ($("#cod_producto").val() === "") {
+    if ($("#cod_producto").val() == "") {
         $("#codigo").focus();
         alertify.alert("Ingrese un producto");
     } else {
-        if ($("#codigo").val() === "") {
+        if ($("#codigo").val() == "") {
             $("#codigo").focus();
             alertify.alert("Ingrese un producto");
         } else {
-            if ($("#producto").val() === "") {
+            if ($("#producto").val() == "") {
                 $("#producto").focus();
                 alertify.alert("Ingrese un producto");
             } else {
-                if ($("#cantidad").val() === "") {
+                if ($("#cantidad").val() == "") {
                     $("#cantidad").focus();
                 } else {
-                    if ($("#p_venta").val() === "") {
+                    if ($("#p_venta").val() == "") {
                     $("#p_venta").focus();
                     alertify.alert("Ingrese un precio");
                 }else{
@@ -185,7 +185,7 @@ function comprobar2() {
                     var resultado = 0;
                     var repe = 0;
                   
-                    if (filas.length === 0) {
+                    if (filas.length == 0) {
                         if ($("#descuento").val() !== "") {
                             desc = $("#descuento").val();
                             precio = (parseFloat($("#p_venta").val())).toFixed(2);
@@ -514,8 +514,7 @@ function flecha_atras() {
                 $.getJSON('retornar_proforma_venta2.php?com=' + valor, function(data) {
                     var tama = data.length;
                     if (tama !== 0) {
-                        for (var i = 0; i < tama; i = i + 8)
-                        {
+                        for (var i = 0; i < tama; i = i + 8) {
                             var datarow = {
                                 cod_producto: data[i], 
                                 codigo: data[i + 1], 
@@ -668,23 +667,16 @@ return patron.test(te);
 
 function punto(e){
  var key;
-if (window.event)
-{
+if (window.event) {
     key = e.keyCode;
-}
-else if (e.which)
-{
+} else if (e.which) {
     key = e.which;
 }
 
-if (key < 48 || key > 57)
-{
-    if (key === 46 || key === 8)
-    {
+if (key < 48 || key > 57) {
+    if (key === 46 || key === 8)     {
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -849,7 +841,7 @@ function inicio() {
      var precio = $("#tipo_precio").val();
        if (precio === "MINORISTA") {
             $("#codigo").autocomplete({
-                source: "buscar_producto7.php?tipo_precio=" + precio,
+                source: "buscar_codigo.php?tipo_precio=" + precio,
                 minLength: 1,
                 focus: function(event, ui) {
                 $("#codigo_barras").val(ui.item.codigo_barras);
@@ -884,7 +876,7 @@ function inicio() {
         } else {
             if (precio === "MAYORISTA") {
                 $("#codigo").autocomplete({
-                    source: "buscar_producto7.php?tipo_precio=" + precio,
+                    source: "buscar_codigo.php?tipo_precio=" + precio,
                     minLength: 1,
                     focus: function(event, ui) {
                     $("#codigo_barras").val(ui.item.codigo_barras);    
@@ -926,7 +918,7 @@ function inicio() {
     var precio = $("#tipo_precio").val();
     if (precio === "MINORISTA") {
         $("#producto").autocomplete({
-            source: "buscar_producto8.php?tipo_precio=" + precio,
+            source: "buscar_producto.php?tipo_precio=" + precio,
             minLength: 1,
             focus: function(event, ui) {
             $("#codigo_barras").val(ui.item.codigo_barras);
@@ -961,7 +953,7 @@ function inicio() {
     } else {
         if (precio === "MAYORISTA") {
             $("#producto").autocomplete({
-                source: "buscar_producto8.php?tipo_precio=" + precio,
+                source: "buscar_producto.php?tipo_precio=" + precio,
                 minLength: 1,
                 focus: function(event, ui) {
                 $("#codigo_barras").val(ui.item.codigo_barras);
@@ -996,7 +988,7 @@ function inicio() {
         }
      }   
   }); 
-  ////////////////////////////////////
+  // fin
 
    ////////////accion limpiar/////////
     $("#tipo_precio").change(function() {
@@ -1014,10 +1006,10 @@ function inicio() {
        $("#carga_series").val("");   
        $("#incluye").val("");
     });
-    /////////////////////////////////
+    // fin
 
 
-    ////////////buscar clientes identificacion//////////
+    // buscar clientes identificacion
     $("#ruc_ci").autocomplete({
         source: "buscar_cliente2.php",
         minLength: 1,
@@ -1040,9 +1032,9 @@ function inicio() {
         .append("<a>" + item.value + "</a>")
         .appendTo(ul);
     };
-    //////////////////////////////
+    // fin
     
-    /////buscador clientes nombres///// 
+    // buscador clientes nombres
     $("#nombres_completos").autocomplete({
         source: "buscar_cliente_pagos.php",
         minLength: 1,
@@ -1065,14 +1057,14 @@ function inicio() {
         .append("<a>" + item.value + "</a>")
         .appendTo(ul);
     };
-    ////////////////////////////// 
+    // fin
     
     ///////////calendarios/////
     $('#fecha_actual').datepicker({
         dateFormat: 'yy-mm-dd'
     }).datepicker('setDate', 'today');
 
-    ///////////tabla local/////////////  
+    // tabla local
     var can;
        jQuery("#list").jqGrid({
         datatype: "local",

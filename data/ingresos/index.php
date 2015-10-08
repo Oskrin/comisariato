@@ -6,7 +6,7 @@ conectarse();
 error_reporting(0);
 
 $cont1 = 0;
-    $consulta = pg_query("select max(id_proforma) from proforma");
+    $consulta = pg_query("select max(id_ingresos) from ingresos");
     while ($row = pg_fetch_row($consulta)) {
         $cont1 = $row[0];
     }
@@ -16,24 +16,24 @@ $cont1 = 0;
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>PROFORMAS</title>
+    <title>INGRESOS</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />    
     <link href="../../font-awesome-4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />        
     <link href="../../plugins/icon/ionicons.min.css" rel="stylesheet" type="text/css" />    
     <link href="../../dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
     <link href="../../dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
-    <link href="../../plugins/iCheck/flat/blue.css" rel="stylesheet" type="text/css" />
+    
     <link href="../../plugins/morris/morris.css" rel="stylesheet" type="text/css" />
     <link href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
     <link href="../../plugins/datepicker/datepicker3.css" rel="stylesheet" type="text/css" />
-    <link href="../../plugins/timepicker/bootstrap-timepicker.min.css" rel="stylesheet"/>
     <link href="../../plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css" />
     <link href="../../plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" rel="stylesheet" type="text/css" />
     <link href="../../dist/css/alertify.core.css" rel="stylesheet" />
     <link href="../../dist/css/alertify.default.css" id="toggleCSS" rel="stylesheet" />
     <link href="../../dist/css/jquery-ui-1.10.4.custom.css" rel="stylesheet" type="text/css"/>            
     <link href="../../dist/css/ui.jqgrid.css" rel="stylesheet" type="text/css"/> 
+    <link href="../../plugins/iCheck/flat/blue.css" rel="stylesheet" type="text/css" /> 
     
   </head>
   <body class="skin-blue">
@@ -42,12 +42,10 @@ $cont1 = 0;
       <?php menu_lateral_1(); ?>
       <div class="content-wrapper">
         <section class="content-header">
-          <h1>
-            PROFORMA
-          </h1>
+          <h1>INGRESOS</h1>
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Procesos</a></li>
-            <li class="active">Proformas</li>
+            <li class="active">Ingresos</li>
           </ol>
         </section>
 
@@ -59,7 +57,7 @@ $cont1 = 0;
                 <div class="box-body">
                   <div class="rows">
                     <div class="col-mx-12">
-                      <form id="clientes_form" name="clientes_form" method="post">
+                      <form id="ingresos_form" name="ingresos_form" method="post">
                         <div class="row">
                             <div class="col-mx-12">
                               <div class="col-md-3">
@@ -103,49 +101,25 @@ $cont1 = 0;
                           <div class="col-md-12">   
                             <div class="col-md-6">
                               <div class="form-group">
-                                <label class="col-md-4 " >CI. Identidad/RUC: <font color="red">*</font></label>
+                                <label class="col-md-4">Ingrese un Origen:</label>
                                 <div class="form-group col-md-8 no-padding">                                
-                                  <input type="text" name="ruc_ci"  id="ruc_ci" required placeholder="Buscar....." class="form-control" />
-                                  <input type="hidden" name="id_cliente"  id="id_cliente" class="form-control" />
-                                  <input type="text" name="id_proforma"  id="id_proforma" class="form-control" />
+                                  <input type="text" name="origen"  id="origen" placeholder="Ingrese el origen" class="form-control" />
                                 </div> 
-                              </div> 
-
-                              <div class="form-group">
-                                <label class="col-md-4" >Saldo Disponible:</label>
-                                <div class="form-group col-md-8 no-padding">
-                                  <div class="input-group">
-                                    <div class="input-group-addon">
-                                      <i class="glyphicon glyphicon-usd"></i>
-                                    </div>
-                                    <input type="text" name="saldo" id="saldo" value="0.00" readonly class="form-control"/>
-                                  </div>                                
-                                </div> 
-                              </div> 
+                              </div>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-group">
-                                <label class="col-md-3" >Nombres:</label>
+                                <label class="col-md-3">Ingrese un Destino:</label>
                                 <div class="form-group col-md-9 no-padding">                                
-                                  <input type="text" name="nombres_completos"  id="nombres_completos" required placeholder="Buscar....." class="form-control" />
+                                  <input type="text" name="destino"  id="destino" placeholder="Ingrese el destino" class="form-control" />
                                 </div> 
-                              </div> 
-
-                              <div class="form-group">
-                                <label class="col-md-3" >Tipo de Precio:</label>
-                                <div class="form-group col-md-9 no-padding">                                
-                                  <select class="form-control" name="tipo_precio" id="tipo_precio">
-                                    <option value="MINORISTA" selected>MINORISTA</option>
-                                    <option value="MAYORISTA">MAYORISTA</option>     
-                                  </select>
-                                </div> 
-                              </div> 
+                              </div>
                             </div>
                           </div>  
                         </div>
                         <hr />
-                        <h3 class="box-title">Detalle Proforma</h3>
+                        <h3 class="box-title">Detalle Ingresos</h3>
                         <div class="row">
                          <div class="col-mx-12">
                             <div class="col-md-2">
@@ -155,7 +129,7 @@ $cont1 = 0;
                               </div>  
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                               <div class="form-group">
                                 <label>CÓDIGO</label>
                                 <input type="text" name="codigo"  id="codigo" placeholder="Buscar..." class="form-control" />
@@ -178,7 +152,14 @@ $cont1 = 0;
 
                             <div class="col-md-1">
                               <div class="form-group">
-                                <label>PRECIO</label>
+                                <label>P. COSTO</label>
+                                <input type="text" name="precio"  id="precio" readonly class="form-control" />
+                              </div> 
+                            </div>
+
+                            <div class="col-md-1">
+                              <div class="form-group">
+                                <label>P. VENTA</label>
                                 <input type="text" name="p_venta"  id="p_venta" readonly class="form-control" />
                               </div> 
                             </div>
@@ -186,24 +167,20 @@ $cont1 = 0;
                             <div class="col-md-1">
                               <div class="form-group">
                                 <label>DESC.</label>
-                                <input type="number" name="descuento"  id="descuento"  min="0" placeholder="%" class="form-control" />
-                                <input type="text" name="cod_producto"  id="cod_producto" readonly class="form-control" />
-                                <input type="text" name="disponibles"  id="disponibles" readonly class="form-control" />
-                                <input type="text" name="iva_producto"  id="iva_producto" readonly class="form-control" />
-                                <input type="text" name="incluye"  id="incluye" readonly class="form-control" />
+                                <input type="number" name="descuento" id="descuento" min="0" readonly placeholder="%" class="form-control" />
+                                <input type="hidden" name="iva_producto"  id="iva_producto" readonly class="form-control" />
+                                <input type="hidden" name="cod_producto"  id="cod_producto" readonly class="form-control" />
+                                <input type="hidden" name="incluye"  id="incluye" readonly class="form-control" />
                               </div>  
                             </div> 
                          </div>
                         </div>
 
-                        <!-- <div class="row"> -->
-                         <div class="col-mx-12">
-                            <div id="grid_container">
-                                <table id="list"></table>
-                                <!--<div id="pager"></div>-->   
-                            </div>
-                         </div>   
-                        <!-- </div> -->
+                        <div class="col-mx-12">
+                          <div id="grid_container">
+                            <table id="list"></table>
+                          </div>
+                        </div>   
 
                         <div class="row">
                          <div class="col-mx-12">
@@ -217,7 +194,6 @@ $cont1 = 0;
                             </div>
 
                             <div class="col-md-3"></div>
-                            <!-- <div class="col-md-2"></div> -->
                             <div class="col-md-3">
                               <div class="form-group">
                                 <label class="col-md-5" >Tarifa 0:</label>
@@ -226,7 +202,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="total_p" id="total_p" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="total_p" id="total_p" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
@@ -238,7 +214,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="total_p2" id="total_p2" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="total_p2" id="total_p2" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
@@ -250,7 +226,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="iva" id="iva" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="iva" id="iva" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
@@ -262,7 +238,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="desc" id="desc" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="desc" id="desc" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div> 
@@ -274,7 +250,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="tot" id="tot" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="tot" id="tot" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
@@ -297,9 +273,9 @@ $cont1 = 0;
                         <button class="btn bg-olive margin" id='btnAdelante'>Adelante <i class="fa fa-forward"></i></button>
                       </p> 
                     </div>
-                    <div id="buscar_proformas" title="BUSCAR PROFORMAS">
-                        <table id="list2"><tr><td></td></tr></table>
-                        <div id="pager2"></div>
+                    <div id="buscar_ingresos" title="BUSCAR INGRESOS">
+                      <table id="list2"><tr><td></td></tr></table>
+                      <div id="pager2"></div>
                     </div>  
                   </div>
                 </div>
@@ -320,7 +296,6 @@ $cont1 = 0;
     <script src="../../plugins/colorpicker/bootstrap-colorpicker.min.js" type="text/javascript"></script>
     <script src="../../plugins/timepicker/bootstrap-timepicker.min.js" type="text/javascript"></script>
     <script src="../../plugins/slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-    <script src="../../plugins/iCheck/icheck.min.js" type="text/javascript"></script>
     <script src='../../plugins/fastclick/fastclick.min.js'></script>
     <script src="../../dist/js/app.min.js" type="text/javascript"></script>
     <script src="../../dist/js/validCampoFranz.js" type="text/javascript" ></script>
@@ -328,7 +303,8 @@ $cont1 = 0;
     <script src="../../dist/js/jquery-ui-1.10.4.custom.min.js" type="text/javascript"></script>
     <script src="../../dist/js/jquery.jqGrid.src.js" type="text/javascript"></script>
     <script src="../../dist/js/grid.locale-es.js" type="text/javascript"></script>
-    <script src="proforma.js" type="text/javascript"></script>
+    <script src="../../plugins/iCheck/icheck.min.js" type="text/javascript"></script>
+    <script src="ingresos.js" type="text/javascript"></script>
     <link href="../../dist/css/style.css" rel="stylesheet" type="text/css"/>     
     <script src="../../dist/js/ventana_reporte.js" type="text/javascript"></script>
   </body>
