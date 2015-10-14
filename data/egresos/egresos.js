@@ -3,7 +3,7 @@ function evento(e) {
     e.preventDefault();
 }
 
-function openPDF(){
+function openPDF() {
 window.open('../../ayudas/ayuda.pdf');
 }
 
@@ -225,8 +225,7 @@ function comprobar2() {
                                         };
                                     su = jQuery("#list").jqGrid('addRowData', $("#cod_producto").val(), datarow);
                                     limpiar_campos();
-                                }
-                                else {
+                                } else {
                                     var repe = 0;
                                     for (var i = 0; i < filas.length; i++) {
                                         var id = filas[i];

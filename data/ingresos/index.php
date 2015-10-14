@@ -176,7 +176,7 @@ $cont1 = 0;
                          </div>
                         </div>
 
-                        <div class="col-mx-12">
+                        <div class="col-md-12">
                           <div id="grid_container">
                             <table id="list"></table>
                           </div>

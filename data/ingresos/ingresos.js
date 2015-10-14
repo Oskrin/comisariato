@@ -220,8 +220,7 @@ function comprobar2() {
                                     };
                                 su = jQuery("#list").jqGrid('addRowData', $("#cod_producto").val(), datarow);
                                 limpiar_campos();
-                            }
-                            else {
+                            } else {
                                 var repe = 0;
                                 for (var i = 0; i < filas.length; i++) {
                                     var id = filas[i];
@@ -271,8 +270,7 @@ function comprobar2() {
 
                                     su = jQuery("#list").jqGrid('setRowData', $("#cod_producto").val(), datarow);
                                     limpiar_campos();
-                                }
-                                else {
+                                } else {
                                     if ($("#descuento").val() !== "") {
                                         desc = $("#descuento").val();
                                         precio = (parseFloat($("#precio").val())).toFixed(3);
@@ -419,7 +417,7 @@ function guardar_ingreso() {
             v5[i] = datos['total'];
         }
 
-        for (i = 0; i < fil.length; i++) {
+        for (i = 0; i < fil.length; i ++) {
             string_v1 = string_v1 + "|" + v1[i];
             string_v2 = string_v2 + "|" + v2[i];
             string_v3 = string_v3 + "|" + v3[i];
@@ -441,7 +439,7 @@ function guardar_ingreso() {
     }
 }
 
-function flecha_atras(){
+function flecha_atras() {
    $.ajax({
         type: "POST",
         url: "../../procesos/flechas.php",
@@ -527,7 +525,7 @@ function flecha_atras(){
     });
 } 
 
-function flecha_siguiente(){
+function flecha_siguiente() {
    $.ajax({
         type: "POST",
         url: "../../procesos/flechas.php",
@@ -872,7 +870,7 @@ function inicio() {
             {name: 'incluye', index: 'incluye', editable: false, hidden: true, frozen: true, editrules: {required: true}, align: 'center', width: 90}
         ],
         rowNum: 30,
-        width: 885,
+        // width: 885,
         height: 300,
         sortable: true,
         rowList: [10, 20, 30],

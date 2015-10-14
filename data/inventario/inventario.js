@@ -28,7 +28,7 @@ function show() {
         dn = "PM";
         hours = hours - 12;
     }
-    if (hours === 0)
+    if (hours == 0)
         hours = 12;
     if (minutes <= 9)
         minutes = "0" + minutes;
@@ -39,7 +39,7 @@ function show() {
 }
 
 function enter(e) {
-    if (e.which === 13 || e.keyCode === 13) {
+    if (e.which == 13 || e.keyCode === 13) {
         entrar();
         return false;
     }
@@ -47,7 +47,7 @@ function enter(e) {
 }
 
 function enter2(e) {
-    if (e.which === 13 || e.keyCode === 13) {
+    if (e.which == 13 || e.keyCode === 13) {
         entrar2();
         return false;
     }
@@ -55,26 +55,24 @@ function enter2(e) {
 }
 
 function entrar() {
-    // reset();
-    if ($("#cod_producto").val() === "") {
-        $("#codigo").focus();
-        alertify.alert("Ingrese un producto");
+    if ($("#cod_producto").val() == "") {
+        $("#codigo_barras").focus();
+        alertify.error("Ingrese un producto");
     } else {
-        if ($("#codigo").val() === "") {
+        if ($("#codigo").val() == "") {
             $("#codigo").focus();
-            alertify.alert("Ingrese un producto");
+            alertify.error("Ingrese un producto");
         } else {
-            if ($("#producto").val() === "") {
+            if ($("#producto").val() == "") {
                 $("#producto").focus();
-                alertify.alert("Ingrese un producto");
+                alertify.error("Ingrese un producto");
             } else {
-                if ($("#cantidad").val() === "") {
+                if ($("#cantidad").val() == "") {
                     $("#cantidad").focus();
-//                    alertify.alert("Ingrese una cantidad");
                 } else {
-                    if ($("#cantidad").val() === "0") {
+                    if ($("#cantidad").val() == "0") {
                         $("#cantidad").focus();
-                        alertify.alert("Ingrese una cantidad valida");
+                        alertify.error("Ingrese una cantidad valida");
                     } else {
                         $("#precio").focus();
                     }
@@ -82,38 +80,49 @@ function entrar() {
             }
         }
     }
-    return false;
+}
+
+function limpiar_input() {
+    $("#cod_producto").val("");
+    $("#codigo_barras").val("");
+    $("#codigo").val("");
+    $("#producto").val("");
+    $("#cantidad").val("");
+    $("#precio").val("");
+    $("#stock").val("");
+    $("#p_venta").val("");
+    $("#existencia").val("");
+    $("#diferencia").val("");
 }
 
 function entrar2() {
-    if ($("#cod_producto").val() === "") {
-        $("#codigo").focus();
-        alertify.alert("Ingrese un producto");
+    if ($("#cod_producto").val() == "") {
+        $("#codigo_barras").focus();
+        alertify.error("Ingrese un producto");
     } else {
-        if ($("#codigo").val() === "") {
+        if ($("#codigo").val() == "") {
             $("#codigo").focus();
-            alertify.alert("Ingrese un producto");
+            alertify.error("Ingrese un producto");
         } else {
-            if ($("#producto").val() === "") {
+            if ($("#producto").val() == "") {
                 $("#producto").focus();
-                alertify.alert("Ingrese un producto");
+                alertify.error("Ingrese un producto");
             } else {
-                if ($("#cantidad").val() === "") {
+                if ($("#cantidad").val() == "") {
                     $("#cantidad").focus();
-//                    alertify.alert("Ingrese una cantidad");
                 } else {
-                    if ($("#cantidad").val() === "0") {
+                    if ($("#cantidad").val() == "0") {
                         $("#cantidad").focus();
-                        alertify.alert("Ingrese una cantidad valida");
+                        alertify.error("Ingrese una cantidad valida");
                     } else {
-                        if ($("#precio").val() === "") {
+                        if ($("#precio").val() == "") {
                             $("#precio").focus();
-                            alertify.alert("Ingrese un precio");
+                            alertify.error("Ingrese un precio");
                         } else {
                             var filas = jQuery("#list").jqGrid("getRowData");
                             var su = 0;
                             var dife = 0;
-                            if (filas.length === 0) {
+                            if (filas.length == 0) {
                                dife = (parseInt( $("#cantidad").val()) - Math.abs(parseInt( $("#stock").val())))
                                 var datarow = {
                                     cod_producto: $("#cod_producto").val(), 
@@ -126,28 +135,17 @@ function entrar2() {
                                     diferencia: dife
                                 };
                                 su = jQuery("#list").jqGrid('addRowData', $("#cod_producto").val(), datarow);
-                                ////////limpiar///////////
-                                $("#cod_producto").val("");
-                                $("#codigo_barras").val("");
-                                $("#codigo").val("");
-                                $("#producto").val("");
-                                $("#cantidad").val("");
-                                $("#precio").val("");
-                                $("#stock").val("");
-                                $("#p_venta").val("");
-                                $("#existencia").val("");
-                                $("#diferencia").val("");
-                            ///////////////////////////
-                            }
-                            else {
+                                limpiar_input();
+                            } else {
                                 var repe = 0;
                                 for (var i = 0; i < filas.length; i++) {
                                     var id = filas[i];
-                                    if (id['cod_producto'] === $("#cod_producto").val()) {
+
+                                    if (id['cod_producto'] == $("#cod_producto").val()) {
                                         repe = 1;
                                     }
                                 }
-                                if (repe === 1) {
+                                if (repe == 1) {
                                    dife = (parseInt( $("#cantidad").val()) - Math.abs(parseInt( $("#stock").val())))
                                     datarow = {
                                         cod_producto: $("#cod_producto").val(), 
@@ -160,20 +158,8 @@ function entrar2() {
                                         diferencia: dife
                                     };
                                     su = jQuery("#list").jqGrid('setRowData', $("#cod_producto").val(), datarow);
-                                    ////////limpiar///////////
-                                    $("#cod_producto").val("");
-                                    $("#codigo_barras").val("");
-                                    $("#codigo").val("");
-                                    $("#producto").val("");
-                                    $("#cantidad").val("");
-                                    $("#precio").val("");
-                                    $("#stock").val("");
-                                    $("#p_venta").val("");
-                                    $("#existencia").val("");
-                                    $("#diferencia").val("");
-                                ///////////////////////////
-                                }
-                                else {
+                                    limpiar_input();
+                                } else {
                                     dife = (parseInt( $("#cantidad").val()) - Math.abs(parseInt( $("#stock").val())))
                                     datarow = {
                                         cod_producto: $("#cod_producto").val(), 
@@ -186,24 +172,14 @@ function entrar2() {
                                         diferencia: dife
                                     };
                                     su = jQuery("#list").jqGrid('addRowData', $("#cod_producto").val(), datarow);
-                                    ////////limpiar///////////
-                                    $("#cod_producto").val("");
-                                    $("#codigo_barras").val("");
-                                    $("#codigo").val("");
-                                    $("#producto").val("");
-                                    $("#cantidad").val("");
-                                    $("#precio").val("");
-                                    $("#stock").val("");
-                                    $("#p_venta").val("");
-                                    $("#existencia").val("");
-                                    $("#diferencia").val("");
-                                ///////////////////////////
+                                    limpiar_input();
                                 }
                             }
                             
-                            ///////////////////calcular valores//////////////
+                            // calcular valores
                             var valor_cos = 0;
                             var valor_ven = 0;
+
                             var fil = jQuery("#list").jqGrid("getRowData");
                             for (var t = 0; t < fil.length; t++) {
                                 var dd = fil[t];
@@ -211,10 +187,10 @@ function entrar2() {
                                 var valor_costo = (valor_cos).toFixed(2);
                                 valor_ven = (valor_ven + parseFloat(dd['precio_venta']));
                                 var valor_venta = (valor_ven).toFixed(2);
-                                }
+                            }
+
                             $("#total_costo").val(valor_costo);
                             $("#total_venta").val(valor_venta);
-                            
                             $("#codigo_barras").focus();
                         }
                     }
@@ -227,7 +203,7 @@ function entrar2() {
 function guardar_inventario() {
     var tam = jQuery("#list").jqGrid("getRowData");
     
-    if (tam.length === 0) {
+    if (tam.length == 0) {
         $("#codigo_barras").focus();
         alertify.error("Error... Ingrese productos en el inventario");
     } else {
@@ -276,20 +252,20 @@ function guardar_inventario() {
     }
 }
 
-function flecha_atras(){
+function flecha_atras() {
     $.ajax({
        type: "POST",
        url: "../../procesos/flechas.php",
        data: "comprobante=" + $("#comprobante").val() + "&tabla=" + "inventario" + "&id_tabla=" + "id_inventario" + "&tipo=" + 1,
        success: function(data) {
            var val = data;
-           if(val != ""){
+           if(val != "") {
                 var valor_costo = 0;
                 var valor_venta = 0;
                 $("#comprobante").val(val);
                 var valor = $("#comprobante").val();
                 
-                ///////////////////llamar inventario primera parte/////
+                //llamar inventario primera parte/////
                 $("#btnGuardar").attr("disabled", true);
                 $("#codigo").attr("disabled", "disabled");
                 $("#codigo_barras").attr("disabled", "disabled");
@@ -300,7 +276,7 @@ function flecha_atras(){
                 $.getJSON('retornar_inventario.php?com=' + valor, function(data) {
                     var tama = data.length;
                     
-                    if (tama !== 0) {
+                    if (tama != 0) {
                         for (var i = 0; i < tama; i = i + 4) {
                             $("#fecha_actual").val(data[i]);
                             $("#hora_actual").val(data[i + 1 ]);
@@ -311,7 +287,7 @@ function flecha_atras(){
                 
                 $.getJSON('retornar_inventario2.php?com=' + valor, function(data) {
                     var tama = data.length;
-                    if (tama !== 0) {
+                    if (tama != 0) {
                         for (var i = 0; i < tama; i = i + 8) {
                             var datarow = {
                                 cod_producto: data[i], 
@@ -333,27 +309,27 @@ function flecha_atras(){
                         }
                     }
                 });
-           }else{
+           } else {
                alertify.alert("No hay mas registros posteriores!!");
            }
        }
    }); 
 } 
 
-function flecha_siguiente(){
+function flecha_siguiente() {
    $.ajax({
        type: "POST",
        url: "../../procesos/flechas.php",
        data: "comprobante=" + $("#comprobante").val() + "&tabla=" + "inventario" + "&id_tabla=" + "id_inventario" + "&tipo=" + 2,
        success: function(data) {
            var val = data;
-           if(val != ""){
+           if(val != "") {
                 var valor_costo = 0;
                 var valor_venta = 0;
                 $("#comprobante").val(val);
                 var valor = $("#comprobante").val();
                 
-                ///////////////////llamar inventario primera parte/////
+                // llamar inventario primera parte/////
                 $("#btnGuardar").attr("disabled", true);
                 $("#codigo").attr("disabled", "disabled");
                 $("#codigo_barras").attr("disabled", "disabled");
@@ -363,7 +339,7 @@ function flecha_siguiente(){
   
                 $.getJSON('retornar_inventario.php?com=' + valor, function(data) {
                     var tama = data.length;
-                    if (tama !== 0) {
+                    if (tama != 0) {
                         for (var i = 0; i < tama; i = i + 4) {
                             $("#fecha_actual").val(data[i]);
                             $("#hora_actual").val(data[i + 1 ]);
@@ -374,9 +350,8 @@ function flecha_siguiente(){
 
                 $.getJSON('retornar_inventario2.php?com=' + valor, function(data) {
                     var tama = data.length;
-                    if (tama !== 0) {
-                        for (var i = 0; i < tama; i = i + 8)
-                        {
+                    if (tama != 0) {
+                        for (var i = 0; i < tama; i = i + 8) {
                             var datarow = {
                                 cod_producto: data[i], 
                                 codigo: data[i + 1], 
@@ -397,7 +372,7 @@ function flecha_siguiente(){
                         }
                     }
                 });
-           }else{
+           } else {
                alertify.alert("No hay mas registros superiores!!");
            }
        }
@@ -408,8 +383,8 @@ function nuevo(){
  location.reload();   
 }
 
-function limpiar_campo1(){
-    if($("#codigo").val() === ""){
+function limpiar_campo1() {
+    if($("#codigo").val() == ""){
         $("#cod_producto").val("");
         $("#codigo_barras").val("");
         $("#producto").val("");
@@ -419,8 +394,8 @@ function limpiar_campo1(){
     }
 }
 
-function limpiar_campo2(){
-    if($("#producto").val() === ""){
+function limpiar_campo2() {
+    if($("#producto").val() == ""){
         $("#cod_producto").val("");
         $("#codigo_barras").val("");
         $("#codigo").val("");
@@ -430,30 +405,38 @@ function limpiar_campo2(){
     }
 }
 
-
-function reset () {
-    $("#toggleCSS").attr("href", "../../css/alertify.default.css");
-    alertify.set({
-        labels : {
-            ok     : "OK",
-            cancel : "Cancel"
-        },
-        delay : 5000,
-        buttonReverse : false,
-        buttonFocus   : "ok"
-    });
-}
-
 function inicio() {
-    jQuery('#platform-details').html('<code>' + navigator.userAgent + '</code>');
+    // jQuery('#platform-details').html('<code>' + navigator.userAgent + '</code>');
     alertify.set({ delay: 1000 });
+
     //Timepicker
-    $(".timepicker").timepicker({
-      showInputs: false
-    });
-    //////////////para hora///////////
+    // $(".timepicker").timepicker({
+    //   showInputs: false
+    // });
+
+    // hora
     show();
-    ///////////////////
+    // fin
+
+    /////////////cambiar idioma///////
+     $.datepicker.regional['es'] = {
+        closeText: 'Cerrar',
+        prevText: '<Ant',
+        nextText: 'Sig>',
+        currentText: 'Hoy',
+        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+        dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+    };
+    $.datepicker.setDefaults($.datepicker.regional['es']);
     
     //////Botones//////////
     $("#btnGuardar").click(function(e) {
@@ -465,19 +448,19 @@ function inicio() {
     $("#btnNuevo").click(function(e) {
         e.preventDefault();
     });
-    $("#btnImprimir").click(function (){
+    $("#btnImprimir").click(function () {
         $.ajax({
-        type: "POST",
-        url: "../../procesos/validacion.php",
-        data: "comprobante=" + $("#comprobante").val() + "&tabla=" + "inventario" + "&id_tabla=" + "id_inventario" + "&tipo=" + 1,
-        success: function(data) {
-            var val = data;
-            if(val != "") {
-                window.open("../../reportes/reportes/reporte_inventario.php?hoja=A4&id="+$("#comprobante").val(),'_blank');  
-            } else {
-              alertify.alert("Inventario no creado!!");
-            }   
-        }
+            type: "POST",
+            url: "../../procesos/validacion.php",
+            data: "comprobante=" + $("#comprobante").val() + "&tabla=" + "inventario" + "&id_tabla=" + "id_inventario" + "&tipo=" + 1,
+            success: function(data) {
+                var val = data;
+                if(val != "") {
+                    window.open("../../reportes/reporte_inventario.php?hoja=A4&id="+$("#comprobante").val(),'_blank');  
+                } else {
+                  alertify.alert("Inventario no creado!!");
+                }   
+            }
         });
     });
     $("#btnAtras").click(function(e) {
@@ -488,8 +471,8 @@ function inicio() {
     });
     
     $("#btnGuardar").on("click", guardar_inventario);
-    $(document).bind('keydown', 'F7', guardar_inventario);
-    $('input').bind('keydown', 'F7', guardar_inventario);
+    // $(document).bind('keydown', 'F7', guardar_inventario);
+    // $('input').bind('keydown', 'F7', guardar_inventario);
     $("#btnNuevo").on("click", nuevo);
     $("#btnAtras").on("click", flecha_atras);
     $("#btnAdelante").on("click", flecha_siguiente);
@@ -506,37 +489,40 @@ function inicio() {
     $("#precio").on("keypress", enter2);
     ///////////////////
     
-    $("#codigo_barras").keyup(function(e) {
+    // buscador productos codigo barras 
+    $("#codigo_barras").change(function(e) {
         var codigo = $("#codigo_barras").val();
-        $.getJSON('search3.php?codigo_barras=' + codigo, function(data) {
-                var tama = data.length;
-                if (tama !== 0) {
-                   for (var i = 0; i < tama; i = i + 8) {
-                        $("#codigo").val(data[i]);
-                        $("#producto").val(data[i + 1]);
-                        $("#precio").val(data[i + 2]);
-                        $("#stock").val(data[i + 3]);
-                        $("#p_venta").val(data[i + 4]);
-                        $("#existencia").val(data[i + 5]);
-                        $("#diferencia").val(data[i + 6]);
-                        $("#cod_producto").val(data[i + 7]);
-                        $("#cantidad").focus();
-                  }
-                }else{
-                    $("#codigo").val("");
-                    $("#producto").val("");
-                    $("#precio").val("");
-                    $("#stock").val("");
-                    $("#p_venta").val("");
-                    $("#existencia").val("");
-                    $("#diferencia").val("");
-                    $("#cod_producto").val("");
+        $.getJSON('search.php?codigo_barras=' + codigo, function(data) {
+            var tama = data.length;
+            if (tama != 0) {
+               for (var i = 0; i < tama; i = i + 8) {
+                    $("#codigo").val(data[i]);
+                    $("#producto").val(data[i + 1]);
+                    $("#precio").val(data[i + 2]);
+                    $("#stock").val(data[i + 3]);
+                    $("#p_venta").val(data[i + 4]);
+                    $("#existencia").val(data[i + 5]);
+                    $("#diferencia").val(data[i + 6]);
+                    $("#cod_producto").val(data[i + 7]);
+                    $("#cantidad").focus();
                 }
-            });
+            } else {
+                $("#codigo").val("");
+                $("#producto").val("");
+                $("#precio").val("");
+                $("#stock").val("");
+                $("#p_venta").val("");
+                $("#existencia").val("");
+                $("#diferencia").val("");
+                $("#cod_producto").val("");
+            }
+        });
     });
+    // fin
     
+    // buscador productos codigo 
     $("#codigo").autocomplete({
-        source: "buscar_productoinv1.php",
+        source: "buscar_codigo.php",
         minLength: 1,
         focus: function(event, ui) {
             $("#codigo_barras").val(ui.item.codigo_barras);
@@ -568,10 +554,11 @@ function inicio() {
         .append("<a>" + item.value + "</a>")
         .appendTo(ul);
     };
+    // fin
     
-    /////buscador productos articulo///// 
+    // buscador productos articulo 
     $("#producto").autocomplete({
-        source: "buscar_productoinv2.php",
+        source: "buscar_producto.php",
         minLength: 1,
         focus: function(event, ui) {
             $("#codigo_barras").val(ui.item.codigo_barras);
@@ -661,8 +648,7 @@ function inicio() {
         gridComplete: function () {
             if (jQuery("div.ui-jqgrid-bdiv > DIV").height() < 249) {
                 jQuery("#list").parents('div.ui-jqgrid-bdiv').css("height", 250);
-            }
-            else {
+            } else {
                 jQuery("#list").parents('div.ui-jqgrid-bdiv').css("height", "100%");
             }
         }
@@ -700,12 +686,11 @@ function inicio() {
     {
         closeOnEscape: true
     });
-    
-
-}
 
 jQuery(window).bind('resize', function () {
-        jQuery("#list").setGridWidth(jQuery('#grid_container').width(), true);
-    }).trigger('resize');
+    jQuery("#list").setGridWidth(jQuery('#grid_container').width(), true);
+}).trigger('resize');
+
+}
 
 

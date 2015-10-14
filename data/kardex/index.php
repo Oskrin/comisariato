@@ -17,7 +17,7 @@ $cont1 = 0;
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>INVENTARIO</title>
+    <title>KARDEX</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />    
     <link href="../../font-awesome-4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />        
@@ -44,7 +44,7 @@ $cont1 = 0;
       <div class="content-wrapper">
         <section class="content-header">
           <h1>
-            Registro Inventario
+            Kardex
           </h1>
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Procesos</a></li>
@@ -107,6 +107,7 @@ $cont1 = 0;
                               <div class="form-group">
                                 <label>CÓDIGO BARRAS</label>
                                 <input type="text" name="codigo_barras"  id="codigo_barras" placeholder="Buscar..." class="form-control" />
+                                <input type="hidden" name="cod_producto"  id="cod_producto" class="form-control" />
                               </div>  
                             </div>
 
@@ -123,73 +124,33 @@ $cont1 = 0;
                                 <input type="text" name="producto"  id="producto" placeholder="Buscar..." class="form-control" />
                               </div>  
                             </div>
-
-                            <div class="col-md-1 ">
-                              <div class="form-group">
-                                <label>CANTIDAD</label>
-                                <input type="text" name="cantidad"  id="cantidad" class="form-control" />
-                              </div>
-                            </div>
-
-                            <div class="col-md-1">
-                              <div class="form-group">
-                                <label>PRECIO</label>
-                                <input type="text" name="precio"  id="precio" readonly class="form-control" />
-                              </div> 
-                            </div>
-
-                            <div class="col-md-1">
-                              <div class="form-group">
-                                <label>STOCK</label>
-                                <input type="text" name="stock"  id="stock" readonly class="form-control" />
-                                <input type="hidden" name="p_venta"  id="p_venta" readonly class="form-control" />
-                                <input type="hidden" name="existencia"  id="existencia" readonly class="form-control" />
-                                <input type="hidden" name="diferencia"  id="diferencia" readonly class="form-control" />
-                                <input type="hidden" name="cod_producto"  id="cod_producto" readonly class="form-control" />
-                              </div>  
-                            </div> 
                          </div>
                         </div>
 
                         <div class="row">
-                         <div class="col-md-12">
-                            <div id="grid_container">
-                                <table id="list"></table> 
+                          <div class="col-mx-12">
+                             <div class="col-md-3">
+                                <div class="form-group">
+                                  <label>FECHA INICIO:</label>
+                                  <input type="text" name="fecha_inicio"  id="fecha_inicio" readonly class="form-control" />
+                                </div>  
                             </div>
-                         </div>   
-                        </div>
 
-                        <div class="row">
-                           <div class="col-mx-12">
-                              <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group">
-                                  <label>Total Precio Costo:</label>
-                                  <input type="text" name="total_costo"  id="total_costo" readonly class="form-control" />
-                                </div>                                                                                            
-                              </div>
-
-                              <div class="col-md-2">
-                                <div class="form-group">
-                                  <label>Total Precio Venta:</label>
-                                  <input type="text" name="total_venta"  id="total_venta" readonly class="form-control" />
-                                </div>                                                                                            
-                              </div>
-                           </div>
+                                  <label>FECHA FIN:</label>
+                                  <input type="text" name="fecha_fin"  id="fecha_fin" readonly class="form-control" />
+                                </div>  
+                            </div>
+                            <div class="col-md-2">
+                              <div class="form-group">
+                                <button class="btn bg-olive margin" id='btnGenerar'><i class="fa fa-save"></i> Generar</button>  
+                              </div>  
+                            </div>
+                          </div>  
                         </div>
                       </form>
                     </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-mx-12">
-                      <p>
-                        <button class="btn bg-olive margin" id='btnGuardar'><i class="fa fa-save"></i> Guardar</button>
-                        <button class="btn bg-olive margin" id='btnNuevo'><i class="fa fa-pencil"></i> Nuevo</button>
-                        <button class="btn bg-olive margin" id='btnImprimir'><i class="fa fa-print"></i> Imprimir</button>
-                        <button class="btn bg-olive margin" id='btnAtras'><i class="fa fa-backward"></i> Atras</button>
-                        <button class="btn bg-olive margin" id='btnAdelante'>Adelante <i class="fa fa-forward"></i></button>
-                      </p> 
-                    </div> 
                   </div>
                 </div>
               </div>
@@ -218,7 +179,7 @@ $cont1 = 0;
     <script src="../../dist/js/jquery.jqGrid.src.js" type="text/javascript"></script>
     <script src="../../dist/js/grid.locale-es.js" type="text/javascript"></script>
     <script src="../../dist/js/jquery.hotkeys.js" type="text/javascript"></script>
-    <script src="inventario.js" type="text/javascript"></script>
+    <script src="kardex.js" type="text/javascript"></script>
     <link href="../../dist/css/style.css" rel="stylesheet" type="text/css"/>     
     <script src="../../dist/js/ventana_reporte.js" type="text/javascript"></script>
   </body>

@@ -165,6 +165,7 @@ print'
 
                 <li><a href="../registro_gastos" target="_blank"><i class="fa fa-circle-o"></i>Registro Gastos</a></li>
                 <li><a href="../gastos" target="_blank"><i class="fa fa-circle-o"></i>Gastos Internos</a></li>
+                <li><a href="../kardex" target="_blank"><i class="fa fa-circle-o"></i>Kardex</a></li>
               </ul>
             </li>
             <li>

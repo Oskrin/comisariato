@@ -340,7 +340,7 @@ function validar_acceso(){
     }   
 }
 
-function aceptar(){
+function aceptar() {
     $.ajax({
         type: "POST",
         url: "eliminar_productos.php",
@@ -378,10 +378,10 @@ function nuevo_producto() {
 }
 
 function agregar_categoria() {
-    if ($("#nombre_categoria").val() === "") {
+    if ($("#nombre_categoria").val() == "") {
         $("#nombre_categoria").focus();
         alertify.error("Nombre Categoria");
-    }else{
+    } else {
         $.ajax({
             type: "POST",
             url: "guardar_categoria.php",
@@ -402,10 +402,10 @@ function agregar_categoria() {
 }
 
 function agregar_marca() {
-    if ($("#nombre_marca").val() === "") {
+    if ($("#nombre_marca").val() == "") {
         $("#nombre_marca").focus();
         alertify.error("Nombre Marca");
-    }else{
+    } else {
         $.ajax({
             type: "POST",
             url: "guardar_marca.php",
@@ -416,7 +416,7 @@ function agregar_marca() {
                     $("#nombre_marca").val("");
                     $("#marca").load("marcas_combos.php");
                     $("#marcas").dialog("close");
-                }else{
+                } else {
                     $("#nombre_marca").val("");
                     alertify.error("Error.... La marca ya existe");
                 }
@@ -491,6 +491,26 @@ function inicio() {
     //     easingType: 'easeOutQuart'
     // });  
     $("#cod_prod").focus();  
+
+    /////////////cambiar idioma///////
+     $.datepicker.regional['es'] = {
+        closeText: 'Cerrar',
+        prevText: '<Ant',
+        nextText: 'Sig>',
+        currentText: 'Hoy',
+        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+        dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+    };
+    $.datepicker.setDefaults($.datepicker.regional['es']);
     
     function getDoc(frame) {
         var doc = null;     
@@ -627,25 +647,25 @@ function inicio() {
   
     ////////////cambio evento/////////////
     $("#iva").change(function() {
-       if($("#iva").val() == "Si"){
+       if($("#iva").val() == "Si") {
           $("#incluye").val("Si");
           $("#incluye").attr("readOnly", false);
-       }else{
-        if($("#iva").val() == "No"){
+       } else {
+          if($("#iva").val() == "No") {
               $("#incluye").val("No");
               $("#incluye").attr("readOnly", true);
-        }
+            }
        }
     });
     /////////////////////////////////////
 
     $("#precio_minorista").keyup(function() {
-        if($("#precio_compra").val() === ""){
+        if($("#precio_compra").val() == "") {
              $("#precio_minorista").val("");
              $("#precio_compra").focus();  
              alertify.error("Error... Ingrese precio compra");
-        }else{
-            if ($("#precio_minorista").val() === "") {
+        } else {
+            if ($("#precio_minorista").val() == "") {
                 $("#utilidad_minorista").val("");
             }
         }
@@ -653,12 +673,12 @@ function inicio() {
 
 
     $("#precio_mayorista").keyup(function() {
-        if($("#precio_compra").val() === ""){
+        if($("#precio_compra").val() == "") {
              $("#precio_mayorista").val("");
              $("#precio_compra").focus();  
              alertify.error("Error... Ingrese precio compra");
-        }else{
-            if ($("#precio_mayorista").val() === "") {
+        } else {
+            if ($("#precio_mayorista").val() == "") {
                 $("#utilidad_mayorista").val("");
             }
         }

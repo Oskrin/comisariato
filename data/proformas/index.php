@@ -107,7 +107,7 @@ $cont1 = 0;
                                 <div class="form-group col-md-8 no-padding">                                
                                   <input type="text" name="ruc_ci"  id="ruc_ci" required placeholder="Buscar....." class="form-control" />
                                   <input type="hidden" name="id_cliente"  id="id_cliente" class="form-control" />
-                                  <input type="text" name="id_proforma"  id="id_proforma" class="form-control" />
+                                  <input type="hidden" name="id_proforma"  id="id_proforma" class="form-control" />
                                 </div> 
                               </div> 
 
@@ -187,10 +187,10 @@ $cont1 = 0;
                               <div class="form-group">
                                 <label>DESC.</label>
                                 <input type="number" name="descuento"  id="descuento"  min="0" placeholder="%" class="form-control" />
-                                <input type="text" name="cod_producto"  id="cod_producto" readonly class="form-control" />
-                                <input type="text" name="disponibles"  id="disponibles" readonly class="form-control" />
-                                <input type="text" name="iva_producto"  id="iva_producto" readonly class="form-control" />
-                                <input type="text" name="incluye"  id="incluye" readonly class="form-control" />
+                                <input type="hidden" name="cod_producto"  id="cod_producto" readonly class="form-control" />
+                                <input type="hidden" name="disponibles"  id="disponibles" readonly class="form-control" />
+                                <input type="hidden" name="iva_producto"  id="iva_producto" readonly class="form-control" />
+                                <input type="hidden" name="incluye"  id="incluye" readonly class="form-control" />
                               </div>  
                             </div> 
                          </div>

@@ -14,9 +14,9 @@ if ($_POST["tipo_venta"] == "FACTURA") {
         $cont1 = $row[0];
     }
     $cont1++;
-//////////////////////////////////////////////////
-//
-//////////////contador clientes///////////////////
+    //////////////////////////////////////////////////
+    //
+    //////////////contador clientes///////////////////
     $contt = 0;
     $consulta_cli = pg_query("select max(id_cliente) from clientes");
     while ($row = pg_fetch_row($consulta_cli)) {
@@ -29,45 +29,45 @@ if ($_POST["tipo_venta"] == "FACTURA") {
 
         $tipo = $_POST['ruc_ci'];
         if (strlen($tipo) == 10) {
-//////////////////guardar clientes/////////////    
+            //////////////////guardar clientes/////////////    
             pg_query("insert into clientes values('$contt','Cedula','$_POST[ruc_ci]','$_POST[nombre_cliente]','natural','$_POST[direccion_cliente]','$_POST[telefono_cliente]','','','','$_POST[correo]','','','Activo','1')");
-////////////////////////////////////////////
-//
-////////////guardar factura venta////////
+            ////////////////////////////////////////////
+            //
+            ////////////guardar factura venta////////
             pg_query("insert into factura_venta values('$cont1','1','$contt','$_SESSION[id]','$cont1','$_POST[num_factura]','$_POST[fecha_actual]','$_POST[hora_actual]','$_POST[cancelacion]','$_POST[tipo_precio]','$_POST[formas]','$_POST[autorizacion]','$_POST[fecha_auto]','$_POST[fecha_caducidad]','$_POST[tarifa0]','$_POST[tarifa12]','$_POST[iva]','$_POST[desc]','$_POST[tot]','Activo','')");
-////////////////////////////////////////
+            ////////////////////////////////////////
         } else {
             if (strlen($tipo) == 13) {
                 //////////////////guardar clientes/////////////    
                 pg_query("insert into clientes values('$contt','Ruc','$_POST[ruc_ci]','$_POST[nombre_cliente]','natural','$_POST[direccion_cliente]','$_POST[telefono_cliente]','','','','$_POST[correo]','','','Activo','1')");
-////////////////////////////////////////////
-//
-////////////guardar factura venta////////
+                ////////////////////////////////////////////
+                //
+                ////////////guardar factura venta////////
                 pg_query("insert into factura_venta values('$cont1','1','$contt','$_SESSION[id]','$cont1','$_POST[num_factura]','$_POST[fecha_actual]','$_POST[hora_actual]','$_POST[cancelacion]','$_POST[tipo_precio]','$_POST[formas]','$_POST[autorizacion]','$_POST[fecha_auto]','$_POST[fecha_caducidad]','$_POST[tarifa0]','$_POST[tarifa12]','$_POST[iva]','$_POST[desc]','$_POST[tot]','Activo','')");
-////////////////////////////////////////    
+                ////////////////////////////////////////    
             }
         }
     } else {
         ////////////guardar factura venta////////
         pg_query("insert into factura_venta values('$cont1','1','$_POST[id_cliente]','$_SESSION[id]','$cont1','$_POST[num_factura]','$_POST[fecha_actual]','$_POST[hora_actual]','$_POST[cancelacion]','$_POST[tipo_precio]','$_POST[formas]','$_POST[autorizacion]','$_POST[fecha_auto]','$_POST[fecha_caducidad]','$_POST[tarifa0]','$_POST[tarifa12]','$_POST[iva]','$_POST[desc]','$_POST[tot]','Activo','')");
-////////////////////////////////////////
+        ////////////////////////////////////////
     }
 
-/////////////////modificar proformas///////////
+    /////////////////modificar proformas///////////
     if ($_POST['proforma'] != "") {
         pg_query("Update proforma Set estado='Pasivo' where id_proforma='" . $_POST['proforma'] . "'");
     }
-///////////////////////////////////////////////
-/////datos detalle factura/////
+    ///////////////////////////////////////////////
+    /////datos detalle factura/////
     $campo1 = $_POST['campo1'];
     $campo2 = $_POST['campo2'];
     $campo3 = $_POST['campo3'];
     $campo4 = $_POST['campo4'];
     $campo5 = $_POST['campo5'];
     $campo6 = $_POST['campo6'];
-/////////////////////////////
-//
-////////////agregar detalle_factura_venta////////
+    /////////////////////////////
+    //
+    ////////////agregar detalle_factura_venta////////
     $arreglo1 = explode('|', $campo1);
     $arreglo2 = explode('|', $campo2);
     $arreglo3 = explode('|', $campo3);
@@ -76,7 +76,7 @@ if ($_POST["tipo_venta"] == "FACTURA") {
     $arreglo6 = explode('|', $campo6);
     $nelem = count($arreglo1);
     $forma = $_POST['formas'];
-///////////////////////////////////////////
+    ///////////////////////////////////////////
 
     if ($forma === "Credito") {
         //variables pagos////
@@ -85,7 +85,7 @@ if ($_POST["tipo_venta"] == "FACTURA") {
         $total = $_POST['tot'];
         ///////////////
         //
-    ///////contador pagos venta//////
+        ///////contador pagos venta//////
         $cont2 = 0;
         $consulta = pg_query("select max(id_pagos_venta) from pagos_venta");
         while ($row = pg_fetch_row($consulta)) {
@@ -147,7 +147,7 @@ if ($_POST["tipo_venta"] == "FACTURA") {
         }
         //////////////////////////////////////////////////////  
         //
-    ////////////////guardar detalle compra/////
+        ////////////////guardar detalle compra/////
         for ($i = 0; $i <= $nelem; $i++) {
             /////////////////contador detalle factura venta/////////////
             $cont4 = 0;
@@ -158,11 +158,11 @@ if ($_POST["tipo_venta"] == "FACTURA") {
             $cont4++;
             //////////////////////////  
             //
-        ///guardar detalle_factura/////
+            ///guardar detalle_factura/////
             pg_query("insert into detalle_factura_venta values('$cont4','$cont1','$arreglo1[$i]','$arreglo2[$i]','$arreglo3[$i]','$arreglo4[$i]','$arreglo5[$i]','Activo','$arreglo6[$i]')");
             ////////////////////////////////
             //
-        //////////////modificar productos///////////
+            //////////////modificar productos///////////
             $consulta2 = pg_query("select * from productos where cod_productos = '$arreglo1[$i]'");
             while ($row = pg_fetch_row($consulta2)) {
                 $stock = $row[13];
@@ -171,11 +171,23 @@ if ($_POST["tipo_venta"] == "FACTURA") {
 
             pg_query("Update productos Set stock='" . $cal . "' where cod_productos='" . $arreglo1[$i] . "'");
             ///////////////////////////////////////////
+            //
+            ///////////////////contador dkardex////////
+            $cont_k = 0;
+            $consulta_k = pg_query("select max(id_kardex) from kardex");
+            while ($row = pg_fetch_row($consulta_k)) {
+                $cont_k = $row[0];
+            }
+            $cont_k++;
+            /////////////////////////////////////////////////////////
+            //
+            ///guardar kardex/////
+            pg_query("insert into kardex values('$cont_k','$_POST[fecha_actual]', '" . 'F.V:' . $_POST['num_factura'] . "' ,'$arreglo2[$i]','$arreglo3[$i]','$arreglo5[$i]','$arreglo1[$i]','$cal','2','','')");
+            /////////////////////////////
         }
     } else {
         if ($forma === "Contado") {
             for ($i = 0; $i <= $nelem; $i++) {
-
                 /////////////////contador detalle factura venta/////////////
                 $cont6 = 0;
                 $consulta = pg_query("select  max(id_detalle_venta) from detalle_factura_venta");
@@ -185,11 +197,11 @@ if ($_POST["tipo_venta"] == "FACTURA") {
                 $cont6++;
                 //////////////////////////  
                 //
-            //////////////guardar detalle_venta////////
+                //////////////guardar detalle_venta////////
                 pg_query("insert into detalle_factura_venta values('$cont6','$cont1','$arreglo1[$i]','$arreglo2[$i]','$arreglo3[$i]','$arreglo4[$i]','$arreglo5[$i]','Activo','$arreglo6[$i]')");
                 ////////////////////////////////////////////
                 //
-            //////////////modificar productos///////////
+                //////////////modificar productos///////////
                 $consulta2 = pg_query("select * from productos where cod_productos = '$arreglo1[$i]'");
                 while ($row = pg_fetch_row($consulta2)) {
                     $stock = $row[13];
@@ -198,6 +210,19 @@ if ($_POST["tipo_venta"] == "FACTURA") {
 
                 pg_query("Update productos Set stock='" . $cal . "' where cod_productos='" . $arreglo1[$i] . "'");
                 ///////////////////////////////////////////
+                //
+                ///////////////////contador kardex////////
+                $cont_k = 0;
+                $consulta_k = pg_query("select max(id_kardex) from kardex");
+                while ($row = pg_fetch_row($consulta_k)) {
+                    $cont_k = $row[0];
+                }
+                $cont_k++;
+                /////////////////////////////////////////////////////////
+                //
+                ///guardar kardex/////
+                pg_query("insert into kardex values('$cont_k','$_POST[fecha_actual]', '" . 'F.V:' . $_POST['num_factura'] . "' ,'$arreglo2[$i]','$arreglo3[$i]','$arreglo5[$i]','$arreglo1[$i]','$cal','2','','')");
+                /////////////////////////////
             }
         }
     }

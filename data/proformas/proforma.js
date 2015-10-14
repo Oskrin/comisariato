@@ -31,6 +31,7 @@ function scrollToBottom() {
         scrollTop: $(document).height()
         }, 'slow');
 }
+
 function scrollToTop() {
     $('html, body').animate({
         scrollTop: 0
@@ -59,7 +60,7 @@ function show() {
 }
 
 function enter(e) {
-    if (e.which === 13 || e.keyCode === 13) {
+    if (e.which == 13 || e.keyCode === 13) {
         entrar();
         return false;
     }
@@ -67,7 +68,7 @@ function enter(e) {
 }
 
 function enter1(e) {
-    if (e.which === 13 || e.keyCode === 13) {
+    if (e.which == 13 || e.keyCode === 13) {
         entrar2();
         return false;
     }
@@ -75,7 +76,7 @@ function enter1(e) {
 }
 
 function enter2(e) {
-    if (e.which === 13 || e.keyCode === 13) {
+    if (e.which == 13 || e.keyCode === 13) {
         comprobar2();
         return false;
     }
@@ -83,7 +84,7 @@ function enter2(e) {
 }
 
 function enter3(e) {
-    if (e.which === 13 || e.keyCode === 13) {
+    if (e.which == 13 || e.keyCode === 13) {
         comprobar();
         return false;
     }
@@ -93,22 +94,22 @@ function enter3(e) {
 function comprobar() {
     if ($("#id_cliente").val() == "") {
         $("#ruc_ci").focus();
-        alertify.alert("Ingrese un cliente");
+        alertify.error("Ingrese un cliente");
     } 
 }
 
 function entrar() {
     if ($("#cod_producto").val() == "") {
-        $("#codigo").focus();
-        alertify.alert("Ingrese un producto");
+        $("#codigo_barras").focus();
+        alertify.error("Ingrese un producto");
     } else {
         if ($("#codigo").val() == "") {
             $("#codigo").focus();
-            alertify.alert("Ingrese un producto");
+            alertify.error("Ingrese un producto");
         } else {
             if ($("#producto").val() == "") {
                 $("#producto").focus();
-                alertify.alert("Ingrese un producto");
+                alertify.error("Ingrese un producto");
             } else {
                 if ($("#cantidad").val() == "") {
                     $("#cantidad").focus();
@@ -122,23 +123,23 @@ function entrar() {
 
 function entrar2() {
     if ($("#cod_producto").val() == "") {
-        $("#codigo").focus();
-        alertify.alert("Ingrese un producto");
+        $("#codigo_barras").focus();
+        alertify.error("Ingrese un producto");
     } else {
         if ($("#codigo").val() == "") {
             $("#codigo").focus();
-            alertify.alert("Ingrese un producto");
+            alertify.error("Ingrese un producto");
         } else {
             if ($("#producto").val() == "") {
                 $("#producto").focus();
-                alertify.alert("Ingrese un producto");
+                alertify.error("Ingrese un producto");
             } else {
                 if ($("#cantidad").val() == "") {
                     $("#cantidad").focus();
                 } else {
                     if ($("#p_venta").val() == "") {
                         $("#p_venta").focus();
-                        alertify.alert("Ingrese un precio");
+                        alertify.error("Ingrese un precio");
                     }else{
                        $("#descuento").focus();
                     }
@@ -146,6 +147,18 @@ function entrar2() {
             }
         }
     }
+}
+
+function limpiar_input() {
+    $("#cod_producto").val("");
+    $("#codigo_barras").val("");
+    $("#codigo").val("");
+    $("#producto").val("");
+    $("#cantidad").val("");
+    $("#p_venta").val("");
+    $("#descuento").val("");
+    $("#disponibles").val("");
+    $("#incluye").val("");
 }
 
 function comprobar2() {
@@ -157,22 +170,22 @@ function comprobar2() {
 
     if ($("#cod_producto").val() == "") {
         $("#codigo").focus();
-        alertify.alert("Ingrese un producto");
+        alertify.error("Ingrese un producto");
     } else {
         if ($("#codigo").val() == "") {
             $("#codigo").focus();
-            alertify.alert("Ingrese un producto");
+            alertify.error("Ingrese un producto");
         } else {
             if ($("#producto").val() == "") {
                 $("#producto").focus();
-                alertify.alert("Ingrese un producto");
+                alertify.error("Ingrese un producto");
             } else {
                 if ($("#cantidad").val() == "") {
                     $("#cantidad").focus();
                 } else {
                     if ($("#p_venta").val() == "") {
                     $("#p_venta").focus();
-                    alertify.alert("Ingrese un precio");
+                    alertify.error("Ingrese un precio");
                 }else{
                     var filas = jQuery("#list").jqGrid("getRowData");
                     var descuento = 0;
@@ -620,7 +633,7 @@ function limpiar_proforma(){
 }
 
 function limpiar_campo(){
-    if($("#ruc_ci").val() === ""){
+    if($("#ruc_ci").val() == ""){
         $("#id_cliente").val("");
         $("#nombres_completos").val("");
         $("#saldo").val("");
@@ -628,7 +641,7 @@ function limpiar_campo(){
 }
 
 function limpiar_campo2(){
-    if($("#nombres_completos").val() === ""){
+    if($("#nombres_completos").val() == ""){
         $("#id_cliente").val("");
         $("#ruc_ci").val("");
         $("#saldo").val("");
@@ -636,7 +649,7 @@ function limpiar_campo2(){
 }
 
 function limpiar_campo3(){
-    if($("#codigo").val() === ""){
+    if($("#codigo").val() == ""){
         $("#cod_producto").val("");
         $("#producto").val("");
         $("#cantidad").val("");
@@ -647,7 +660,7 @@ function limpiar_campo3(){
 }
 
 function limpiar_campo4(){
-    if($("#producto").val() === ""){
+    if($("#producto").val() == ""){
         $("#cod_producto").val("");
         $("#codigo").val("");
         $("#cantidad").val("");
@@ -692,6 +705,26 @@ function inicio() {
     //////////////para hora///////////
     show();
     ///////////////////
+
+     /////////////cambiar idioma///////
+     $.datepicker.regional['es'] = {
+        closeText: 'Cerrar',
+        prevText: '<Ant',
+        nextText: 'Sig>',
+        currentText: 'Hoy',
+        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+        dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+    };
+    $.datepicker.setDefaults($.datepicker.regional['es']);
 
     //////////////botones//////////
     $("#btnGuardar").click(function(e) {
@@ -784,7 +817,7 @@ function inicio() {
                         $("#incluye").val(data[i + 9]);
                         $("#cantidad").focus();
                     }
-                }else{
+                } else {
                     $("#codigo").val("");
                     $("#producto").val("");
                     $("#p_venta").val("");
@@ -798,7 +831,7 @@ function inicio() {
                     $("#incluye").val("");
                 }
             });
-        }else{
+        } else {
             if (precio === "MAYORISTA") {
                 $.getJSON('search.php?codigo_barras=' + codigo + '&precio=' + precio, function(data) {
                     var tama = data.length;
@@ -817,7 +850,7 @@ function inicio() {
                             $("#incluye").val(data[i + 9]);
                             $("#cantidad").focus();
                         }
-                    }else{
+                    } else {
                         $("#codigo").val("");
                         $("#producto").val("");
                         $("#p_venta").val("");

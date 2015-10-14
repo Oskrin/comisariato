@@ -23,9 +23,7 @@ $cont1++;
 //////////////////////////////////////////////////
 //
 ////////////guardar egresos////////
-pg_query("insert into egresos values('$cont1','1','$_SESSION[id]','$cont1','$_POST[fecha_actual]','$_POST[hora_actual]','$_POST[origen]'
-    ,'$_POST[destino]','$_POST[tarifa0]','$_POST[tarifa12]','$_POST[iva]','$_POST[desc]','$_POST[tot]','$_POST[observaciones]','Activo')");
-
+pg_query("insert into egresos values('$cont1','1','$_SESSION[id]','$cont1','$_POST[fecha_actual]','$_POST[hora_actual]','$_POST[origen]','$_POST[destino]','$_POST[tarifa0]','$_POST[tarifa12]','$_POST[iva]','$_POST[desc]','$_POST[tot]','$_POST[observaciones]','Activo')");
 ////////////////////////////////////////
 //
 ////////////agregar ingresos////////
@@ -60,7 +58,20 @@ for ($i = 0; $i <= $nelem; $i++) {
     ////////////////////////////////////////
 
     pg_query("Update productos Set stock='" . $cal . "' where cod_productos='" . $arreglo1[$i] . "'");
-    /////////////////////////////////////////  
+    ///////////////////////////////////////// 
+    //
+    ///////////////////contador kardex////////
+    $cont_k = 0;
+    $consulta_k = pg_query("select max(id_kardex) from kardex");
+    while ($row = pg_fetch_row($consulta_k)) {
+        $cont_k = $row[0];
+    }
+    $cont_k++;
+    //////////////////////////////////////////
+    //
+    ///guardar kardex/////
+    pg_query("insert into kardex values('$cont_k','$_POST[fecha_actual]', '" . 'T.E:' . $cont1 . "' ,'$arreglo2[$i]','$arreglo3[$i]','$arreglo5[$i]','$arreglo1[$i]','$cal','4','$_POST[origen]','$_POST[destino]')");
+    ///////////////////////////// 
 }
 
 $data = 1;
