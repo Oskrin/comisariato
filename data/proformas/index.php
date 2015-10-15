@@ -190,20 +190,18 @@ $cont1 = 0;
                                 <input type="hidden" name="cod_producto"  id="cod_producto" readonly class="form-control" />
                                 <input type="hidden" name="disponibles"  id="disponibles" readonly class="form-control" />
                                 <input type="hidden" name="iva_producto"  id="iva_producto" readonly class="form-control" />
+                                <input type="hidden" name="des"  id="des" readonly class="form-control" />
                                 <input type="hidden" name="incluye"  id="incluye" readonly class="form-control" />
                               </div>  
                             </div> 
                          </div>
                         </div>
 
-                        <!-- <div class="row"> -->
-                         <div class="col-mx-12">
-                            <div id="grid_container">
-                                <table id="list"></table>
-                                <!--<div id="pager"></div>-->   
-                            </div>
-                         </div>   
-                        <!-- </div> -->
+                        <div class="col-mx-12">
+                          <div id="grid_container">
+                            <table id="list"></table>
+                          </div>
+                        </div>   
 
                         <div class="row">
                          <div class="col-mx-12">
@@ -217,7 +215,7 @@ $cont1 = 0;
                             </div>
 
                             <div class="col-md-3"></div>
-                            <!-- <div class="col-md-2"></div> -->
+                            
                             <div class="col-md-3">
                               <div class="form-group">
                                 <label class="col-md-5" >Tarifa 0:</label>
@@ -226,7 +224,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="total_p" id="total_p" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="total_p" id="total_p" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
@@ -238,7 +236,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="total_p2" id="total_p2" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="total_p2" id="total_p2" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
@@ -250,7 +248,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="iva" id="iva" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="iva" id="iva" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
@@ -262,7 +260,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="desc" id="desc" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="desc" id="desc" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div> 
@@ -274,7 +272,7 @@ $cont1 = 0;
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="tot" id="tot" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="tot" id="tot" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
