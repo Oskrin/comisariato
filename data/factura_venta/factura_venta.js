@@ -2782,7 +2782,7 @@ function inicio() {
             {name: 'incluye', index: 'incluye', editable: false, hidden: true, frozen: true, editrules: {required: true}, align: 'center', width: 90}
         ],
         rowNum: 30,
-        width: 885,
+        width: null,
         height: 300,
         sortable: true,
         rowList: [10, 20, 30],

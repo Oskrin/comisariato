@@ -127,7 +127,7 @@ function entrar2() {
     var descu_total = 0;
 
     if ($("#cod_producto").val() == "") {
-        $("#codigo").focus();
+        $("#codigo_barras").focus();
         alertify.error("Ingrese un producto");
     } else {
         if ($("#codigo").val() == "") {
@@ -153,19 +153,19 @@ function entrar2() {
                                 $("#precio").focus();
                                 alertify.error("Ingrese un precio");
                             } else {
-                                if($("#estado").val() == "Pasivo"){
-                                    $("#cod_producto").val("");
-                                    $("#codigo").val("");
-                                    $("#producto").val("");
-                                    $("#cantidad").val("");
-                                    $("#precio").val("");
-                                    $("#descuento").val("");
-                                    $("#canti").val("");
-                                    $("#estado").val("");
-                                    $("#incluye").val("");
-                                    $("#codigo_barras").focus();
-                                    alertify.error("El producto ya fue devuelto");
-                                } else {
+                                // if($("#estado").val() == "Pasivo"){
+                                //     $("#cod_producto").val("");
+                                //     $("#codigo").val("");
+                                //     $("#producto").val("");
+                                //     $("#cantidad").val("");
+                                //     $("#precio").val("");
+                                //     $("#descuento").val("");
+                                //     $("#canti").val("");
+                                //     $("#estado").val("");
+                                //     $("#incluye").val("");
+                                //     $("#codigo_barras").focus();
+                                //     alertify.error("El producto ya fue devuelto");
+                                // } else {
                                     var filas = jQuery("#list").jqGrid("getRowData");
 
                                     var descuento = 0;
@@ -392,7 +392,7 @@ function entrar2() {
                                 }
                             }
                         }
-                    }
+                    // }
                 }
             }
         }
@@ -534,7 +534,6 @@ function guardar_devolucion() {
                             alertify.error("Error... Ingrese productos a la Nota de Crédito");
                         } else {
                             $("#btnGuardar").attr("disabled", true);
-
                             var v1 = new Array();
                             var v2 = new Array();
                             var v3 = new Array();
@@ -556,6 +555,7 @@ function guardar_devolucion() {
                                 v4[i] = datos['descuento'];
                                 v5[i] = datos['total'];
                             }
+
                             for (i = 0; i < fil.length; i++) {
                                 string_v1 = string_v1 + "|" + v1[i];
                                 string_v2 = string_v2 + "|" + v2[i];
@@ -563,6 +563,7 @@ function guardar_devolucion() {
                                 string_v4 = string_v4 + "|" + v4[i];
                                 string_v5 = string_v5 + "|" + v5[i];
                             }
+
                             $.ajax({
                                 type: "POST",
                                 url: "guardar_notas_credito.php",
@@ -746,11 +747,11 @@ function flecha_siguiente() {
                 }
             }); 
             // fin
-           } else {
+            } else {
                alertify.alert("No hay mas registros superiores!!");
+            }
         }
-     }
-  });
+    });
 } 
 
 function limpiar_nota() {
@@ -758,7 +759,7 @@ function limpiar_nota() {
 }
 
 function limpiar_campo1() {
-    if($("#ruc_ci").val() == ""){
+    if($("#ruc_ci").val() == "") {
         $("#id_cliente").val("");
         $("#nombre_cli").val("");
         $("#direccion_cli").val("");
@@ -769,7 +770,7 @@ function limpiar_campo1() {
 }
 
 function limpiar_campo2() {
-    if($("#serie").val() == ""){
+    if($("#serie").val() == "") {
         $("#id_factura_venta").val("");
         $("#cod_producto").val("");
         $("#codigo").val("");
@@ -782,7 +783,7 @@ function limpiar_campo2() {
 }
 
 function limpiar_campo3() {
-    if($("#codigo").val() == ""){
+    if($("#codigo").val() == "") {
         $("#cod_producto").val("");
         $("#producto").val("");
         $("#cantidad").val("");
@@ -793,7 +794,7 @@ function limpiar_campo3() {
 }
 
 function limpiar_campo4() {
-    if($("#producto").val() == ""){
+    if($("#producto").val() == "") {
         $("#cod_producto").val("");
         $("#codigo").val("");
         $("#cantidad").val("");
@@ -803,7 +804,7 @@ function limpiar_campo4() {
     }
 }
 
-function punto(e){
+function punto(e) {
 var key;
 if (window.event) {
     key = e.keyCode;
@@ -821,14 +822,25 @@ if (key < 48 || key > 57) {
 return true;   
 }
 
+function limpiar_datos() {
+    $("#ruc_ci").val("");
+    $("#nombre_cli").val("");
+    $("#telefono_cli").val("");
+    $("#direccion_cli").val("");
+    $("#id_cliente").val("");
+    $("#serie").val("");
+    $("#id_factura_venta").val("");    
+}
+
 function inicio() {
     $("[data-mask]").inputmask();
     alertify.set({ delay: 1000 });
-    //////////////para hora///////////
-    show();
-    ///////////////////
 
-    ///////botones ///////////////////
+    // para hora
+    show();
+    // fin
+
+    // botones
     $("#btncargar").click(function(e) {
         e.preventDefault();
     });
@@ -886,7 +898,7 @@ function inicio() {
     });
     /////////////////////////// 
 
-     /////////////////////////////////
+    /////////////////////////////////
     $("#cantidad").validCampoFranz("0123456789");
     $("#autorizacion").validCampoFranz("0123456789");
     $("#serie").validCampoFranz("0123456789");
@@ -894,6 +906,7 @@ function inicio() {
     $("#serie").attr("maxlength", "17");
     $("#autorizacion").attr("disabled", "disabled");
     $("#descuento").validCampoFranz("0123456789");
+    $("#precio").on("keypress",punto);
     ///////////////////////////////////////////
 
     // eventos
@@ -918,10 +931,6 @@ function inicio() {
     $("#cuotas").attr("disabled", "disabled");
     // fin
 
-    //////////////para precio////////
-    $("#precio").on("keypress",punto);
-   ////////////////////////////////
-
     // buscar cliente
     $("#tipo_docu").change(function() {
         var tipo = $("#tipo_docu").val();
@@ -932,7 +941,7 @@ function inicio() {
             $("#serie").removeAttr("disabled");
             $("#ruc_ci").attr("maxlength", "10");
             $("#ruc_ci").autocomplete({
-                source: "buscar_clientedev.php?tipo_docu=" + tipo,
+                source: "buscar_cliente.php?tipo_docu=" + tipo,
                 minLength: 1,
                 focus: function(event, ui) {
                 $("#ruc_ci").val(ui.item.value);
@@ -956,15 +965,7 @@ function inicio() {
                 .append("<a>" + item.value + "</a>")
                 .appendTo(ul);
             };
-            //////////////////////////////
-            $("#ruc_ci").val("");
-            $("#nombre_cli").val("");
-            $("#telefono_cli").val("");
-            $("#direccion_cli").val("");
-            $("#id_cliente").val("");
-            $("#serie").val("");
-            $("#id_factura_venta").val("");
-
+            limpiar_datos();
         } else {
             if (tipo == "Ruc") {
                 $("#ruc_ci").validCampoFranz("0123456789");
@@ -973,7 +974,7 @@ function inicio() {
                 $("#ruc_ci").removeAttr("maxlength");
                 $("#ruc_ci").attr("maxlength", "13");
                 $("#ruc_ci").autocomplete({
-                    source: "buscar_clientedev.php?tipo_docu=" + tipo,
+                    source: "buscar_cliente.php?tipo_docu=" + tipo,
                     minLength: 1,
                     focus: function(event, ui) {
                     $("#ruc_ci").val(ui.item.value);
@@ -997,14 +998,7 @@ function inicio() {
                     .append("<a>" + item.value + "</a>")
                     .appendTo(ul);
                 };
-                //////////////////////////////
-                $("#ruc_ci").val("");
-                $("#nombre_cli").val("");
-                $("#telefono_cli").val("");
-                $("#direccion_cli").val("");
-                $("#id_cliente").val("");
-                $("#serie").val("");
-                $("#id_factura_venta").val("");
+                limpiar_datos();
             } else {
                 if (tipo == "Pasaporte") {
                     $("#ruc_ci").unbind("keypress");
@@ -1012,7 +1006,7 @@ function inicio() {
                     $("#serie").removeAttr("disabled");
                     $("#ruc_ci").attr("maxlength", "30");
                     $("#ruc_ci").autocomplete({
-                        source: "buscar_clientedev.php?tipo_docu=" + tipo,
+                        source: "buscar_cliente.php?tipo_docu=" + tipo,
                         minLength: 1,
                         focus: function(event, ui) {
                         $("#ruc_ci").val(ui.item.value);
@@ -1036,14 +1030,7 @@ function inicio() {
                         .append("<a>" + item.value + "</a>")
                         .appendTo(ul);
                     };
-                    //////////////////////////////
-                    $("#ruc_ci").val("");
-                    $("#nombre_cli").val("");
-                    $("#telefono_cli").val("");
-                    $("#direccion_cli").val("");
-                    $("#id_cliente").val("");
-                    $("#serie").val("");
-                    $("#id_factura_venta").val("");
+                    limpiar_datos();
                 }
             }
         }
@@ -1060,7 +1047,7 @@ function inicio() {
             alertify.error("Error... Seleccione un cliente");
         } else {
             $("#serie").autocomplete({
-                source: "buscar_facturas2.php?id=" + id,
+                source: "buscar_facturas.php?id=" + id,
                 minLength: 1,
                 focus: function(event, ui) {
                 $("#serie").val(ui.item.value);
@@ -1083,148 +1070,123 @@ function inicio() {
     // Fin
 
     // buscar producto codigo barras
-    $("#codigo_barras").keyup(function(e) {
+    $("#codigo_barras").change(function(e) {
+        var codigo = $("#codigo_barras").val();
         var ids = $("#id_factura_venta").val();
 
-        if (ids == "") {
-            $("#serie").focus();
-            $("#codigo_barras").val("");
-            alertify.error("Error... Seleccione una factura");
-        } else {
-            var codigo = $("#codigo_barras").val();
-            $.getJSON('search.php?codigo_barras=' + codigo + '&ids=' + ids, function(data) {
-                var tama = data.length;
-                if (tama != 0) {
-                    for (var i = 0; i < tama; i = i + 11) {
-                        $("#cod_producto").val(data[i]);
-                        $("#codigo").val(data[i + 1]);
-                        $("#producto").val(data[i + 3]);
-                        $("#precio").val(data[i + 4]);
-                        $("#canti").val(data[i + 5]);
-                        $("#descuento").val(data[i + 6]);
-                        $("#iva_producto").val(data[i + 7]);
-                        $("#carga_series").val(data[i + 8]);
-                        $("#estado").val(data[i + 9]);
-                        $("#incluye").val(data[i + 10]);
-                        $("#cantidad").focus();
-                    }
-                } else {
-                    $("#codigo").val("");
-                    $("#producto").val("");
-                    $("#precio").val("");
-                    $("#descuento").val("");
-                    $("#canti").val("");
-                    $("#iva_producto").val("");
-                    $("#carga_series").val("");
-                    $("#estado").val("");
-                    $("#cod_producto").val("");
-                    $("#incluye").val("");
-                    $("#cantidad").val("");
-                    alertify.error("Producto no ingresado");
-                    $("#codigo_barras").val("");
+        $.getJSON('search.php?codigo_barras=' + codigo + '&ids=' + ids, function(data) {
+            var tama = data.length;
+            if (tama != 0) {
+                for (var i = 0; i < tama; i = i + 11) {
+                    $("#cod_producto").val(data[i]);
+                    $("#codigo").val(data[i + 1]);
+                    $("#producto").val(data[i + 3]);
+                    $("#precio").val(data[i + 4]);
+                    $("#canti").val(data[i + 5]);
+                    $("#descuento").val(data[i + 6]);
+                    $("#iva_producto").val(data[i + 7]);
+                    $("#carga_series").val(data[i + 8]);
+                    $("#estado").val(data[i + 9]);
+                    $("#incluye").val(data[i + 10]);
+                    $("#cantidad").focus();
                 }
-            });
-        }
-    });
+            } else {
+                $("#codigo").val("");
+                $("#producto").val("");
+                $("#precio").val("");
+                $("#descuento").val("");
+                $("#canti").val("");
+                $("#iva_producto").val("");
+                $("#carga_series").val("");
+                $("#estado").val("");
+                $("#cod_producto").val("");
+                $("#incluye").val("");
+                $("#cantidad").val("");
+                alertify.error("Producto no ingresado");
+                $("#codigo_barras").val("");
+            }
+        });
+    });  
     // Fin   
 
     // buscar productos codigo
-    $("#codigo").keyup(function(e) {
-        var ids = $("#id_factura_venta").val();
-
-        if (ids == "") {
-            $("#serie").focus();
-            $("#codigo_barras").val("");
-            alertify.error("Error... Seleccione una factura");
-        } else {
-            $("#codigo").autocomplete({
-                source: "buscar_productonotas.php?ids=" + ids,
-                minLength: 1,
-                focus: function(event, ui) {
-                $("#codigo_barras").val(ui.item.codigo_barras);
-                $("#codigo").val(ui.item.value);
-                $("#producto").val(ui.item.producto);
-                $("#precio").val(ui.item.precio);
-                $("#canti").val(ui.item.canti);
-                $("#descuento").val(ui.item.descuento);
-                $("#iva_producto").val(ui.item.iva_producto);
-                $("#carga_series").val(ui.item.carga_series);
-                $("#estado").val(ui.item.estado);
-                $("#cod_producto").val(ui.item.cod_producto);
-                $("#incluye").val(ui.item.incluye);
-                return false;
-                },
-                select: function(event, ui) {
-                $("#codigo_barras").val(ui.item.codigo_barras);
-                $("#codigo").val(ui.item.value);
-                $("#producto").val(ui.item.producto);
-                $("#precio").val(ui.item.precio);
-                $("#canti").val(ui.item.canti);
-                $("#descuento").val(ui.item.descuento);
-                $("#iva_producto").val(ui.item.iva_producto);
-                $("#carga_series").val(ui.item.carga_series);
-                $("#estado").val(ui.item.estado);
-                $("#cod_producto").val(ui.item.cod_producto);
-                $("#incluye").val(ui.item.incluye);
-                return false;
-                }
-
-                }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                return $("<li>")
-                .append("<a>" + item.value + "</a>")
-                .appendTo(ul);
-            };
+    $("#codigo").autocomplete({
+        source: "buscar_codigo.php?ids=" + $("#id_factura_venta").val(),
+        minLength: 1,
+        focus: function(event, ui) {
+        $("#codigo_barras").val(ui.item.codigo_barras);
+        $("#codigo").val(ui.item.value);
+        $("#producto").val(ui.item.producto);
+        $("#precio").val(ui.item.precio);
+        $("#canti").val(ui.item.canti);
+        $("#descuento").val(ui.item.descuento);
+        $("#iva_producto").val(ui.item.iva_producto);
+        $("#carga_series").val(ui.item.carga_series);
+        $("#estado").val(ui.item.estado);
+        $("#cod_producto").val(ui.item.cod_producto);
+        $("#incluye").val(ui.item.incluye);
+        return false;
+        },
+        select: function(event, ui) {
+        $("#codigo_barras").val(ui.item.codigo_barras);
+        $("#codigo").val(ui.item.value);
+        $("#producto").val(ui.item.producto);
+        $("#precio").val(ui.item.precio);
+        $("#canti").val(ui.item.canti);
+        $("#descuento").val(ui.item.descuento);
+        $("#iva_producto").val(ui.item.iva_producto);
+        $("#carga_series").val(ui.item.carga_series);
+        $("#estado").val(ui.item.estado);
+        $("#cod_producto").val(ui.item.cod_producto);
+        $("#incluye").val(ui.item.incluye);
+        return false;
         }
-    });
+
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+        return $("<li>")
+        .append("<a>" + item.value + "</a>")
+        .appendTo(ul);
+    };
     // Fin
     
-    $("#producto").keyup(function(e) {
-        var ids = $("#id_factura_venta").val();
-
-        if (ids == "") {
-            $("#serie").focus();
-            $("#producto").val("");
-            alertify.error("Error... Seleccione una factura");
-        } else {
-            $("#producto").autocomplete({
-                source: "buscar_productonotas2.php?ids=" + ids,
-                minLength: 1,
-                focus: function(event, ui) {
-                $("#codigo_barras").val(ui.item.codigo_barras);
-                $("#producto").val(ui.item.value);
-                $("#codigo").val(ui.item.codigo);
-                $("#precio").val(ui.item.precio);
-                $("#canti").val(ui.item.canti);
-                $("#descuento").val(ui.item.descuento);
-                $("#iva_producto").val(ui.item.iva_producto);
-                $("#carga_series").val(ui.item.carga_series);
-                $("#estado").val(ui.item.estado);
-                $("#cod_producto").val(ui.item.cod_producto);
-                $("#incluye").val(ui.item.incluye);
-                return false;
-                },
-                select: function(event, ui) {
-                $("#codigo_barras").val(ui.item.codigo_barras);
-                $("#producto").val(ui.item.value);
-                $("#codigo").val(ui.item.codigo);
-                $("#precio").val(ui.item.precio);
-                $("#canti").val(ui.item.canti);
-                $("#descuento").val(ui.item.descuento);
-                $("#iva_producto").val(ui.item.iva_producto);
-                $("#carga_series").val(ui.item.carga_series);
-                $("#estado").val(ui.item.estado);
-                $("#cod_producto").val(ui.item.cod_producto);
-                $("#incluye").val(ui.item.incluye);
-                return false;
-                }
-
-                }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                return $("<li>")
-                .append("<a>" + item.value + "</a>")
-                .appendTo(ul);
-            };
+    // buscar productos articulo
+    $("#producto").autocomplete({
+        source: "buscar_productonotas2.php?ids=" + $("#id_factura_venta").val(),
+        minLength: 1,
+        focus: function(event, ui) {
+        $("#codigo_barras").val(ui.item.codigo_barras);
+        $("#producto").val(ui.item.value);
+        $("#codigo").val(ui.item.codigo);
+        $("#precio").val(ui.item.precio);
+        $("#canti").val(ui.item.canti);
+        $("#descuento").val(ui.item.descuento);
+        $("#iva_producto").val(ui.item.iva_producto);
+        $("#carga_series").val(ui.item.carga_series);
+        $("#estado").val(ui.item.estado);
+        $("#cod_producto").val(ui.item.cod_producto);
+        $("#incluye").val(ui.item.incluye);
+        return false;
+        },
+        select: function(event, ui) {
+        $("#codigo_barras").val(ui.item.codigo_barras);
+        $("#producto").val(ui.item.value);
+        $("#codigo").val(ui.item.codigo);
+        $("#precio").val(ui.item.precio);
+        $("#canti").val(ui.item.canti);
+        $("#descuento").val(ui.item.descuento);
+        $("#iva_producto").val(ui.item.iva_producto);
+        $("#carga_series").val(ui.item.carga_series);
+        $("#estado").val(ui.item.estado);
+        $("#cod_producto").val(ui.item.cod_producto);
+        $("#incluye").val(ui.item.incluye);
+        return false;
         }
-    });
+
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+        return $("<li>")
+        .append("<a>" + item.value + "</a>")
+        .appendTo(ul);
+    };   
     // Fin 
     
     // fechas

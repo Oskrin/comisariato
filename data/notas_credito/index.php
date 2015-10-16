@@ -157,13 +157,8 @@ $cont1++;
                                 <label class="col-md-5">Tipo de comprobante: <font color="red">*</font></label>
                                 <div class="form-group col-md-7 no-padding">                                
                                   <select class="form-control" name="tipo_comprobante" id="tipo_comprobante">
-                                    <option value="">........Seleccione........</option>
-                                    <?php
-                                    $consulta = pg_query("select * from tipo_comprobante ");
-                                    while ($row = pg_fetch_row($consulta)) {
-                                        echo "<option id=$row[0] value=$row[0]>$row[1] $row[2]</option>";
-                                    }
-                                    ?>
+                                    <option value="FACTURA" selected>FACTURA</option>
+                                    <option value="NOTA">NOTA VENTA</option>
                                   </select>
                                 </div> 
                               </div> 

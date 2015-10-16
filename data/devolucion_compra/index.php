@@ -143,12 +143,8 @@ $cont1++;
                                 <div class="form-group col-md-7 no-padding">                                
                                   <select class="form-control" name="tipo_comprobante" id="tipo_comprobante">
                                     <option value="">........Seleccione........</option>
-                                    <?php
-                                    $consulta = pg_query("select * from tipo_comprobante ");
-                                    while ($row = pg_fetch_row($consulta)) {
-                                        echo "<option id=$row[0] value=$row[0]>$row[1] $row[2]</option>";
-                                    }
-                                    ?>
+                                    <option value="FACTURA" selected>FACTURA</option>
+                                    <option value="NOTA VENTA">NOTA VENTA</option>
                                   </select>
                                 </div> 
                               </div>
@@ -175,7 +171,7 @@ $cont1++;
                           </div> 
                         </div>
                         <hr />
-                        <h3 class="box-title">Detalle Factura</h3>
+                        <h3 class="box-title">Detalle Devolución</h3>
 
                         <div class="row">
                          <div class="col-mx-12">
@@ -210,15 +206,15 @@ $cont1++;
                             <div class="col-md-1">
                               <div class="form-group">
                                 <label>PRECIO</label>
-                                <input type="text" name="precio"  id="precio" class="form-control" />
+                                <input type="text" name="precio"  id="precio" class="form-control" readonly />
                               </div> 
                             </div>
 
                             <div class="col-md-1">
                               <div class="form-group">
                                 <label>DESC</label>
-                                <input type="hidden" name="canti"  id="canti" readonly min="0" class="form-control" />
                                 <input type="text" name="descuento"  id="descuento" readonly min="0" placeholder="%" class="form-control" />
+                                <input type="hidden" name="canti"  id="canti" readonly class="form-control" />
                                 <input type="hidden" name="iva_producto"  id="iva_producto" readonly class="form-control" />
                                 <input type="hidden" name="carga_series"  id="carga_series" readonly class="form-control" />
                                 <input type="hidden" name="cod_producto"  id="cod_producto" readonly class="form-control" />
@@ -228,14 +224,11 @@ $cont1++;
                          </div>
                         </div>
 
-                        <!-- <div class="row"> -->
-                         <div class="col-mx-12">
-                            <div id="grid_container">
-                                <table id="list"></table>
-                                <!--<div id="pager"></div>-->   
-                            </div>
-                         </div>   
-                        <!-- </div> -->
+                        <div class="col-mx-12">
+                          <div id="grid_container">
+                            <table id="list"></table>
+                          </div>
+                        </div>   
 
                         <div class="row">
                          <div class="col-mx-12">
@@ -249,22 +242,21 @@ $cont1++;
                             </div>
 
                             <div class="col-md-3"></div>
-                            <!-- <div class="col-md-2"></div> -->
                             <div class="col-md-3">
                               <div class="form-group">
-                                <label class="col-md-5" >Tarifa 0:</label>
+                                <label class="col-md-5">Tarifa 0:</label>
                                 <div class="form-group col-md-7 no-padding">
                                   <div class="input-group">
                                     <div class="input-group-addon">
                                       <i class="glyphicon glyphicon-usd"></i>
                                     </div>
-                                    <input type="text" name="total_p" id="total_p" value="0.00" readonly class="form-control"/>
+                                    <input type="text" name="total_p" id="total_p" value="0.000" readonly class="form-control"/>
                                   </div>                                
                                 </div> 
                               </div>
 
                               <div class="form-group">
-                                <label class="col-md-5" >Tarifa 12:</label>
+                                <label class="col-md-5">Tarifa 12:</label>
                                 <div class="form-group col-md-7 no-padding">
                                   <div class="input-group">
                                     <div class="input-group-addon">
@@ -276,7 +268,7 @@ $cont1++;
                               </div>
 
                               <div class="form-group">
-                                <label class="col-md-5" >12 %Iva:</label>
+                                <label class="col-md-5">12 %Iva:</label>
                                 <div class="form-group col-md-7 no-padding">
                                   <div class="input-group">
                                     <div class="input-group-addon">
@@ -288,7 +280,7 @@ $cont1++;
                               </div>
 
                               <div class="form-group">
-                                <label class="col-md-5" >Descuento:</label>
+                                <label class="col-md-5">Descuento:</label>
                                 <div class="form-group col-md-7 no-padding">
                                   <div class="input-group">
                                     <div class="input-group-addon">
@@ -300,7 +292,7 @@ $cont1++;
                               </div> 
 
                               <div class="form-group">
-                                <label class="col-md-5" >Total:</label>
+                                <label class="col-md-5">Total:</label>
                                 <div class="form-group col-md-7 no-padding">
                                   <div class="input-group">
                                     <div class="input-group-addon">

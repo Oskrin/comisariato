@@ -233,7 +233,6 @@ function comprobar2() {
                             $("#precio").focus();
                             alertify.error("Ingrese un precio");
                         } else {
-
                             var filas = jQuery("#list").jqGrid("getRowData");
                             var descuento = 0;
                             var total = 0;
@@ -275,7 +274,7 @@ function comprobar2() {
                                     total: total, 
                                     iva: $("#iva_producto").val(),
                                     incluye: $("#incluye").val()
-                                    };
+                                };
 
                                 su = jQuery("#list").jqGrid('addRowData', $("#cod_producto").val(), datarow);
                                 limpiar_campos();
@@ -463,7 +462,7 @@ function comprobar4() {
     if ($("#serie").val() == "") {
         $("#serie").focus();
         alertify.error("Ingrese una serie");
-    }else{
+    } else {
         if ($("#tipo_comprobante").val() == "") {
             $("#tipo_comprobante").focus();
             alertify.error("Seleccione tipo documento");
@@ -475,7 +474,7 @@ function comprobar4() {
                if ($("#empresa").val() == "") {
                 $("#ruc_ci").focus();
                 alertify.error("Indique un Proveedor");
-                }else{
+                } else {
                     $("#codigo_barras").focus();
                 } 
             }
@@ -500,7 +499,7 @@ function agregar() {
                     $("#serie").val("");
                     $("#serie").focus();
                     alertify.alert("Error... Serie ya registrada");
-                }else{
+                } else {
                     if (filas2.length < canti) {
                         if (filas2.length == 0) {
                             var datarow = {
@@ -548,6 +547,7 @@ function agregar() {
 
 function guardar_serie() {
     var tam2 = jQuery("#list2").jqGrid("getRowData");
+
     if ($("#cod_producto").val() == "") {
         alertify.alert("Error... Seleccione un producto");
     } else {
@@ -775,7 +775,7 @@ function flecha_atras(){
             if(val != ""){
                 $("#comprobante").val(val);
                 var valor = $("#comprobante").val();
-                 // llamar factura flechas primera parte
+               // llamar datos Factura Compra
                 $("#btnGuardar").attr("disabled", true);
 
                 $("#ruc_ci").attr("disabled", "disabled");
@@ -854,6 +854,7 @@ function flecha_atras(){
                         }
                     }
                 });
+                // Fin
              } else {
                 alertify.alert("No hay mas registros posteriores!!");
             }
@@ -871,7 +872,7 @@ function flecha_siguiente(){
             if(val != ""){
             $("#comprobante").val(val);
             var valor = $("#comprobante").val();
-            // llamar factura flechas primera parte/////
+            // llamar datos Factura Compra
             $("#btnGuardar").attr("disabled", true);
 
             $("#ruc_ci").attr("disabled", "disabled");
@@ -887,7 +888,6 @@ function flecha_siguiente(){
             $("#iva").val("0.000");
             $("#desc").val("0.000");
             $("#tot").val("0.000");
-            // fin
     
             $.getJSON('retornar_factura_compra.php?com=' + valor, function(data) {
                 var tama = data.length;
@@ -955,6 +955,7 @@ function flecha_siguiente(){
                     }
                 }
             });
+            // fin
             }else{
                 alertify.alert("No hay mas registros superiores!!");
             }
@@ -1313,9 +1314,9 @@ function inicio() {
 
     // buscar producto codigo barras 
     $("#codigo_barras").change(function(e) {
-    var codigo = $("#codigo_barras").val();
+        var codigo = $("#codigo_barras").val();
 
-    $.getJSON('search.php?codigo_barras=' + codigo, function(data) {
+        $.getJSON('search.php?codigo_barras=' + codigo, function(data) {
             var tama = data.length;
             if (tama != 0) {
                for (var i = 0; i < tama; i = i + 7) {
@@ -1344,9 +1345,9 @@ function inicio() {
     });
     // fin
 
-   // buscar producto codigo
+    // buscar producto codigo
     $("#codigo").autocomplete({
-        source: "buscar_producto.php",
+        source: "buscar_codigo.php",
         minLength: 1,
         focus: function(event, ui) {
         $("#codigo_barras").val(ui.item.codigo_barras);
@@ -1378,9 +1379,9 @@ function inicio() {
     };
     // fin
 
-    // buscar producto nombre
+    // buscar producto articulo
     $("#producto").autocomplete({
-        source: "buscar_producto2.php",
+        source: "buscar_producto.php",
         minLength: 1,
         focus: function(event, ui) {
         $("#codigo_barras").val(ui.item.codigo_barras);
