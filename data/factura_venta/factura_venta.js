@@ -287,7 +287,7 @@ function entrar3() {
                                     if ($("#descuento").val() != "") {
                                         desc = $("#descuento").val();
                                         precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                        multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                        multi = (parseFloat($("#cantidad").val()) * parseFloat(precio)).toFixed(3);
                                         descuento = ((multi * parseFloat(desc)) / 100);
                                         flotante = parseFloat(descuento);
                                         resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
@@ -295,11 +295,11 @@ function entrar3() {
                                     } else {
                                         desc = 0;
                                         precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                        multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                        multi = (parseFloat($("#cantidad").val()) * parseFloat(precio)).toFixed(3);
                                         descuento = ((multi * parseFloat(desc)) / 100);
                                         flotante = parseFloat(descuento);
                                         resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
-                                        total = (parseFloat($("#cantidad").val()) * precio).toFixed(3);
+                                        total = (parseFloat(multi)).toFixed(3);
                                     }
                                     
                                     var datarow = {
@@ -338,7 +338,7 @@ function entrar3() {
                                             if ($("#descuento").val() !== "") {
                                                 desc = $("#descuento").val();
                                                 precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                                multi = (parseFloat(suma) * parseFloat($("#p_venta").val())).toFixed(3);
+                                                multi = (parseFloat(suma) * parseFloat(precio)).toFixed(3);
                                                 descuento = ((multi * parseFloat(desc)) / 100);
                                                 flotante = parseFloat(descuento);
                                                 resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
@@ -346,11 +346,11 @@ function entrar3() {
                                             } else {
                                                 desc = 0;
                                                 precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                                multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                                multi = (parseFloat(suma) * parseFloat(precio)).toFixed(3);
                                                 descuento = ((multi * parseFloat(desc)) / 100);
                                                 flotante = parseFloat(descuento);
                                                 resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
-                                                total = (parseFloat(suma) * precio).toFixed(3);
+                                                total = (parseFloat(multi)).toFixed(3);
                                             }
                                         
                                             datarow = {
@@ -375,7 +375,7 @@ function entrar3() {
                                             if ($("#descuento").val() != "") {
                                                 desc = $("#descuento").val();
                                                 precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                                multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                                multi = (parseFloat($("#cantidad").val()) * parseFloat(precio)).toFixed(3);
                                                 descuento = ((multi * parseFloat(desc)) / 100);
                                                 flotante = parseFloat(descuento) ;
                                                 resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
@@ -383,11 +383,11 @@ function entrar3() {
                                             } else {
                                                 desc = 0;
                                                 precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                                multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                                multi = (parseFloat($("#cantidad").val()) * parseFloat(precio)).toFixed(3);
                                                 descuento = ((multi * parseFloat(desc)) / 100);
                                                 flotante = parseFloat(descuento);
                                                 resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
-                                                total = (parseFloat($("#cantidad").val()) * precio).toFixed(3);
+                                                total = (parseFloat(multi)).toFixed(3);
                                             }
                                         
                                             datarow = {
@@ -502,7 +502,7 @@ function entrar3() {
                                     if ($("#descuento").val() != "") {
                                         desc = $("#descuento").val();
                                         precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                        multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                        multi = (parseFloat($("#cantidad").val()) * parseFloat(precio)).toFixed(3);
                                         descuento = ((multi * parseFloat(desc)) / 100);
                                         flotante = parseFloat(descuento);
                                         resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
@@ -510,11 +510,11 @@ function entrar3() {
                                     } else {
                                         desc = 0;
                                         precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                        multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                        multi = (parseFloat($("#cantidad").val()) * parseFloat(precio)).toFixed(3);
                                         descuento = ((multi * parseFloat(desc)) / 100);
                                         flotante = parseFloat(descuento);
                                         resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
-                                        total = (parseFloat($("#cantidad").val()) * precio).toFixed(3);
+                                        total = (parseFloat(multi)).toFixed(3);
                                     }
                                     
                                     var datarow = {
@@ -549,7 +549,7 @@ function entrar3() {
                                         if ($("#descuento").val() != "") {
                                             desc = $("#descuento").val();
                                             precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                            multi = (parseFloat(suma) * parseFloat($("#p_venta").val())).toFixed(3);
+                                            multi = (parseFloat(suma) * parseFloat(precio)).toFixed(3);
                                             descuento = ((multi * parseFloat(desc)) / 100);
                                             flotante = parseFloat(descuento);
                                             resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
@@ -557,11 +557,11 @@ function entrar3() {
                                         } else {
                                             desc = 0;
                                             precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                            multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                            multi = (parseFloat(suma) * parseFloat(precio)).toFixed(3);
                                             descuento = ((multi * parseFloat(desc)) / 100);
                                             flotante = parseFloat(descuento);
                                             resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
-                                            total = (parseFloat(suma) * precio).toFixed(3);
+                                            total = (parseFloat(multi)).toFixed(3);
                                         }
                                     
                                         datarow = {
@@ -585,7 +585,7 @@ function entrar3() {
                                             if ($("#descuento").val() != "") {
                                                 desc = $("#descuento").val();
                                                 precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                                multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                                multi = (parseFloat($("#cantidad").val()) * parseFloat(precio)).toFixed(3);
                                                 descuento = ((multi * parseFloat(desc)) / 100);
                                                 flotante = parseFloat(descuento) ;
                                                 resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
@@ -593,11 +593,11 @@ function entrar3() {
                                             } else {
                                                 desc = 0;
                                                 precio = (parseFloat($("#p_venta").val())).toFixed(3);
-                                                multi = (parseFloat($("#cantidad").val()) * parseFloat($("#p_venta").val())).toFixed(3);
+                                                multi = (parseFloat($("#cantidad").val()) * parseFloat(precio)).toFixed(3);
                                                 descuento = ((multi * parseFloat(desc)) / 100);
                                                 flotante = parseFloat(descuento);
                                                 resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
-                                                total = (parseFloat($("#cantidad").val()) * precio).toFixed(3);
+                                                total = (parseFloat(multi)).toFixed(3);
                                             }
                                         
                                             datarow = {
@@ -1574,7 +1574,7 @@ function flecha_atras(){
             if(val != "") {
                 $("#comprobante").val(val);
                 var valor = $("#comprobante").val();
-                ///////////////////llamar factura flechas primera parte/////
+                // llamar factura venta
                 $("#btnGuardar").attr("disabled", true);
 
                 $("#num_factura").attr("disabled", true);
@@ -1600,7 +1600,6 @@ function flecha_atras(){
                 $("#desc").val("0.000");
                 $("#tot").val("0.000");
 
-                ///////////////////llamar factura flechas primera parte/////
                 $.getJSON('retornar_factura_venta.php?com=' + valor, function(data) {
                     var tama = data.length;
                     if (tama != 0) {
@@ -1711,6 +1710,7 @@ function flecha_atras(){
                         }
                     }
                 });
+                // Fin
             } else {
                 alertify.alert("No hay mas registros posteriores!!");
             }
@@ -1728,7 +1728,7 @@ function flecha_siguiente() {
             if(val != ""){   
                 $("#comprobante").val(val);
                 var valor = $("#comprobante").val();
-                ///////////////////llamar factura flechas primera parte/////
+                // llamar factura venta
                 $("#btnGuardar").attr("disabled", true);
 
                 $("#num_factura").attr("disabled", true);
@@ -1864,6 +1864,7 @@ function flecha_siguiente() {
                         }
                     }
                 });
+                // Fin
             } else {
                 alertify.alert("No hay mas registros superiores!!");
             }
@@ -2772,10 +2773,10 @@ function inicio() {
             {name: 'codigo', index: 'codigo', editable: false, search: false, hidden: false, editrules: {edithidden: false}, align: 'center',
                 frozen: true, width: 100},
             {name: 'detalle', index: 'detalle', editable: false, frozen: true, editrules: {required: true}, align: 'center', width: 290},
-            {name: 'cantidad', index: 'cantidad', editable: false, frozen: true, editrules: {required: true}, align: 'center', width: 70},
-            {name: 'precio_u', index: 'precio_u', editable: false, search: false, frozen: true, editrules: {required: true}, align: 'center', width: 110, editoptions:{maxlength: 10, size:15,dataInit: function(elem){$(elem).bind("keypress", function(e) {return punto(e)})}}}, 
+            {name: 'cantidad', index: 'cantidad', editable: true, frozen: true, editrules: {required: true}, align: 'center', width: 70},
+            {name: 'precio_u', index: 'precio_u', editable: true, search: false, frozen: true, editrules: {required: true}, align: 'center', width: 110, editoptions:{maxlength: 10, size:15,dataInit: function(elem){$(elem).bind("keypress", function(e) {return punto(e)})}}}, 
             {name: 'descuento', index: 'descuento', editable: false, frozen: true, editrules: {required: true}, align: 'center', width: 90},
-            {name: 'cal_des', index: 'cal_des', editable: false, hidden: true, frozen: true, editrules: {required: true}, align: 'center', width: 90},
+            {name: 'cal_des', index: 'cal_des', editable: false, hidden: false, frozen: true, editrules: {required: true}, align: 'center', width: 90},
             {name: 'total', index: 'total', editable: false, search: false, frozen: true, editrules: {required: true}, align: 'center', width: 150},
             {name: 'iva', index: 'iva', align: 'center', width: 100, hidden: true},
             {name: 'pendiente', index: 'pendiente', editable: false, frozen: true, editrules: {required: true}, align: 'center', width: 90},
@@ -2885,7 +2886,120 @@ function inicio() {
             processing: true
         },
         afterSaveCell : function(rowid,name,val,iRow,iCol) {
-        ///////////aki codigo//////////////
+        var subtotal0 = 0;
+        var subtotal12 = 0;
+        var iva12 = 0;
+        var total_total = 0;
+        var descu_total = 0;
+    
+        var id = jQuery("#list").jqGrid('getGridParam', 'selrow');
+        jQuery('#list').jqGrid('restoreRow', id);
+        var ret = jQuery("#list").jqGrid('getRowData', id);
+
+            if(name == 'cantidad') {
+                var precio_grid = jQuery("#list").jqGrid('getCell',rowid, iCol + 1);
+                var descuento_grid =  jQuery("#list").jqGrid('getCell',rowid, iCol + 2);
+                var precio = 0;
+                var descuento = 0; 
+                var multi = 0;
+                var total = 0;
+                var desc = 0;
+                var flotante = 0;
+                var resultado = 0;               
+
+                if (descuento_grid != '0') {
+                    desc = descuento_grid;
+                    precio = (parseFloat(precio_grid)).toFixed(3);
+                    multi = (parseFloat(val) * parseFloat(precio)).toFixed(3);
+                    descuento = ((multi * parseFloat(desc)) / 100);
+                    flotante = parseFloat(descuento);
+                    resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                    total = (multi - resultado).toFixed(3);
+                    jQuery("#list").jqGrid('setRowData',rowid,{total: total, cal_des: resultado});
+                } else {
+                    desc = descuento_grid;
+                    precio = (parseFloat(precio_grid)).toFixed(3);
+                    multi = (parseFloat(val) * parseFloat(precio)).toFixed(3);
+                    descuento = ((multi * parseFloat(desc)) / 100);
+                    flotante = parseFloat(descuento);
+                    resultado = (Math.round(flotante * Math.pow(10,2)) / Math.pow(10,2)).toFixed(3);
+                    total = (parseFloat(multi)).toFixed(3);
+                    jQuery("#list").jqGrid('setRowData',rowid,{total: total});
+                }
+
+                // proceso incluye iva
+                var subtotal = 0;
+                var sub = 0;
+                var sub1 = 0;
+                var sub2 = 0;
+                var iva = 0;
+                var iva1 = 0;
+                var iva2 = 0;
+
+                var fil = jQuery("#list").jqGrid("getRowData");
+                for (var t = 0; t < fil.length; t++) {
+                    var dd = fil[t];
+                    if (dd['iva'] == "Si") {
+                        if(dd['incluye'] == "No"){
+                            subtotal = dd['total'];
+                            sub1 = subtotal;
+                            iva1 = (sub1 * 0.12).toFixed(3);                                          
+
+                            subtotal0 = parseFloat(subtotal0) + 0;
+                            subtotal12 = parseFloat(subtotal12) + parseFloat(sub1);
+                            descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
+                            iva12 = parseFloat(iva12) + parseFloat(iva1);
+                        
+                            subtotal0 = parseFloat(subtotal0).toFixed(3);
+                            subtotal12 = parseFloat(subtotal12).toFixed(3);
+                            iva12 = parseFloat(iva12).toFixed(3);
+                            descu_total = parseFloat(descu_total).toFixed(3);
+                        } else {
+                            if(dd['incluye'] == "Si"){
+                                subtotal = dd['total'];
+                                sub2 = (subtotal / 1.12).toFixed(3);
+                                iva2 = (sub2 * 0.12).toFixed(3);
+
+                                subtotal0 = parseFloat(subtotal0) + 0;
+                                subtotal12 = parseFloat(subtotal12) + parseFloat(sub2);
+                                iva12 = parseFloat(iva12) + parseFloat(iva2);
+                                descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
+
+                                subtotal0 = parseFloat(subtotal0).toFixed(3);
+                                subtotal12 = parseFloat(subtotal12).toFixed(3);
+                                iva12 = parseFloat(iva12).toFixed(3);
+                                descu_total = parseFloat(descu_total).toFixed(3);
+                            }
+                        }
+                    } else {
+                        if (dd['iva'] == "No") {                                               
+                            subtotal = dd['total'];
+                            sub = subtotal;
+
+                            subtotal0 = parseFloat(subtotal0) + parseFloat(sub);
+                            subtotal12 = parseFloat(subtotal12) + 0;
+                            iva12 = parseFloat(iva12) + 0;
+                            descu_total = parseFloat(descu_total) + parseFloat(dd['cal_des']);
+                            
+                            subtotal0 = parseFloat(subtotal0).toFixed(3);
+                            subtotal12 = parseFloat(subtotal12).toFixed(3);
+                            iva12 = parseFloat(iva12).toFixed(3);
+                            descu_total = parseFloat(descu_total).toFixed(3);                                  
+                        }       
+                    }
+                } 
+
+                total_total = parseFloat(total_total) + (parseFloat(subtotal0) + parseFloat(subtotal12) + parseFloat(iva12));
+                total_total = parseFloat(total_total).toFixed(3);
+
+                $("#total_p").val(subtotal0);
+                $("#total_p2").val(subtotal12);
+                $("#iva").val(iva12);
+                $("#desc").val(descu_total);
+                $("#tot").val(total_total);
+                $("#codigo_barras").focus();
+            }
+
         }
   });
 

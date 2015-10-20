@@ -32,8 +32,7 @@ function show() {
     setTimeout("show()", 1000);
 }
 
-var dialogo =
-{
+var dialogo = {
     autoOpen: false,
     resizable: false,
     width: 600,
@@ -41,8 +40,7 @@ var dialogo =
     modal: true
 };
         
-var dialogo2 =
-{
+var dialogo2 = {
     autoOpen: false,
     resizable: false,
     width: 800,
@@ -53,8 +51,7 @@ var dialogo2 =
     hide: "blind"    
 }
 
-var dialogo3 =
-{
+var dialogo3 = {
     autoOpen: false,
     resizable: false,
     width: 400,
@@ -290,7 +287,7 @@ function entrar2() {
                                             limpiar_input();
                                         }
                                     } else {
-                                         if ($("#descuento").val() != "") {
+                                        if ($("#descuento").val() != "") {
                                             desc = $("#descuento").val();
                                             precio = (parseFloat($("#precio").val())).toFixed(3);
                                             multi = (parseFloat($("#cantidad").val()) * parseFloat($("#precio").val())).toFixed(3);
@@ -338,7 +335,7 @@ function entrar2() {
                                 for (var t = 0; t < fil.length; t++) {
                                     var dd = fil[t];
                                     if (dd['iva'] == "Si") {
-                                        if(dd['incluye'] == "No"){
+                                        if(dd['incluye'] == "No") {
                                             subtotal = dd['total'];
                                             sub1 = subtotal;
                                             iva1 = (sub1 * 0.12).toFixed(3);                                          
@@ -353,7 +350,7 @@ function entrar2() {
                                             iva12 = parseFloat(iva12).toFixed(3);
                                             descu_total = parseFloat(descu_total).toFixed(3);
                                         } else {
-                                            if(dd['incluye'] == "Si"){
+                                            if(dd['incluye'] == "Si") {
                                                 subtotal = dd['total'];
                                                 sub2 = (subtotal / 1.12).toFixed(3);
                                                 iva2 = (sub2 * 0.12).toFixed(3);
@@ -953,24 +950,33 @@ function limpiar_devolucion() {
 }
 
 function limpiar_campo1() {
-    if($("#codigo").val() == ""){
+    if($("#codigo").val() == "") {
+        $("#codigo_barras").val("");
         $("#producto").val("");
         $("#cantidad").val("");
         $("#precio").val("");
         $("#canti").val("");
         $("#descuento").val("");
         $("#cod_producto").val("");
+        $("#iva_producto").val("");
+        $("#carga_series").val("");
+        $("#incluye").val("");
+
     }
 }
 
 function limpiar_campo2() {
-    if($("#producto").val() == ""){
+    if($("#producto").val() == "") {
+        $("#codigo_barras").val("");
         $("#codigo").val("");
         $("#cantidad").val("");
         $("#precio").val("");
         $("#canti").val("");
         $("#descuento").val("");
         $("#cod_producto").val("");
+        $("#iva_producto").val("");
+        $("#carga_series").val("");
+        $("#incluye").val("");
     }
 }
 
@@ -985,6 +991,7 @@ function limpiar_campo4() {
     if($("#serie").val() == ""){
         $("#autorizacion").val("");
         $("#id_factura_compra").val("");
+        $("#codigo_barras").val("");
         $("#codigo").val("");
         $("#producto").val("");
         $("#cantidad").val("");
@@ -992,6 +999,9 @@ function limpiar_campo4() {
         $("#canti").val("");
         $("#descuento").val("");
         $("#cod_producto").val("");
+        $("#iva_producto").val("");
+        $("#carga_series").val("");
+        $("#incluye").val("");
     }
 }
 
@@ -1289,79 +1299,83 @@ function inicio() {
     });    
 
     // buscador productos codigo
-    $("#codigo").autocomplete({
-        source: "buscar_codigo.php?ids=" + $("#id_factura_compra").val(),
-        minLength: 1,
-        focus: function(event, ui) {
-        $("#codigo_barras").val(ui.item.codigo_barras);
-        $("#codigo").val(ui.item.value);
-        $("#producto").val(ui.item.producto);
-        $("#precio").val(ui.item.precio);
-        $("#canti").val(ui.item.canti);
-        $("#descuento").val(ui.item.descuento);
-        $("#iva_producto").val(ui.item.iva_producto);
-        $("#carga_series").val(ui.item.carga_series);
-        $("#cod_producto").val(ui.item.cod_producto);
-        $("#incluye").val(ui.item.incluye);
-        return false;
-        },
-        select: function(event, ui) {
-        $("#codigo_barras").val(ui.item.codigo_barras);
-        $("#codigo").val(ui.item.value);
-        $("#producto").val(ui.item.producto);
-        $("#precio").val(ui.item.precio);
-        $("#canti").val(ui.item.canti);
-        $("#descuento").val(ui.item.descuento);
-        $("#iva_producto").val(ui.item.iva_producto);
-        $("#carga_series").val(ui.item.carga_series);
-        $("#cod_producto").val(ui.item.cod_producto);
-        $("#incluye").val(ui.item.incluye);
-        return false;
-        }
+    $("#codigo").keyup(function() {
+        $("#codigo").autocomplete({
+            source: "buscar_codigo.php?ids=" + $("#id_factura_compra").val(),
+            minLength: 1,
+            focus: function(event, ui) {
+            $("#codigo_barras").val(ui.item.codigo_barras);
+            $("#codigo").val(ui.item.value);
+            $("#producto").val(ui.item.producto);
+            $("#precio").val(ui.item.precio);
+            $("#canti").val(ui.item.canti);
+            $("#descuento").val(ui.item.descuento);
+            $("#iva_producto").val(ui.item.iva_producto);
+            $("#carga_series").val(ui.item.carga_series);
+            $("#cod_producto").val(ui.item.cod_producto);
+            $("#incluye").val(ui.item.incluye);
+            return false;
+            },
+            select: function(event, ui) {
+            $("#codigo_barras").val(ui.item.codigo_barras);
+            $("#codigo").val(ui.item.value);
+            $("#producto").val(ui.item.producto);
+            $("#precio").val(ui.item.precio);
+            $("#canti").val(ui.item.canti);
+            $("#descuento").val(ui.item.descuento);
+            $("#iva_producto").val(ui.item.iva_producto);
+            $("#carga_series").val(ui.item.carga_series);
+            $("#cod_producto").val(ui.item.cod_producto);
+            $("#incluye").val(ui.item.incluye);
+            return false;
+            }
 
-    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-        return $("<li>")
-                .append("<a>" + item.value + "</a>")
-                .appendTo(ul);
-    };
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+            return $("<li>")
+                    .append("<a>" + item.value + "</a>")
+                    .appendTo(ul);
+        };
+    });    
     // fin
 
     // buscar productos articulo
-    $("#producto").autocomplete({
-        source: "buscar_producto.php?ids=" + $("#id_factura_compra").val(),
-        minLength: 1,
-        focus: function(event, ui) {
-        $("#codigo_barras").val(ui.item.codigo_barras);
-        $("#producto").val(ui.item.value);
-        $("#codigo").val(ui.item.codigo);
-        $("#precio").val(ui.item.precio);
-        $("#canti").val(ui.item.canti);
-        $("#descuento").val(ui.item.descuento);
-        $("#iva_producto").val(ui.item.iva_producto);
-        $("#carga_series").val(ui.item.carga_series);
-        $("#cod_producto").val(ui.item.cod_producto);
-        $("#incluye").val(ui.item.incluye);
-        return false;
-        },
-        select: function(event, ui) {
-        $("#codigo_barras").val(ui.item.codigo_barras);
-        $("#producto").val(ui.item.value);
-        $("#codigo").val(ui.item.codigo);
-        $("#precio").val(ui.item.precio);
-        $("#canti").val(ui.item.canti);
-        $("#descuento").val(ui.item.descuento);
-        $("#iva_producto").val(ui.item.iva_producto);
-        $("#carga_series").val(ui.item.carga_series);
-        $("#cod_producto").val(ui.item.cod_producto);
-        $("#incluye").val(ui.item.incluye);
-        return false;
-        }
+    $("#producto").keyup(function() {
+        $("#producto").autocomplete({
+            source: "buscar_producto.php?ids=" + $("#id_factura_compra").val(),
+            minLength: 1,
+            focus: function(event, ui) {
+            $("#codigo_barras").val(ui.item.codigo_barras);
+            $("#producto").val(ui.item.value);
+            $("#codigo").val(ui.item.codigo);
+            $("#precio").val(ui.item.precio);
+            $("#canti").val(ui.item.canti);
+            $("#descuento").val(ui.item.descuento);
+            $("#iva_producto").val(ui.item.iva_producto);
+            $("#carga_series").val(ui.item.carga_series);
+            $("#cod_producto").val(ui.item.cod_producto);
+            $("#incluye").val(ui.item.incluye);
+            return false;
+            },
+            select: function(event, ui) {
+            $("#codigo_barras").val(ui.item.codigo_barras);
+            $("#producto").val(ui.item.value);
+            $("#codigo").val(ui.item.codigo);
+            $("#precio").val(ui.item.precio);
+            $("#canti").val(ui.item.canti);
+            $("#descuento").val(ui.item.descuento);
+            $("#iva_producto").val(ui.item.iva_producto);
+            $("#carga_series").val(ui.item.carga_series);
+            $("#cod_producto").val(ui.item.cod_producto);
+            $("#incluye").val(ui.item.incluye);
+            return false;
+            }
 
-    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-        return $("<li>")
-                .append("<a>" + item.value + "</a>")
-                .appendTo(ul);
-    };
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+            return $("<li>")
+                    .append("<a>" + item.value + "</a>")
+                    .appendTo(ul);
+        };
+    });    
     // Fin        
         
     // calendarios

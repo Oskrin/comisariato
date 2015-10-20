@@ -219,8 +219,8 @@ $cont1++;
                             <div class="col-md-1">
                               <div class="form-group">
                                 <label>DESC</label>
-                                <input type="hidden" name="canti"  id="canti" readonly class="form-control" />
                                 <input type="text" name="descuento"  id="descuento"  min="0" placeholder="%" readonly class="form-control" />
+                                <input type="hidden" name="canti"  id="canti" readonly class="form-control" />
                                 <input type="hidden" name="iva_producto"  id="iva_producto" readonly class="form-control" />
                                 <input type="hidden" name="carga_series"  id="carga_series" readonly class="form-control" />
                                 <input type="hidden" name="cod_producto"  id="cod_producto" readonly class="form-control" />
